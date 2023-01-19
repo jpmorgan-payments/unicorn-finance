@@ -2,10 +2,10 @@ import React from 'react';
 
 function Banner({ bannerText, isSuccess }: { bannerText: string, isSuccess: boolean }) {
   return (
-    <div className={`flex flex-row gap-2 border border-${isSuccess ? 'green' : 'red'}-300 rounded bg-${isSuccess ? 'green' : 'red'}-200 p-3`}>
-      <span className={`material-icons-outlined text-md text-${isSuccess ? 'green' : 'red'}-800`}>{isSuccess ? 'check' : 'info'}</span>
+    <div className={`flex flex-row gap-2 border ${isSuccess ? 'border-green-300 bg-green-200 text-green-800' : 'border-red-300 bg-red-200 text-red-800'} rounded p-3 mb-3`}>
+      <span className="material-icons-outlined text-md ">{isSuccess ? 'check' : 'info'}</span>
 
-      <p className={`text-xl text-${isSuccess ? 'green' : 'red'}-800`}>{bannerText}</p>
+      <p className="text-xl ">{bannerText}</p>
     </div>
   );
 }
