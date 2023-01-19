@@ -95,10 +95,11 @@ cd app/client
 npx cypress open
 ```
 
-## Contribution to our project
+## Contributing
 
 We welcome any contributions you have. Steps for contribution are:
+
 1. If this is your first time contributing to JPMC codebases you will need to fill out our Contribution Licence Agreement (CLA). More information can be found at: https://github.com/jpmorganchase/.github/blob/main/CONTRIBUTING.md
 2. Write your code and create a PR and we will review it
-3. Your code will then be reviewed and merged if no issues are found. 
+3. Your code will then be reviewed and merged if no issues are found.
 4. As this project is a submodule of the [JPMC Payments](https://github.com/jpmorganchase/payments) you will need to update the commit ID reference there. You can follow their contribution guide for more information.
