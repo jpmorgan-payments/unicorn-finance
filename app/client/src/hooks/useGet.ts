@@ -12,6 +12,7 @@ export const sendGet = async (path:string) => {
   return fetch(path, requestOptions)
     .then((response) => response.json())
     .then((data: ServiceStatusDataType) => {
+      console.log(data);
       if (data.errors) {
         const errors = data.errors.map((item) => `${item.errorCode} - ${item.errorMsg}`);
         throw new Error(`There has been a problem with your fetch operation: ${JSON.stringify(errors)}`);
