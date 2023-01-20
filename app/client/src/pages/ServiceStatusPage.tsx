@@ -12,12 +12,8 @@ const mockedData: BankType[] = mockedDataUntyped as BankType[];
 
 function ServiceStatusPage() {
   const { statusConfig } = config;
-  const {
-    displayingMockedData,
-  } = React.useContext(AppContext);
-  const {
-    isError, data, error,
-  } = useGet(
+  const { displayingMockedData } = React.useContext(AppContext);
+  const { isError, data, error } = useGet(
     statusConfig.apiDetails[0].backendPath,
     statusConfig.apiDetails[0].cacheKey,
     statusConfig.apiDetails[0].refreshInterval,
