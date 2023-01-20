@@ -4,7 +4,6 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import nock from 'nock';
 import { renderHook, waitFor } from '@testing-library/react';
 import { config } from '../../config';
-import useTransactionGet from '../useTransactionGet';
 import usePostBalanceData from '../usePostBalanceData';
 
 const API_PATH = '/api/accessapi/balance';
