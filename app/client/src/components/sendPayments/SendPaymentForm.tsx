@@ -12,7 +12,7 @@ import generateApiBody, { today, updateSessionStorageTransactions } from './Send
 import { paymentTypesConfiguration } from './config';
 import { AppContext } from '../../context/AppContext';
 import { config } from '../../config';
-import { sendGet } from '../../hooks/useGet';
+import { sendGet } from '../../hooks/useAccountGet';
 
 type SendPaymentFormProps = {
   setApiResponse: (apiResponse: PaymentsResponse) => void

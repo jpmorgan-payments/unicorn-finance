@@ -3,13 +3,13 @@ import AccountInfo from '../components/accountInformationPanel/index';
 import TransactionInfo from '../components/transactionInformationPanel/index';
 import usePost from '../hooks/usePost';
 import Spinner from '../components/spinner';
-import useGet from '../hooks/useGet';
 import { AppContext } from '../context/AppContext';
 import balanceMockDataUntyped from '../mockedJson/uf-balances.json';
 import transactionMockDataUntyped from '../mockedJson/uf-transactions.json';
 import { config } from '../config';
 import { BalanceDataType } from '../types/accountTypes';
 import { TransactionDataType } from '../types/transactionTypes';
+import useAccountGet from '../hooks/useAccountGet';
 
 const balanceMockData: BalanceDataType = balanceMockDataUntyped as BalanceDataType;
 const transactionMockData: TransactionDataType = transactionMockDataUntyped as TransactionDataType;
@@ -27,7 +27,7 @@ function AccountPage() {
     displayingMockedData,
   );
 
-  const transactionResults = useGet(
+  const transactionResults = useAccountGet(
     accountsConfig.apiDetails[1].backendPath,
     accountsConfig.apiDetails[1].cacheKey,
     accountsConfig.apiDetails[1].refreshInterval,

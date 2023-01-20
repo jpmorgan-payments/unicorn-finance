@@ -1,7 +1,7 @@
 import React from 'react';
 import StatusTable from '../components/statusTable';
 import Spinner from '../components/spinner';
-import useGet from '../hooks/useGet';
+import useServiceStatusGet from '../hooks/useServiceStatusGet';
 import { AppContext } from '../context/AppContext';
 import mockedDataUntyped from '../mockedJson/uf-service-status.json';
 
@@ -13,7 +13,7 @@ const mockedData: BankType[] = mockedDataUntyped as BankType[];
 function ServiceStatusPage() {
   const { statusConfig } = config;
   const { displayingMockedData } = React.useContext(AppContext);
-  const { isError, data, error } = useGet(
+  const { isError, data, error } = useServiceStatusGet(
     statusConfig.apiDetails[0].backendPath,
     statusConfig.apiDetails[0].cacheKey,
     statusConfig.apiDetails[0].refreshInterval,

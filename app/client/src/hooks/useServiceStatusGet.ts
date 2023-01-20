@@ -22,7 +22,7 @@ export const sendGet = async (path:string) => {
 };
 
 export default function
-useGet(path: string, id: string, intervalMs: number, displayingMockedData: boolean) {
+useServiceStatusGet(path: string, id: string, intervalMs: number, displayingMockedData: boolean) {
   return useQuery([id], () => sendGet(path), {
     refetchInterval: intervalMs,
     retry: 0,

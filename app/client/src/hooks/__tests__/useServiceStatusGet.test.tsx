@@ -3,7 +3,7 @@ import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import nock from 'nock';
 import { renderHook, waitFor } from '@testing-library/react';
-import useGet from '../useGet';
+import useServiceStatusGet from '../useServiceStatusGet';
 import { config } from '../../config';
 
 const queryClient = new QueryClient({
@@ -57,7 +57,7 @@ describe('Test responses from server', () => {
       .get('/api/tsapi/v1/participants')
       .reply(200, successfulResponse);
 
-    const { result } = renderHook(() => useGet(
+    const { result } = renderHook(() => useServiceStatusGet(
       config.statusConfig.apiDetails[0].backendPath,
       config.statusConfig.apiDetails[0].cacheKey,
       config.statusConfig.apiDetails[0].refreshInterval,
@@ -73,7 +73,7 @@ describe('Test responses from server', () => {
       .get('/api/tsapi/v1/participants')
       .reply(500, errorResponse);
 
-    const { result } = renderHook(() => useGet(
+    const { result } = renderHook(() => useServiceStatusGet(
       config.statusConfig.apiDetails[0].backendPath,
       config.statusConfig.apiDetails[0].cacheKey,
       config.statusConfig.apiDetails[0].refreshInterval,
@@ -88,7 +88,7 @@ describe('Test responses from server', () => {
       .get('/api/tsapi/v1/participants')
       .reply(200, { bankStatus: [] });
 
-    const { result } = renderHook(() => useGet(
+    const { result } = renderHook(() => useServiceStatusGet(
       config.statusConfig.apiDetails[0].backendPath,
       config.statusConfig.apiDetails[0].cacheKey,
       config.statusConfig.apiDetails[0].refreshInterval,
