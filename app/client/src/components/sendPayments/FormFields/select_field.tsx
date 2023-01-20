@@ -2,7 +2,7 @@ import React from 'react';
 import { UseFormRegister } from 'react-hook-form';
 import { AccountType } from '../../../types/accountTypes';
 import { FormValuesType } from '../../../types/globalPaymentApiTypes';
-import { capitalize } from '../SendPaymentsUtils';
+import { capitalize } from '../send_payments_utils';
 
 type SelectFieldProps = {
   id: keyof FormValuesType,

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import AccountTotal from './accountCards/AccountTotal';
-import AccountList from './AccountList';
+import AccountTotal from './accountCards/account_total';
+import AccountList from './account_list';
 import Search from '../search';
 import { AccountType } from '../../types/accountTypes';
 import { round } from '../utils';

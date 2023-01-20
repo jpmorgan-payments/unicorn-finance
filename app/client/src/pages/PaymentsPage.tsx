@@ -1,6 +1,6 @@
 import React from 'react';
-import SendPaymentForm from '../components/sendPayments/SendPaymentPanel';
-import PreviousPaymentsGrid from '../components/sendPayments/PreviousPaymentsGrid';
+import SendPaymentForm from '../components/sendPayments/send_payment_panel';
+import PreviousPaymentsGrid from '../components/sendPayments/previous_payments_grid';
 
 function PaymentsPage() {
   return (

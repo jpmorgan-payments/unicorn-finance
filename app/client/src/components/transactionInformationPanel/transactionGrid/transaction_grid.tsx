@@ -2,8 +2,8 @@ import React from 'react';
 import { AppContext } from '../../../context/AppContext';
 import { config } from '../../../config';
 import { GroupByDayType } from '../../../types/transactionTypes';
-import APIDetails from '../../APIDetails';
-import DailyTransactionTable from './DailyTransactionTable';
+import APIDetails from '../../api_details';
+import DailyTransactionTable from './daily_transaction_table';
 
 type TransactionGridProps = {
   groupedByDay: GroupByDayType[],

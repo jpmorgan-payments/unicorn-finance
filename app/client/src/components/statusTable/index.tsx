@@ -3,8 +3,8 @@ import React from 'react';
 import { AppContext } from '../../context/AppContext';
 import { config } from '../../config';
 import { BankType } from '../../types/serviceStatusTypes';
-import APIDetails from '../APIDetails';
-import TableItem from './tableItem';
+import APIDetails from '../api_details';
+import TableItem from './table_item';
 
 const tableHeaders = [
   'Participant ID',

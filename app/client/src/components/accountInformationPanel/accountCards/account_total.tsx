@@ -2,7 +2,7 @@ import React from 'react';
 import { AppContext } from '../../../context/AppContext';
 import { config } from '../../../config';
 import { AccountType, CurrencyType } from '../../../types/accountTypes';
-import APIDetails from '../../APIDetails';
+import APIDetails from '../../api_details';
 import { gatherCurrencySymbol, isEmptyObject } from '../../utils';
 
 type AccountTotalType = {

@@ -6,10 +6,10 @@ import { AppContext } from '../../context/AppContext';
 import { PaymentsResponse, GlobalPaymentRequest } from '../../types/globalPaymentApiTypes';
 import { config } from '../../config';
 import Spinner from '../spinner';
-import APIDetails from '../APIDetails';
-import FormButton from './FormButton';
+import APIDetails from '../api_details';
+import FormButton from './form_button';
 import { sendPost } from '../../hooks/usePost';
-import SendPaymentForm from './SendPaymentForm';
+import SendPaymentForm from './send_payment_form';
 import Banner from './Banner';
 
 function MakePaymentForm() {

@@ -5,10 +5,10 @@ import { UseMutationResult, useQueryClient } from '@tanstack/react-query';
 import {
   FormValuesType, GlobalPaymentRequest, PaymentsResponse, PaymentStatusResponseType,
 } from '../../types/globalPaymentApiTypes';
-import FormButton from './FormButton';
-import InputField from './FormFields/InputField';
-import SelectField from './FormFields/SelectField';
-import generateApiBody, { today, updateSessionStorageTransactions } from './SendPaymentsUtils';
+import FormButton from './form_button';
+import InputField from './FormFields/input_field';
+import SelectField from './FormFields/select_field';
+import generateApiBody, { today, updateSessionStorageTransactions } from './send_payments_utils';
 import { paymentTypesConfiguration } from './config';
 import { AppContext } from '../../context/AppContext';
 import { config } from '../../config';
