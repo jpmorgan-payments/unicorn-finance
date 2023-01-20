@@ -2,10 +2,10 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import { ErrorBoundary } from 'react-error-boundary';
 import { AppContext } from '../context/AppContext';
-import JsonDialog from './JsonDialog';
+import JsonDialog from './json_dialog';
 import Sidebar from './sidebar';
-import WhatAPI from './whatApi';
-import ErrorFallback from './errorFallback';
+import WhatAPI from './what_api';
+import ErrorFallback from './error_fallback';
 
 function Layout() {
   const {

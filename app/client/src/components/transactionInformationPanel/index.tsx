@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import TransactionViz from './TransactionViz';
-import TransactionGrid from './transactionGrid/TransactionGrid';
+import TransactionViz from './transaction-viz';
+import TransactionGrid from './transactionGrid/transaction_grid';
 import { isEmptyObject } from '../utils';
 import Search from '../search';
 import { TransactionType } from '../../types/transactionTypes';

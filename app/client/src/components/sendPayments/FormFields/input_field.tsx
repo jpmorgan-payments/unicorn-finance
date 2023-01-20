@@ -1,7 +1,7 @@
 import React from 'react';
 import { UseFormRegister } from 'react-hook-form';
 import { FormValuesType } from '../../../types/globalPaymentApiTypes';
-import { capitalize } from '../SendPaymentsUtils';
+import { capitalize } from '../send_payments_utils';
 
 type InputFieldProps = {
   label: keyof FormValuesType,

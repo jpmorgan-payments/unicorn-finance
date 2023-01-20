@@ -2,8 +2,8 @@ import React from 'react';
 import { AppContext } from '../../context/AppContext';
 import { config } from '../../config';
 import { AccountType } from '../../types/accountTypes';
-import APIDetails from '../APIDetails';
-import AccountCard from './accountCards/AccountCard';
+import APIDetails from '../api_details';
+import AccountCard from './accountCards/account_card';
 
 function AccountList({ data, selectedAccount, setSelectedAccount } : {
   data: AccountType[],
