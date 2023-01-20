@@ -9,7 +9,7 @@ import transactionMockDataUntyped from '../mockedJson/uf-transactions.json';
 import { config } from '../config';
 import { BalanceDataType } from '../types/accountTypes';
 import { TransactionType } from '../types/transactionTypes';
-import useAccountGet from '../hooks/useAccountGet';
+import useTransactionGet from '../hooks/useTransactionGet';
 
 const balanceMockData: BalanceDataType = balanceMockDataUntyped as BalanceDataType;
 const transactionMockData: TransactionType[] = transactionMockDataUntyped as TransactionType[];
@@ -27,7 +27,7 @@ function AccountPage() {
     displayingMockedData,
   );
 
-  const transactionResults = useAccountGet(
+  const transactionResults = useTransactionGet(
     accountsConfig.apiDetails[1].backendPath,
     accountsConfig.apiDetails[1].cacheKey,
     accountsConfig.apiDetails[1].refreshInterval,

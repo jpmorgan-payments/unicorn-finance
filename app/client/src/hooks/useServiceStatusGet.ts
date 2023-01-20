@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { ServiceStatusDataType } from '../types/serviceStatusTypes';
 
-export const sendGet = async (path:string) => {
+const sendGet = async (path:string) => {
   const requestOptions: RequestInit = {
     headers: {
       'Content-Type': 'application/json',

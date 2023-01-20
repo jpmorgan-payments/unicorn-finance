@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { TransactionDataType } from '../types/transactionTypes';
 
-export const sendGet = async (path:string) => {
+const sendGet = async (path:string) => {
   const requestOptions: RequestInit = {
     headers: {
       'Content-Type': 'application/json',
@@ -22,7 +22,7 @@ export const sendGet = async (path:string) => {
 };
 
 export default function
-useAccountGet(path: string, id: string, intervalMs: number, displayingMockedData: boolean) {
+useTransactionGet(path: string, id: string, intervalMs: number, displayingMockedData: boolean) {
   return useQuery([id], () => sendGet(path), {
     refetchInterval: intervalMs,
     retry: 0,
