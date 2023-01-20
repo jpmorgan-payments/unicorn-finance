@@ -1,5 +1,8 @@
+import { ErrorType } from './globalTypes';
+
 export type BalanceDataType = {
-  accountList: AccountType[]
+  accountList?: AccountType[],
+  errors?: ErrorType[]
 };
 export type AccountType = {
   accountId: string,

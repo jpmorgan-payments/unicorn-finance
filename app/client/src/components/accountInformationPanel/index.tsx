@@ -2,18 +2,18 @@ import React, { useState } from 'react';
 import AccountTotal from './accountCards/AccountTotal';
 import AccountList from './AccountList';
 import Search from '../search';
-import { AccountType, BalanceDataType } from '../../types/accountTypes';
+import { AccountType } from '../../types/accountTypes';
 import { round } from '../utils';
 
 function AccountInfo({ data, selectedAccount, setSelectedAccount }: {
-  data: BalanceDataType,
+  data: AccountType[],
   selectedAccount: AccountType | Record<string, never>,
   setSelectedAccount: (account: AccountType | Record<string, never>) => void
 }) {
   const [searchInput, setSearchInput] = useState('');
 
-  let accounts = data.accountList;
-  const totalAccount = data.accountList
+  let accounts = data;
+  const totalAccount = data
     .map((account) => {
       if (!account.errorCode && account.balanceList) {
         return account.balanceList[0].openingAvailableAmount;

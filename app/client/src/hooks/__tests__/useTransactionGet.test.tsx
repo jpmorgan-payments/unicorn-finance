@@ -6,6 +6,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { config } from '../../config';
 import useTransactionGet from '../useTransactionGet';
 
+const HOSTNAME = 'http://localhost:80';
 const API_PATH = '/api/tsapi/v2/transactions?relativeDateType=CURRENT_DAY&accountIds=000000010975001,000000011008182,000000010975514,000000010900009';
 const queryClient = new QueryClient({
   logger: {
@@ -127,11 +128,11 @@ const errorResponse = {
     },
   ],
 };
-describe('Test responses from server', () => {
+describe('Test responses from server for transactions', () => {
   test('Successful response', async () => {
     queryClient.clear();
 
-    nock('http://localhost:80')
+    nock(HOSTNAME)
       .get(API_PATH)
       .reply(200, successfulResponse);
 
@@ -147,7 +148,7 @@ describe('Test responses from server', () => {
   });
   test('Error response', async () => {
     queryClient.clear();
-    nock('http://localhost:80')
+    nock(HOSTNAME)
       .get(API_PATH)
       .reply(500, errorResponse);
 
@@ -162,7 +163,7 @@ describe('Test responses from server', () => {
   });
   test('Empty response', async () => {
     queryClient.clear();
-    nock('http://localhost:80')
+    nock(HOSTNAME)
       .get(API_PATH)
       .reply(200, { data: [] });
 

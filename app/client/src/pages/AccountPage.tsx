@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import AccountInfo from '../components/accountInformationPanel/index';
 import TransactionInfo from '../components/transactionInformationPanel/index';
-import usePost from '../hooks/usePost';
+import usePostBalanceData from '../hooks/usePostBalanceData';
 import Spinner from '../components/spinner';
 import { AppContext } from '../context/AppContext';
 import balanceMockDataUntyped from '../mockedJson/uf-balances.json';
 import transactionMockDataUntyped from '../mockedJson/uf-transactions.json';
 import { config } from '../config';
-import { BalanceDataType } from '../types/accountTypes';
+import { AccountType } from '../types/accountTypes';
 import { TransactionType } from '../types/transactionTypes';
 import useTransactionGet from '../hooks/useTransactionGet';
 
-const balanceMockData: BalanceDataType = balanceMockDataUntyped as BalanceDataType;
+const balanceMockData: AccountType[] = balanceMockDataUntyped as AccountType[];
 const transactionMockData: TransactionType[] = transactionMockDataUntyped as TransactionType[];
 
 function AccountPage() {
@@ -19,7 +19,7 @@ function AccountPage() {
   const [selectedAccount, setSelectedAccount] = useState({});
   const { displayingMockedData } = React.useContext(AppContext);
 
-  const balanceResults = usePost(
+  const balanceResults = usePostBalanceData(
     accountsConfig.apiDetails[0].backendPath,
     accountsConfig.apiDetails[0].cacheKey,
     accountsConfig.apiDetails[0].refreshInterval,
@@ -38,7 +38,7 @@ function AccountPage() {
     setSelectedAccount({});
   }, [displayingMockedData, setSelectedAccount]);
 
-  const displayAccountPanel = (data: BalanceDataType) => (
+  const displayAccountPanel = (data: AccountType[]) => (
     <AccountInfo
       data={data}
       selectedAccount={selectedAccount}
@@ -70,7 +70,7 @@ function AccountPage() {
     } if (!displayingMockedData && balanceResults.data && transactionResults.data) {
       return (
         <div className="flex flex-wrap">
-          {displayAccountPanel(balanceResults?.data as BalanceDataType)}
+          {displayAccountPanel(balanceResults?.data)}
           {displayTransactionPanel(transactionResults?.data)}
         </div>
       );
