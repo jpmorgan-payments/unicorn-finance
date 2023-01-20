@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import nock from 'nock';
@@ -13,7 +14,7 @@ const queryClient = new QueryClient({
     error: process.env.NODE_ENV === 'test' ? () => {} : console.error,
   },
 });
-const wrapper = ({ children }:any) => (
+const wrapper = ({ children }: { children:React.ReactNode }) => (
   <QueryClientProvider client={queryClient}>
     {children}
   </QueryClientProvider>
@@ -52,7 +53,7 @@ describe('Test responses from server', () => {
   test('Successful response', async () => {
     queryClient.clear();
 
-    const expectation = nock('http://localhost:80')
+    nock('http://localhost:80')
       .get('/api/tsapi/v1/participants')
       .reply(200, successfulResponse);
 
@@ -68,7 +69,7 @@ describe('Test responses from server', () => {
   });
   test('Error response', async () => {
     queryClient.clear();
-    const expectation = nock('http://localhost:80')
+    nock('http://localhost:80')
       .get('/api/tsapi/v1/participants')
       .reply(500, errorResponse);
 
@@ -83,7 +84,7 @@ describe('Test responses from server', () => {
   });
   test('Empty response', async () => {
     queryClient.clear();
-    const expectation = nock('http://localhost:80')
+    nock('http://localhost:80')
       .get('/api/tsapi/v1/participants')
       .reply(200, { bankStatus: [] });
 
