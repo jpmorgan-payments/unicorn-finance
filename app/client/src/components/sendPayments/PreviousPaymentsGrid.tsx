@@ -7,7 +7,7 @@ import { PaymentStatusResponseType } from '../../types/globalPaymentApiTypes';
 import previousMockedTransactionsUntyped from '../../mockedJson/uf-mocked-previous-payments.json';
 import { config } from '../../config';
 import APIDetails from '../APIDetails';
-import { sendGet } from '../../hooks/useAccountGet';
+import { sendGet } from '../../hooks/useGet';
 import Spinner from '../spinner';
 
 const headers: string[] = [

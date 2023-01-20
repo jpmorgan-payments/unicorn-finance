@@ -8,11 +8,11 @@ import balanceMockDataUntyped from '../mockedJson/uf-balances.json';
 import transactionMockDataUntyped from '../mockedJson/uf-transactions.json';
 import { config } from '../config';
 import { BalanceDataType } from '../types/accountTypes';
-import { TransactionDataType } from '../types/transactionTypes';
+import { TransactionType } from '../types/transactionTypes';
 import useAccountGet from '../hooks/useAccountGet';
 
 const balanceMockData: BalanceDataType = balanceMockDataUntyped as BalanceDataType;
-const transactionMockData: TransactionDataType = transactionMockDataUntyped as TransactionDataType;
+const transactionMockData: TransactionType[] = transactionMockDataUntyped as TransactionType[];
 
 function AccountPage() {
   const { accountsConfig } = config;
@@ -46,7 +46,7 @@ function AccountPage() {
     />
   );
 
-  const displayTransactionPanel = (data : TransactionDataType) => (
+  const displayTransactionPanel = (data : TransactionType[]) => (
     <TransactionInfo
       transactions={data}
       selectedAccount={selectedAccount}
@@ -61,23 +61,23 @@ function AccountPage() {
           {displayTransactionPanel(transactionMockData)}
         </div>
       );
-    } if (balanceResults.isLoading || transactionResults.isLoading) {
-      return (
-        <div className="text-center pt-24">
-          <Spinner />
-        </div>
-      );
     } if (balanceResults.isError || transactionResults.isError) {
       return (
         <div className="text-center pt-24" data-cy="errorMessage">
           Error gathering information from API. Toggle on mocked data below to see example information
         </div>
       );
+    } if (!displayingMockedData && balanceResults.data && transactionResults.data) {
+      return (
+        <div className="flex flex-wrap">
+          {displayAccountPanel(balanceResults?.data as BalanceDataType)}
+          {displayTransactionPanel(transactionResults?.data)}
+        </div>
+      );
     }
     return (
-      <div className="flex flex-wrap">
-        {displayAccountPanel(balanceResults?.data as BalanceDataType)}
-        {displayTransactionPanel(transactionResults?.data as TransactionDataType)}
+      <div className="text-center pt-24">
+        <Spinner />
       </div>
     );
   };

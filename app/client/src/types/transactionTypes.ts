@@ -1,7 +1,9 @@
 import { AccountType, CurrencyType } from './accountTypes';
+import { ErrorType } from './globalTypes';
 
 export interface TransactionDataType {
-  data: TransactionType[];
+  data?: TransactionType[],
+  errors?: ErrorType[]
 }
 
 export type GroupByDayType = {
