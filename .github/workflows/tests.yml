@@ -6,17 +6,26 @@ name: Tests
 on: push
 
 jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install modules
+        run: yarn
+        with:
+          working-directory: ./app/client
+      - name: Run tests
+        run: yarn test
+        with:
+          working-directory: ./app/client
   cypress-run:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      # Install NPM dependencies, cache them correctly
-      # and run all Cypress tests
       - name: Cypress run
         uses: cypress-io/github-action@v4
         with:
           working-directory: ./app/client
-          build: yarn run build && yarn test
           start: yarn start
           wait-on: "http://localhost:3000"
