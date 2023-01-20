@@ -6,6 +6,8 @@ import { renderHook, waitFor } from '@testing-library/react';
 import useServiceStatusGet from '../useServiceStatusGet';
 import { config } from '../../config';
 
+const HOSTNAME = 'http://localhost:80';
+const API_PATH = '/api/tsapi/v1/participants';
 const queryClient = new QueryClient({
   logger: {
     log: console.log,
@@ -49,12 +51,12 @@ const errorResponse = {
     },
   ],
 };
-describe('Test responses from server', () => {
+describe('Test responses from server for service status', () => {
   test('Successful response', async () => {
     queryClient.clear();
 
-    nock('http://localhost:80')
-      .get('/api/tsapi/v1/participants')
+    nock(HOSTNAME)
+      .get(API_PATH)
       .reply(200, successfulResponse);
 
     const { result } = renderHook(() => useServiceStatusGet(
@@ -69,8 +71,8 @@ describe('Test responses from server', () => {
   });
   test('Error response', async () => {
     queryClient.clear();
-    nock('http://localhost:80')
-      .get('/api/tsapi/v1/participants')
+    nock(HOSTNAME)
+      .get(API_PATH)
       .reply(500, errorResponse);
 
     const { result } = renderHook(() => useServiceStatusGet(
@@ -84,8 +86,8 @@ describe('Test responses from server', () => {
   });
   test('Empty response', async () => {
     queryClient.clear();
-    nock('http://localhost:80')
-      .get('/api/tsapi/v1/participants')
+    nock(HOSTNAME)
+      .get(API_PATH)
       .reply(200, { bankStatus: [] });
 
     const { result } = renderHook(() => useServiceStatusGet(

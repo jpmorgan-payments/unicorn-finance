@@ -3,11 +3,11 @@ import TransactionViz from './TransactionViz';
 import TransactionGrid from './transactionGrid/TransactionGrid';
 import { isEmptyObject } from '../utils';
 import Search from '../search';
-import { TransactionDataType, TransactionType } from '../../types/transactionTypes';
+import { TransactionType } from '../../types/transactionTypes';
 import { AccountType } from '../../types/accountTypes';
 
 type TransactionInfoType = {
-  transactions: TransactionDataType,
+  transactions: TransactionType[],
   selectedAccount: AccountType | Record<string, never>
 };
 
@@ -40,7 +40,7 @@ function TransactionInfo({
 }: TransactionInfoType) {
   const [searchInput, setSearchInput] = useState('');
 
-  let transactionData = transactions.data;
+  let transactionData = transactions;
 
   if (!isEmptyObject(selectedAccount) && selectedAccount.accountId) {
     transactionData = transactionData.filter((transaction) => (transaction.account.accountId === selectedAccount.accountId));

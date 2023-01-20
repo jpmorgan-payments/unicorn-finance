@@ -1,25 +1,25 @@
 import React, { useEffect, useState } from 'react';
 import AccountInfo from '../components/accountInformationPanel/index';
 import TransactionInfo from '../components/transactionInformationPanel/index';
-import usePost from '../hooks/usePost';
+import usePostBalanceData from '../hooks/usePostBalanceData';
 import Spinner from '../components/spinner';
 import { AppContext } from '../context/AppContext';
 import balanceMockDataUntyped from '../mockedJson/uf-balances.json';
 import transactionMockDataUntyped from '../mockedJson/uf-transactions.json';
 import { config } from '../config';
-import { BalanceDataType } from '../types/accountTypes';
-import { TransactionDataType } from '../types/transactionTypes';
-import useAccountGet from '../hooks/useAccountGet';
+import { AccountType } from '../types/accountTypes';
+import { TransactionType } from '../types/transactionTypes';
+import useTransactionGet from '../hooks/useTransactionGet';
 
-const balanceMockData: BalanceDataType = balanceMockDataUntyped as BalanceDataType;
-const transactionMockData: TransactionDataType = transactionMockDataUntyped as TransactionDataType;
+const balanceMockData: AccountType[] = balanceMockDataUntyped as AccountType[];
+const transactionMockData: TransactionType[] = transactionMockDataUntyped as TransactionType[];
 
 function AccountPage() {
   const { accountsConfig } = config;
   const [selectedAccount, setSelectedAccount] = useState({});
   const { displayingMockedData } = React.useContext(AppContext);
 
-  const balanceResults = usePost(
+  const balanceResults = usePostBalanceData(
     accountsConfig.apiDetails[0].backendPath,
     accountsConfig.apiDetails[0].cacheKey,
     accountsConfig.apiDetails[0].refreshInterval,
@@ -27,7 +27,7 @@ function AccountPage() {
     displayingMockedData,
   );
 
-  const transactionResults = useAccountGet(
+  const transactionResults = useTransactionGet(
     accountsConfig.apiDetails[1].backendPath,
     accountsConfig.apiDetails[1].cacheKey,
     accountsConfig.apiDetails[1].refreshInterval,
@@ -38,7 +38,7 @@ function AccountPage() {
     setSelectedAccount({});
   }, [displayingMockedData, setSelectedAccount]);
 
-  const displayAccountPanel = (data: BalanceDataType) => (
+  const displayAccountPanel = (data: AccountType[]) => (
     <AccountInfo
       data={data}
       selectedAccount={selectedAccount}
@@ -46,7 +46,7 @@ function AccountPage() {
     />
   );
 
-  const displayTransactionPanel = (data : TransactionDataType) => (
+  const displayTransactionPanel = (data : TransactionType[]) => (
     <TransactionInfo
       transactions={data}
       selectedAccount={selectedAccount}
@@ -61,23 +61,23 @@ function AccountPage() {
           {displayTransactionPanel(transactionMockData)}
         </div>
       );
-    } if (balanceResults.isLoading || transactionResults.isLoading) {
-      return (
-        <div className="text-center pt-24">
-          <Spinner />
-        </div>
-      );
     } if (balanceResults.isError || transactionResults.isError) {
       return (
         <div className="text-center pt-24" data-cy="errorMessage">
           Error gathering information from API. Toggle on mocked data below to see example information
         </div>
       );
+    } if (!displayingMockedData && balanceResults.data && transactionResults.data) {
+      return (
+        <div className="flex flex-wrap">
+          {displayAccountPanel(balanceResults?.data)}
+          {displayTransactionPanel(transactionResults?.data)}
+        </div>
+      );
     }
     return (
-      <div className="flex flex-wrap">
-        {displayAccountPanel(balanceResults?.data as BalanceDataType)}
-        {displayTransactionPanel(transactionResults?.data as TransactionDataType)}
+      <div className="text-center pt-24">
+        <Spinner />
       </div>
     );
   };

@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { ServiceStatusDataType } from '../types/serviceStatusTypes';
+import { TransactionDataType } from '../types/transactionTypes';
 
 const sendGet = async (path:string) => {
   const requestOptions: RequestInit = {
@@ -11,18 +11,18 @@ const sendGet = async (path:string) => {
 
   return fetch(path, requestOptions)
     .then((response) => response.json())
-    .then((data: ServiceStatusDataType) => {
+    .then((data: TransactionDataType) => {
       if (data.errors) {
         const errors = data.errors.map((item) => `${item.errorCode} - ${item.errorMsg}`);
         throw new Error(`There has been a problem with your fetch operation: ${JSON.stringify(errors)}`);
       }
-      return data.bankStatus;
+      return data.data;
     })
     .catch((error: Error) => { throw new Error(error.message); });
 };
 
 export default function
-useServiceStatusGet(path: string, id: string, intervalMs: number, displayingMockedData: boolean) {
+useTransactionGet(path: string, id: string, intervalMs: number, displayingMockedData: boolean) {
   return useQuery([id], () => sendGet(path), {
     refetchInterval: intervalMs,
     retry: 0,
