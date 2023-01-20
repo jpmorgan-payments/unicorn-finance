@@ -1,5 +1,7 @@
+import { ErrorType } from './globalTypes';
+
 export type ServiceStatusDataType = {
-  bankStatus: BankType[]
+  bankStatus?: BankType[]
   errors?: ErrorType[]
 };
 
@@ -9,8 +11,4 @@ export type BankType = {
   participantId: string,
   participantName: string,
   'status': BankStatusType
-};
-type ErrorType = {
-  errorCode: string,
-  errorMsg: string
 };

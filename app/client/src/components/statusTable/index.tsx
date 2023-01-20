@@ -2,9 +2,8 @@
 import React from 'react';
 import { AppContext } from '../../context/AppContext';
 import { config } from '../../config';
-import { BankType, ServiceStatusDataType } from '../../types/serviceStatusTypes';
+import { BankType } from '../../types/serviceStatusTypes';
 import APIDetails from '../APIDetails';
-import { isEmptyObject } from '../utils';
 import TableItem from './tableItem';
 
 const tableHeaders = [
@@ -20,25 +19,21 @@ const renderErrorMessage = (message: string) => (
   </div>
 );
 
-function StatusTable({ serviceStatusData } : { serviceStatusData: ServiceStatusDataType }) {
-  const bankStatus = serviceStatusData?.bankStatus;
+function StatusTable({ serviceStatusData } : { serviceStatusData: BankType[] }) {
   const { displayingApiData } = React.useContext(AppContext);
 
   const { statusConfig: { apiDetails } } = config;
   return (
     <div className="relative">
       {displayingApiData ? <APIDetails details={apiDetails[0]} absolute={false} />
-        : !serviceStatusData || serviceStatusData.errors ? renderErrorMessage(
-          'Error gathering information from API. Toggle on mocked data below to see example information',
-        )
-          : isEmptyObject(bankStatus) ? renderErrorMessage(
-            'There are no upcoming outages. Want to know what this data looks like? Toggle on mocked data below.',
-          ) : (
-            <table className="mb-6 min-w-full border-b border-gray-200 text-xs">
+        : serviceStatusData.length === 0 ? renderErrorMessage(
+          'There are no upcoming outages. Want to know what this data looks like? Toggle on mocked data below.',
+        ) : (
+          <table className="mb-6 min-w-full border-b border-gray-200 text-xs">
 
-              <thead className="border-b-2">
-                <tr>
-                  {tableHeaders
+            <thead className="border-b-2">
+              <tr>
+                {tableHeaders
                 && tableHeaders.map((header) => (
                   <th
                     scope="col"
@@ -48,11 +43,11 @@ function StatusTable({ serviceStatusData } : { serviceStatusData: ServiceStatusD
                     {header}
                   </th>
                 ))}
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
-                {bankStatus?.length > 0
-              && bankStatus.map((outage : BankType) => (
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200 bg-white">
+              {serviceStatusData.length > 0
+              && serviceStatusData.map((outage : BankType) => (
                 <tr key={`outage-${outage.participantId}-${outage.participantName}`}>
                   <TableItem text={outage.participantId} />
                   <TableItem text={outage.participantName} />
@@ -60,9 +55,9 @@ function StatusTable({ serviceStatusData } : { serviceStatusData: ServiceStatusD
                   <TableItem text={outage.clearingSystem} />
                 </tr>
               ))}
-              </tbody>
-            </table>
-          )}
+            </tbody>
+          </table>
+        )}
     </div>
   );
 }
