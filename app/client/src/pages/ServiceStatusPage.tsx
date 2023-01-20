@@ -1,51 +1,51 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import StatusTable from '../components/statusTable';
 import Spinner from '../components/spinner';
-import useGet from '../hooks/useGet';
+import useServiceStatusGet from '../hooks/useServiceStatusGet';
 import { AppContext } from '../context/AppContext';
 import mockedDataUntyped from '../mockedJson/uf-service-status.json';
 
 import { config } from '../config';
-import { ServiceStatusDataType } from '../types/serviceStatusTypes';
+import { BankType } from '../types/serviceStatusTypes';
 
-const mockedData: ServiceStatusDataType = mockedDataUntyped as ServiceStatusDataType;
+const mockedData: BankType[] = mockedDataUntyped as BankType[];
 
 function ServiceStatusPage() {
-  const [data, setData] = React.useState<ServiceStatusDataType>(mockedData);
   const { statusConfig } = config;
-  const {
-    displayingMockedData,
-  } = React.useContext(AppContext);
-  const response = useGet(
+  const { displayingMockedData } = React.useContext(AppContext);
+  const { isError, data, error } = useServiceStatusGet(
     statusConfig.apiDetails[0].backendPath,
     statusConfig.apiDetails[0].cacheKey,
     statusConfig.apiDetails[0].refreshInterval,
     displayingMockedData,
   );
 
-  useEffect(() => {
-    if (displayingMockedData) {
-      setData(mockedData);
-    } else {
-      setData(response?.data as ServiceStatusDataType);
-    }
-  }, [displayingMockedData, response?.data]);
-
   const displayTable = () => {
-    if (
-      !displayingMockedData
-      && (!response || response.status === 'loading' || response.isFetching)
-    ) {
+    if (displayingMockedData) {
       return (
-        <div className="text-center pt-24">
-          <Spinner />
+        <StatusTable
+          serviceStatusData={mockedData}
+        />
+      );
+    }
+    if (!displayingMockedData && (isError || error)) {
+      return (
+        <div className="pt-24 text-center" data-cy="errorMessage">
+          Error gathering information from API. Toggle on mocked data below to see example information
         </div>
       );
     }
+    if (data && !displayingMockedData) {
+      return (
+        <StatusTable
+          serviceStatusData={data}
+        />
+      );
+    }
     return (
-      <StatusTable
-        serviceStatusData={data}
-      />
+      <div className="text-center pt-24">
+        <Spinner />
+      </div>
     );
   };
 
