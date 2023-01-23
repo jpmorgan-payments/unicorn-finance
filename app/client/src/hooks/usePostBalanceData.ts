@@ -5,7 +5,6 @@ export const sendPost = async (path:string, body:string) => {
   const requestOptions: RequestInit = {
     method: 'POST',
     body,
-    headers: { 'Content-Type': 'application/json' },
   };
 
   return fetch(path, requestOptions)
