@@ -10,7 +10,7 @@ import APIDetails from '../api_details';
 import FormButton from './form_button';
 import { sendPost } from '../../hooks/usePost';
 import SendPaymentForm from './send_payment_form';
-import Banner from './banner';
+import Banner from './hello';
 
 function MakePaymentForm() {
   const {
