@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable no-console */
 import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -7,7 +8,6 @@ import { config } from '../../config';
 import { serviceStatusMockedResponse } from '../../mocks/handler';
 
 const HOSTNAME = 'http://localhost:80';
-const API_PATH = '/api/tsapi/v1/participants';
 const queryClient = new QueryClient({
   logger: {
     log: console.log,

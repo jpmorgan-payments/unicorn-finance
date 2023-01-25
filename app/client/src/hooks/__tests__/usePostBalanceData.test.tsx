@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 /* eslint-disable no-console */
 import React from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
@@ -8,12 +9,12 @@ import { accountBalanceMockedResponse } from '../../mocks/handler';
 
 const HOSTNAME = 'http://localhost:80';
 const queryClient = new QueryClient({
-  // logger: {
-  //   log: console.log,
-  //   warn: console.warn,
-  //   // ✅ no more errors on the console for tests
-  //   error: process.env.NODE_ENV === 'test' ? () => {} : console.error,
-  // },
+  logger: {
+    log: console.log,
+    warn: console.warn,
+    // ✅ no more errors on the console for tests
+    error: process.env.NODE_ENV === 'test' ? () => {} : console.error,
+  },
 });
 const wrapper = ({ children }: { children:React.ReactNode }) => (
   <QueryClientProvider client={queryClient}>
