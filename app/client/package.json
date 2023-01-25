@@ -22,7 +22,7 @@
     "typescript": "^4.8.4"
   },
   "scripts": {
-    "start": "vite",
+    "start": "vite --port 3000",
     "build": "tsc && vite build",
     "serve": "vite preview",
     "test": "vitest watch",
