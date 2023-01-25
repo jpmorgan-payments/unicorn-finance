@@ -23,7 +23,6 @@ test:
       commands:
         - cd app
         - cd client
-        - yarn add wait-on mocha mochawesome mochawesome-merge mochawesome-report-generator
         - "yarn start & npx wait-on http://localhost:3000"
     test:
       commands:
