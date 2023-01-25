@@ -23,8 +23,6 @@ test:
       commands:
         - cd app
         - cd client
-        - yarn cache clean && yarn install
-        - yarn install
         - yarn add wait-on@6.0.0 mocha@9.1.3 mochawesome@7.0.1 mochawesome-merge@4.2.1 mochawesome-report-generator@6.2.0 --dev
     test:
       commands:
