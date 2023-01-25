@@ -24,6 +24,7 @@ test:
         - cd app
         - cd client
         - node -v
+        - yarn cache clean && yarn install
         - yarn install
         - yarn add wait-on@6.0.0 --dev
         - yarn add mocha@9.1.3 --dev
