@@ -67,13 +67,13 @@ function PreviousPaymentsGrid() {
 
   const renderMockedCells = () => mockedData.map((mock) => renderCells(mock, mock.identifiers.endToEndId));
 
-  const renderTableCells = () => data.map((payment) => {
+  const renderTableCells = () => data.map((payment, key) => {
     if (payment && payment.length === 2 && payment[1] !== undefined) {
       const previousPayment = payment[1] as PaymentStatusResponseType;
       const endToEndId = payment[0][1] as string;
       return renderCells(previousPayment, endToEndId);
     }
-    return <div />;
+    return <div key={`empty-div-${key}`}/>;
   });
 
   const renderTable = () => (

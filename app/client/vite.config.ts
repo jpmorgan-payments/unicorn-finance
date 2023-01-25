@@ -1,3 +1,5 @@
+/// <reference types="vitest" />
+
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import viteTsconfigPaths from 'vite-tsconfig-paths';
@@ -11,5 +13,19 @@ export default defineConfig({
       '/api': 'http://localhost:8081',
     },
   },
+  test: {
+    globals: true,
+    environment: 'jsdom',
+    setupFiles: ['./src/setupTests.js'],
+    coverage: {
+      reporter: ['text', 'html'],
+      exclude: [
+        'node_modules/','**/mocks',
+        '**/*.test.tsx','**/config.ts'
+
+      ],
+    },
+  },
+  
 });
   

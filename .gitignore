@@ -3,7 +3,7 @@ node_modules
 
 
 # Testing
- coverage
+coverage
 
 # Misc
 .DS_Store
@@ -21,7 +21,6 @@ yarn-debug.log*
 yarn-error.log*
 
 /dist
-
 .env.*
 .env
 build
