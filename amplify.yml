@@ -6,8 +6,6 @@ frontend:
         - cd app
         - cd client
         - yarn install
-        - yarn add wait-on@6.0.0 mocha@9.1.3 mochawesome@7.0.1 mochawesome-merge@4.2.1 mochawesome-report-generator@6.2.0 --dev
-
     build:
       commands:
         - yarn run build
@@ -25,10 +23,10 @@ test:
       commands:
         - cd app
         - cd client
-        - yarn add wait-on@6.0.0 mocha@9.1.3 mochawesome@7.0.1 mochawesome-merge@4.2.1 mochawesome-report-generator@6.2.0 --dev
+        - yarn add wait-on mocha mochawesome mochawesome-merge mochawesome-report-generator
+        - "yarn start & npx wait-on http://localhost:3000"
     test:
       commands:
-        - "yarn start & npx wait-on http://localhost:3000"
         - 'npx cypress run --reporter mochawesome --reporter-options "reportDir=cypress/report/mochawesome-report,overwrite=false,html=false,json=true,timestamp=mmddyyyy_HHMMss"'
     postTest:
       commands:
