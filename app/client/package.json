@@ -24,7 +24,7 @@
   "scripts": {
     "start": "vite --port 3000",
     "build": "tsc && vite build",
-    "serve": "vite preview",
+    "serve": "vite preview --port 3000",
     "test": "vitest watch",
     "test:no-watch": "vitest run",
     "test:coverage": "vitest run --coverage",

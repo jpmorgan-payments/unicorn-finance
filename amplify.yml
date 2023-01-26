@@ -26,7 +26,7 @@ test:
         - ls
         - yarn global add wait-on
         - yarn global add mocha mochawesome mochawesome-merge mochawesome-report-generator
-        - "yarn start & wait-on http://localhost:3000"
+        - "yarn run preview & wait-on http://localhost:3000"
     test:
       commands:
         - 'npx cypress run --reporter mochawesome --reporter-options "reportDir=cypress/report/mochawesome-report,overwrite=false,html=false,json=true,timestamp=mmddyyyy_HHMMss"'
