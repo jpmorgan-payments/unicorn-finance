@@ -24,7 +24,8 @@ test:
         - cd app
         - cd client
         - ls
-        - yarn add wait-on mocha mochawesome mochawesome-merge mochawesome-report-generator --dev
+        - yarn add -g wait-on
+        - yarn add mocha mochawesome mochawesome-merge mochawesome-report-generator
         - "yarn start & npx wait-on http://localhost:3000"
     test:
       commands:
