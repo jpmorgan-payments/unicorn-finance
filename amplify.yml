@@ -23,7 +23,6 @@ test:
       commands:
         - cd app
         - cd client
-        - ls
         - yarn global add wait-on
         - "yarn run serve & npx wait-on http://localhost:3000"
     test:
