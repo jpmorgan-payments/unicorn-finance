@@ -11,7 +11,6 @@ frontend:
         - yarn run build
 
   artifacts:
-    # IMPORTANT - Please verify your build output directory
     baseDirectory: /app/client/dist
     files:
       - "**/*"
@@ -24,6 +23,7 @@ test:
       commands:
         - cd app
         - cd client
+        - ls
         - yarn add wait-on mocha mochawesome mochawesome-merge mochawesome-report-generator --dev
         - "yarn start & npx wait-on http://localhost:3000"
     test:
