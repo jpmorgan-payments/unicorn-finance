@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
 import { config } from '../../config';
 import usePostBalanceData from '../usePostBalanceData';
-import { accountBalanceMockedResponse } from '../../mocks/handler';
+import accountBalanceMockedResponse from '../../mockedJson/uf-balances.json';
 
 const HOSTNAME = 'http://localhost:80';
 const queryClient = new QueryClient({
@@ -35,7 +35,7 @@ describe('Test responses from server for balances', () => {
     ), { wrapper });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    await waitFor(() => expect(result.current.data).toEqual(accountBalanceMockedResponse.accountList));
+    await waitFor(() => expect(result.current.data).toEqual(accountBalanceMockedResponse));
   });
   test('Error response', async () => {
     queryClient.clear();

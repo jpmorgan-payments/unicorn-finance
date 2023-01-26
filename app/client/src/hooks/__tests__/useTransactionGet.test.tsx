@@ -5,17 +5,17 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
 import { config } from '../../config';
 import useTransactionGet from '../useTransactionGet';
-import { transactionsMockedResponse } from '../../mocks/handler';
+import transactionsMockedResponse from '../../mockedJson/uf-transactions.json';
 
 const HOSTNAME = 'http://localhost:80';
 
 const queryClient = new QueryClient({
-  logger: {
-    log: console.log,
-    warn: console.warn,
-    // ✅ no more errors on the console for tests
-    error: process.env.NODE_ENV === 'test' ? () => {} : console.error,
-  },
+  // logger: {
+  //   log: console.log,
+  //   warn: console.warn,
+  //   // ✅ no more errors on the console for tests
+  //   error: process.env.NODE_ENV === 'test' ? () => {} : console.error,
+  // },
 });
 const wrapper = ({ children }: { children:React.ReactNode }) => (
   <QueryClientProvider client={queryClient}>
@@ -32,7 +32,7 @@ describe('Test responses from server for transactions', () => {
       false,
     ), { wrapper });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    await waitFor(() => expect(result.current.data).toEqual(transactionsMockedResponse.data));
+    await waitFor(() => expect(result.current.data).toEqual(transactionsMockedResponse));
   });
   test('Error response', async () => {
     queryClient.clear();

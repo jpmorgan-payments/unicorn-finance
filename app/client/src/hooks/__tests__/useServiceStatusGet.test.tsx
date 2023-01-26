@@ -5,7 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { renderHook, waitFor } from '@testing-library/react';
 import useServiceStatusGet from '../useServiceStatusGet';
 import { config } from '../../config';
-import { serviceStatusMockedResponse } from '../../mocks/handler';
+import serviceStatusMockedResponse from '../../mockedJson/uf-service-status.json';
 
 const HOSTNAME = 'http://localhost:80';
 const queryClient = new QueryClient({
@@ -34,7 +34,7 @@ describe('Test responses from server for service status', () => {
     ), { wrapper });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
-    await waitFor(() => expect(result.current.data).toEqual(serviceStatusMockedResponse.bankStatus));
+    await waitFor(() => expect(result.current.data).toEqual(serviceStatusMockedResponse));
   });
   test('Error response', async () => {
     queryClient.clear();
