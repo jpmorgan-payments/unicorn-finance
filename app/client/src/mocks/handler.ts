@@ -1,10 +1,9 @@
-import {  rest } from 'msw'
+import { rest } from 'msw'
 import transactionsMockedResponse from '../mockedJson/uf-transactions.json';
 import accountBalanceMockedResponse from '../mockedJson/uf-balances.json';
 import serviceStatusMockedResponse from '../mockedJson/uf-service-status.json';
 
-
-  const errorResponse = {
+const errorResponse = {
     errors: [
       {
         errorCode: 'GCA-099',
@@ -37,8 +36,4 @@ export const handlers = [
     }
     return res(ctx.status(200), ctx.json({accountList:accountBalanceMockedResponse}))
   }),
-
-
-
-
 ]

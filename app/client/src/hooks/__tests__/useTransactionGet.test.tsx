@@ -10,12 +10,12 @@ import transactionsMockedResponse from '../../mockedJson/uf-transactions.json';
 const HOSTNAME = 'http://localhost:80';
 
 const queryClient = new QueryClient({
-  // logger: {
-  //   log: console.log,
-  //   warn: console.warn,
-  //   // ✅ no more errors on the console for tests
-  //   error: process.env.NODE_ENV === 'test' ? () => {} : console.error,
-  // },
+  logger: {
+    log: console.log,
+    warn: console.warn,
+    // ✅ no more errors on the console for tests
+    error: process.env.NODE_ENV === 'test' ? () => {} : console.error,
+  },
 });
 const wrapper = ({ children }: { children:React.ReactNode }) => (
   <QueryClientProvider client={queryClient}>
