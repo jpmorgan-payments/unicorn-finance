@@ -25,7 +25,6 @@ test:
         - cd client
         - ls
         - yarn global add wait-on
-        - yarn global add mocha mochawesome mochawesome-merge mochawesome-report-generator
         - "yarn run serve & wait-on http://localhost:3000"
     test:
       commands:

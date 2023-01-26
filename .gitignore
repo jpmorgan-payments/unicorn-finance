@@ -4,6 +4,9 @@ node_modules
 
 # Testing
 coverage
+**/cypress/screenshots/
+**/cypress/videos
+**/cypress/report
 
 # Misc
 .DS_Store
@@ -28,5 +31,5 @@ certs
 archive.zip
 body.js
 
-**/cypress/screenshots/
-**/cypress/videos
+
+
