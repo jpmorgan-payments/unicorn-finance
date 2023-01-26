@@ -3,7 +3,10 @@ node_modules
 
 
 # Testing
- coverage
+coverage
+**/cypress/screenshots/
+**/cypress/videos
+**/cypress/report
 
 # Misc
 .DS_Store
@@ -20,14 +23,10 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-/dist
-
+dist
 .env.*
 .env
 build
 certs
 archive.zip
 body.js
-
-**/cypress/screenshots/
-**/cypress/videos

@@ -9,9 +9,9 @@ frontend:
     build:
       commands:
         - yarn run build
+
   artifacts:
-    # IMPORTANT - Please verify your build output directory
-    baseDirectory: /app/client/build
+    baseDirectory: /app/client/dist
     files:
       - "**/*"
   cache:
@@ -23,16 +23,17 @@ test:
       commands:
         - cd app
         - cd client
-        - yarn install
-        - yarn add wait-on
-        - yarn add mocha@5.2.0 mochawesome mochawesome-merge mochawesome-report-generator
-        - "yarn start & npx wait-on http://localhost:3000"
+        - yarn global add pm2
+        - yarn global add wait-on
+        - pm2 start yarn -- run serve
+        - wait-on http://localhost:3000
     test:
       commands:
         - 'npx cypress run --reporter mochawesome --reporter-options "reportDir=cypress/report/mochawesome-report,overwrite=false,html=false,json=true,timestamp=mmddyyyy_HHMMss"'
     postTest:
       commands:
         - npx mochawesome-merge cypress/report/mochawesome-report/mochawesome*.json > cypress/report/mochawesome.json
+        - pm2 kill
   artifacts:
     baseDirectory: app/client/cypress
     configFilePath: "**/mochawesome.json"
