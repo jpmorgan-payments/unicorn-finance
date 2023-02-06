@@ -4,6 +4,9 @@ export const sendPost = async (path:string, body:string) => {
   const requestOptions: RequestInit = {
     method: 'POST',
     body,
+    headers : {
+      'Content-Type': 'application/json',
+    }
   };
   const response = await fetch(path, requestOptions);
   return response.json();
