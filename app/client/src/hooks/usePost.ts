@@ -12,9 +12,8 @@ export const sendPost = async (path: string, body: string) => {
   return fetch(path, requestOptions)
     .then((response) => {
       if(!response.ok){
-        console.log('here')
-        return Promise.reject(response);
-      }
+        throw new Error('There has been a problem with your fetch operation: ' + response.statusText);   
+         }
       return response.json()
     })
     .then((data: PaymentsResponse) => {
@@ -28,9 +27,6 @@ export const sendPost = async (path: string, body: string) => {
     .catch((error: Error) => { 
       if(error.message){
         throw new Error(error.message); 
-      }else{
-        console.log(error);
-        throw error;
       }
     });
 };
