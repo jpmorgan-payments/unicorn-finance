@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { ServiceStatusDataType } from '../types/serviceStatusTypes';
 
-const sendGet = async (path:string) => {
+const sendGet = async (path: string) => {
   const requestOptions: RequestInit = {
     headers: {
       'Content-Type': 'application/json',
@@ -10,8 +10,12 @@ const sendGet = async (path:string) => {
   };
 
   return fetch(path, requestOptions)
-    .then((response) => response.json())
-    .then((data: ServiceStatusDataType) => {
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error('Error code: ' + response.status);
+      }
+      return response.json()
+    }).then((data: ServiceStatusDataType) => {
       if (data.errors) {
         const errors = data.errors.map((item) => `${item.errorCode} - ${item.errorMsg}`);
         throw new Error(`There has been a problem with your fetch operation: ${JSON.stringify(errors)}`);
@@ -22,7 +26,7 @@ const sendGet = async (path:string) => {
 };
 
 export default function
-useServiceStatusGet(path: string, id: string, intervalMs: number, displayingMockedData: boolean) {
+  useServiceStatusGet(path: string, id: string, intervalMs: number, displayingMockedData: boolean) {
   return useQuery([id], () => sendGet(path), {
     refetchInterval: intervalMs,
     retry: 0,

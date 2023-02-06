@@ -25,11 +25,17 @@ export type GlobalPaymentRequest = {
 };
 export type PaymentsResponse = {
   paymentInitiationResponse? : APISuccessMessage,
-  errors? : {
-    endToEndId: string,
-    errorDetails: Error[]
-  }
+  errors?: {
+    endToEndId?: string,
+    errorDetails: [ErrorDetails]
+  } 
 };
+
+type ErrorDetails = {
+  errorCode: string,
+  errorDescription: string,
+  ruleDefinition?: string
+}
 
 type AgentType = {
   financialInstitutionId:

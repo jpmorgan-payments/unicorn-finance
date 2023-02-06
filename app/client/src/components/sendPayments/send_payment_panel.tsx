@@ -8,7 +8,7 @@ import { config } from '../../config';
 import Spinner from '../spinner';
 import APIDetails from '../api_details';
 import FormButton from './form_button';
-import { sendPost } from '../../hooks/usePost';
+import { sendPostGlobalPaymentInit } from '../../hooks/usePostGlobalPaymentInit';
 import SendPaymentForm from './send_payment_form';
 import Banner from './banner';
 
@@ -21,7 +21,7 @@ function MakePaymentForm() {
   const [apiError, setApiError] = React.useState<Error>();
 
   const createPaymentMutation = useMutation({
-    mutationFn: (data: GlobalPaymentRequest) => sendPost(paymentConfig.apiDetails[0].backendPath, JSON.stringify(data)),
+    mutationFn: (data: GlobalPaymentRequest) => sendPostGlobalPaymentInit(paymentConfig.apiDetails[0].backendPath, JSON.stringify(data)),
   });
 
   const formReset = () => {
@@ -33,7 +33,7 @@ function MakePaymentForm() {
   return (
     <div className=" w-full flex flex-col h-full pb-20">
       {displayingApiData && (
-      <APIDetails details={paymentConfig.apiDetails[0]} absolute={false} />
+        <APIDetails details={paymentConfig.apiDetails[0]} absolute={false} />
       )}
       {!displayingApiData && (apiError || apiResponse?.errors) && (
         <>
@@ -42,12 +42,12 @@ function MakePaymentForm() {
             isSuccess={false}
           />
           {apiResponse?.errors && (
-          <pre
-            id="json"
-            className="border-2 border-dashed border-gray-200 w-full m-2 p-2 overflow-x-auto mb-10"
-          >
-            {JSON.stringify(apiResponse?.errors, undefined, 2)}
-          </pre>
+            <pre
+              id="json"
+              className="border-2 border-dashed border-gray-200 w-full m-2 p-2 overflow-x-auto mb-10"
+            >
+              {JSON.stringify(apiResponse?.errors, undefined, 2)}
+            </pre>
           )}
           <FormButton
             buttonText="Return"
