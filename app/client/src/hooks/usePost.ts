@@ -10,7 +10,13 @@ export const sendPost = async (path: string, body: string) => {
     }
   };
   return fetch(path, requestOptions)
-    .then((response) => response.json())
+    .then((response) => {
+      if(!response.ok){
+        console.log('here')
+        return Promise.reject(response);
+      }
+      return response.json()
+    })
     .then((data: PaymentsResponse) => {
       console.log(data);
       if (data.errors) {
