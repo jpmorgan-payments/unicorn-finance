@@ -1,5 +1,4 @@
 import { BIC } from './accountTypes';
-import { ErrorType } from './globalTypes';
 
 export type GlobalPaymentRequest = {
   payments: {

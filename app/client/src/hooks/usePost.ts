@@ -12,13 +12,17 @@ export const sendPost = async (path: string, body: string) => {
   return fetch(path, requestOptions)
     .then((response) => response.json())
     .then((data: PaymentsResponse) => {
+      console.log(data);
       if (data.errors) {
         const errors = `${data.errors.endToEndId} - ${JSON.stringify(data.errors.errorDetails)}`;
         throw new Error(`There has been a problem with your fetch operation: ${JSON.stringify(errors)}`);
       }
       return data;
     })
-    .catch((error: Error) => { throw new Error(error.message); });
+    .catch((error: Error) => { 
+      console.log(error);
+      throw new Error(error.message); 
+    });
 };
 
 
