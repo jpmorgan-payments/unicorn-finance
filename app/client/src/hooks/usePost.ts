@@ -12,7 +12,7 @@ export const sendPost = async (path: string, body: string) => {
   return fetch(path, requestOptions)
     .then((response) => {
       if(!response.ok){
-        throw new Error('There has been a problem with your fetch operation: ' + response.statusText);   
+        throw new Error('There has been a problem with your fetch operation: ' + response.status);   
          }
       return response.json()
     })
