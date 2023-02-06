@@ -1,37 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
-import { PaymentsResponse } from '../types/globalPaymentApiTypes';
 
-export const sendPost = async (path: string, body: string) => {
+export const sendPost = async (path:string, body:string) => {
   const requestOptions: RequestInit = {
     method: 'POST',
     body,
-    headers: {
-      'Content-Type': 'application/json',
-    }
   };
-  return fetch(path, requestOptions)
-    .then((response) => {
-      if(!response.ok){
-        throw new Error('There has been a problem with your fetch operation: ' + response.status);   
-         }
-      return response.json()
-    })
-    .then((data: PaymentsResponse) => {
-      console.log(data);
-      if (data.errors) {
-        const errors = `${data.errors.endToEndId} - ${JSON.stringify(data.errors.errorDetails)}`;
-        throw new Error(`There has been a problem with your fetch operation: ${JSON.stringify(errors)}`);
-      }
-      return data;
-    })
-    .catch((error: Error) => { 
-      if(error.message){
-        throw new Error(error.message); 
-      }
-    });
+  const response = await fetch(path, requestOptions);
+  return response.json();
 };
-
-
 
 export default function usePost(
   path: string,

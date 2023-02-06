@@ -12,6 +12,10 @@ const errorResponse = {
     ],
   };
 
+  export const paymentInitiationResponse = {
+    endToEndId: '1234',
+    firmRootId: '5679'
+  }
 // Define handlers that catch the corresponding requests and returns the mock data.
 export const handlers = [
 
@@ -35,5 +39,12 @@ export const handlers = [
         return res(ctx.status(500), ctx.json(errorResponse))
     }
     return res(ctx.status(200), ctx.json({accountList:accountBalanceMockedResponse}))
+  }),
+  rest.post('*/api/digitalSignature/tsapi/v1/payments', (req, res, ctx) => {
+    const statusCode = req.url.searchParams.get('statusCode');
+    if(statusCode === "401"){
+        return res(ctx.status(500), ctx.json(errorResponse))
+    }
+    return res(ctx.status(200), ctx.json({paymentInitiationResponse}))
   }),
 ]
