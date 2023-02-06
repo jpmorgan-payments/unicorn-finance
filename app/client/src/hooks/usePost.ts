@@ -29,6 +29,7 @@ export const sendPost = async (path: string, body: string) => {
       if(error.message){
         throw new Error(error.message); 
       }else{
+        console.log(error);
         throw error;
       }
     });
