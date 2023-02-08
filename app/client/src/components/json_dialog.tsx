@@ -34,7 +34,7 @@ function JsonDialog() {
               <button
                 type="button"
                 onClick={copyClickedFunction}
-                data-cy="closeButton"
+                data-cy="copyButton"
                 className='hover:border-solid  hover:border-2 hover: border-spacing-4'
               >
                 {copyClicked ? 'COPIED' : 'COPY'}
