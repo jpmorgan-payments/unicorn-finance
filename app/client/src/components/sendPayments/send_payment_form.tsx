@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-misused-promises */
 import React, { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
+// eslint-disable-next-line import/named
 import { UseMutationResult, useQueryClient } from '@tanstack/react-query';
 import {
   FormValuesType, GlobalPaymentRequest, PaymentsResponse, PaymentStatusResponseType,
@@ -16,9 +17,9 @@ import { sendGet } from '../../hooks/useGet';
 
 type SendPaymentFormProps = {
   setApiResponse: (apiResponse: PaymentsResponse) => void
-  setApiError: (apiError:Error) => void,
+  setApiError: (apiError: Error) => void,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  createPaymentMutation:UseMutationResult<any, unknown, GlobalPaymentRequest, unknown>
+  createPaymentMutation: UseMutationResult<any, unknown, GlobalPaymentRequest, unknown>
 
 };
 function SendPaymentForm({ setApiResponse, setApiError, createPaymentMutation }: SendPaymentFormProps) {
@@ -61,7 +62,7 @@ function SendPaymentForm({ setApiResponse, setApiError, createPaymentMutation }:
     setValue('creditorAccount', JSON.stringify(paymentTypesConfiguration[paymentType].accounts[1]));
   }, [paymentType, setValue]);
 
-  const onSubmit = (formData:FormValuesType) => {
+  const onSubmit = (formData: FormValuesType) => {
     const globalPaymentApiPayload = generateApiBody(formData);
     if (!displayingMockedData) {
       createPaymentMutation.mutate(globalPaymentApiPayload, {

@@ -14,8 +14,8 @@ export type GlobalPaymentRequest = {
       debtorType?: string,
       debtorAccount: PaymentAccount,
     }
-    debtorAgent: AgentType,
-    creditorAgent: AgentType,
+    debtorAgent?: AgentType,
+    creditorAgent?: AgentType,
     creditor: {
       creditorName: string,
       creditorAccount: PaymentAccount
@@ -27,17 +27,11 @@ export type PaymentsResponse = {
   paymentInitiationResponse? : APISuccessMessage,
   errors?: {
     endToEndId?: string,
-    errorDetails: [ErrorDetails]
+    errorDetails: [Error]
   } 
 };
 
-type ErrorDetails = {
-  errorCode: string,
-  errorDescription: string,
-  ruleDefinition?: string
-}
-
-type AgentType = {
+export type AgentType = {
   financialInstitutionId:
   (
     { bic : BIC }
@@ -45,7 +39,7 @@ type AgentType = {
     {
       clearingSystemId: {
         id: string,
-        idType: string
+        idType?: string
       }
     }
   )
