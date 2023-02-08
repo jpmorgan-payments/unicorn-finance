@@ -91,7 +91,7 @@ export const config: ConfigDataInterface = {
         name: 'Global Payments',
         backendPath: '/api/digitalSignature/tsapi/v1/payments',
         cacheKey: 'globalPayments',
-        path: 'https://apigatewaycat.jpmorgan.com/tsapi/v1/payments',
+        path: 'https://apigatewayqaf.jpmorgan.com/tsapi/v1/payments',
         refreshInterval: 1800000,
         description:
           'The Global Payments API offers our clients a unified experience for which multiple payment types can be initiated through a single API.'
@@ -99,9 +99,9 @@ export const config: ConfigDataInterface = {
       },
       {
         name: 'Global Payments Status',
-        backendPath: '/api/cat/tsapi/v1/payments/status?endToEndId=<endToEndId>',
+        backendPath: '/api/tsapi/v1/payments/status?endToEndId=<endToEndId>',
         cacheKey: 'globalPaymentsStatus',
-        path: 'https://apigatewaycat.jpmorgan.com/tsapi/v1/payments/status',
+        path: 'https://apigatewayqaf.jpmorgan.com/tsapi/v1/payments/status',
         refreshInterval: 1800000,
         description:
           'The Global Payments API offers our clients a unified experience for which multiple payment types can be initiated through a single API.'
