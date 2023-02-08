@@ -66,16 +66,16 @@ export type APIErrorMessage = {
 
 export type Error = {
   errorCode: string,
-  errorDescription: string,
+  errorDescription?: string,
   ruleDefinition?: string
 };
 
 export type PaymentStatusResponseType = {
-  paymentStatus?: {
+  paymentStatus: {
     createDateTime?: string,
     status: 'PENDING' | 'REJECTED' | 'COMPLETED' | 'RETURNED',
+    exception?: Error[],
   },
-  exception?: Error[],
   identifiers: APISuccessMessage
 };
 export type FormValuesType = {
