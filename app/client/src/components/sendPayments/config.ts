@@ -1,13 +1,13 @@
-import { EUAccountType, UKAccountType, USAccountType } from '../../types/accountTypes';
+import { AccountType } from '../../types/accountTypes';
 
 /* eslint-disable import/prefer-default-export */
 type PaymentTypeObject = {
-  accounts: USAccountType[] | EUAccountType[] | UKAccountType[],
+  accounts: AccountType[],
   currency: 'USD' | 'EUR' | 'GBP'
 };
 type MapLike = Record<string, PaymentTypeObject>;
 
-const USRTPAccounts: USAccountType[] = [{
+const USRTPAccounts: AccountType[] = [{
   accountId: '000000010900009',
   accountName: 'RAPID AUDIO LLC',
   bankId: '02100002',
@@ -19,7 +19,14 @@ const USRTPAccounts: USAccountType[] = [{
     decimalLocation: 2,
     currencySequence: 0,
   },
-  aba: '021000021',
+  agent:{
+    financialInstitutionId: {
+      clearingSystemId:{
+        id:'021000021',
+        idType:'USABA'
+      }
+    }
+  }
 },
 {
   accountId: '000000010962009',
@@ -33,8 +40,14 @@ const USRTPAccounts: USAccountType[] = [{
     decimalLocation: 2,
     currencySequence: 0,
   },
-  aba: '021000021',
-}, {
+  agent:{
+    financialInstitutionId: {
+      clearingSystemId:{
+        id:'021000021',
+        idType:'USABA'
+      }
+    }
+  }}, {
   accountId: '000000010975001',
   accountName: 'OFFICE 123 INC',
   bankId: '02100002',
@@ -46,12 +59,18 @@ const USRTPAccounts: USAccountType[] = [{
     decimalLocation: 2,
     currencySequence: 0,
   },
-  aba: '021000021',
-},
+  agent:{
+    financialInstitutionId: {
+      clearingSystemId:{
+        id:'021000021',
+        idType:'USABA'
+      }
+    }
+  }},
 ];
-const SEPARTPAccounts: EUAccountType[] = [{
-  accountId: '6231400596',
-  accountName: '',
+const SEPARTPAccounts: AccountType[] = [{
+  iban: '6231400596',
+  accountName: 'OBGLRTPCL1 Account',
   branchId: '',
   bankName: '',
   currency: {
@@ -60,12 +79,17 @@ const SEPARTPAccounts: EUAccountType[] = [{
     decimalLocation: 2,
     currencySequence: 0,
   },
-  iban: 'DE88501108006231400596',
-  bic: 'CHASDEFX',
+  accountId: 'DE88501108006231400596',
+  agent: {
+    financialInstitutionId: {
+      bic: 'CHASDEFX'
+    }
+  }
 
 }, {
-  accountId: '0041287103',
-  accountName: '',
+  iban: '0041287103',
+
+  accountName: 'UNICORNUAT Account',
   branchId: '',
   bankName: '',
   currency: {
@@ -74,12 +98,16 @@ const SEPARTPAccounts: EUAccountType[] = [{
     decimalLocation: 2,
     currencySequence: 0,
   },
-  bic: 'CHASDEFX',
-  iban: 'DE45501108000041287103',
+  agent: {
+    financialInstitutionId: {
+      bic: 'CHASDEFX'
+    }
+  },
+  accountId: 'DE45501108000041287103',
 },
 {
   accountId: '0079601529',
-  accountName: '',
+  accountName: 'ACCT-0017960079601529-TITLE.1',
   branchId: '',
   bankName: '',
   currency: {
@@ -88,12 +116,16 @@ const SEPARTPAccounts: EUAccountType[] = [{
     decimalLocation: 2,
     currencySequence: 0,
   },
-  bic: 'CHASIE4L',
+  agent: {
+    financialInstitutionId: {
+      bic: 'CHASIE4L'
+    }
+  },
   iban: 'IE90CHAS93090379601529',
 },
 {
-  accountId: '0079607496',
-  accountName: '',
+  iban: '0079607496',
+  accountName: 'ACCT-0017960079607496-TITLE.1',
   branchId: '',
   bankName: '',
   currency: {
@@ -102,15 +134,19 @@ const SEPARTPAccounts: EUAccountType[] = [{
     decimalLocation: 2,
     currencySequence: 0,
   },
-  bic: 'CHASIE4L',
-  iban: 'IE98CHAS93090379607496',
+  agent: {
+    financialInstitutionId: {
+      bic: 'CHASIE4L'
+    }
+  },
+  accountId: 'IE98CHAS93090379607496',
 },
 ];
 
-const UKRTPAccounts: UKAccountType[] = [
+const UKRTPAccounts: AccountType[] = [
   {
     accountId: '0040025916',
-    accountName: '',
+    accountName: 'ACCT-0016710040025916-TITLE.1',
     branchId: '',
     bankName: '',
     currency: {
@@ -119,20 +155,31 @@ const UKRTPAccounts: UKAccountType[] = [
       decimalLocation: 2,
       currencySequence: 0,
     },
-    bic: 'CHASGB2L',
+    agent: {
+      financialInstitutionId: {
+        bic: 'CHASGB2L'
+      }
+    }
   },
   {
     accountId: '0022610202',
-    accountName: '',
+    accountName: 'ACCT-0016710022610202-TITLE.1',
     branchId: '',
     bankName: '',
     currency: {
-      code: 'GBP',
+      code: 'EUR',
       description: '',
       decimalLocation: 2,
       currencySequence: 0,
     },
-    bic: 'CHASGB2L',
+    agent: {
+      financialInstitutionId: {
+        clearingSystemId: {
+          id: "185008"
+        }
+      }
+    }
+
   },
 ];
 

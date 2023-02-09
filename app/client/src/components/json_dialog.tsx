@@ -7,6 +7,15 @@ function JsonDialog() {
     jsonDialogData,
     setJsonDialogData,
   } = React.useContext(AppContext);
+  const [copyClicked, setCopyClicked] = React.useState(false)
+
+  const copyClickedFunction = () => {
+    navigator.clipboard.writeText(jsonDialogData.data ? jsonDialogData.data : '{}');
+    setCopyClicked(true);
+    setTimeout(() => {
+      setCopyClicked(false);
+    }, 3000)
+  }
 
   return (
     <Dialog
@@ -21,13 +30,24 @@ function JsonDialog() {
             <Dialog.Title className="text-xl font-medium text-gray-900 mt-4">
               Raw JSON
             </Dialog.Title>
-            <button
-              type="button"
-              onClick={() => setJsonDialogData({ state: false, data: null })}
-              data-cy="closeButton"
-            >
-              Close
-            </button>
+            <div>
+              <button
+                type="button"
+                onClick={copyClickedFunction}
+                data-cy="copyButton"
+                className='hover:border-solid  hover:border-2 hover: border-spacing-4'
+              >
+                {copyClicked ? 'COPIED' : 'COPY'}
+                <span className="material-icons text-md mr-1 px-2">{copyClicked ? 'done' : 'content_copy'}</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setJsonDialogData({ state: false, data: null })}
+                data-cy="closeButton"
+              >
+                <span className="material-icons text-md mr-1">close</span>
+              </button>
+            </div>
           </div>
           <pre
             data-cy="jsonDialogContent"

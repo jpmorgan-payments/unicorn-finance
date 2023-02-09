@@ -32,12 +32,17 @@
         },
         {
             "identifiers": {
-                "endToEndId": "uf1668512756739",
-                "firmRootId": "4a4269d1-2b30-4795-970f-ffc9323aa789"
+                "endToEndId": "uf1675873559536",
+                "firmRootId": "cc2723fe-fbef-4d2b-9418-05c6f7dfdss"
             },
             "paymentStatus": {
-                "createDateTime": "Tue, 10 Jan 2023 11:42:20 GMT",
-                "status": "PENDING"
+                "createDateTime": "2023-02-08T04:26:01.000",
+                "status": "REJECTED",
+                "exception": [
+                    {
+                        "errorCode": "10001"
+                    }
+                ]
             }
         }
     ]

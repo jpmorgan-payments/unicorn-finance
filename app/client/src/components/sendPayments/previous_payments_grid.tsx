@@ -54,13 +54,13 @@ function PreviousPaymentsGrid() {
     mockedData = [...mockedPreviousPaymentsSession, ...previousMockedTransactions.payments];
   }
 
-  const renderCells = (payment: PaymentStatusResponseType, endToEndId:string) => (
+  const renderCells = (payment: PaymentStatusResponseType, endToEndId: string) => (
     <tr onClick={() => setJsonDialogData({ state: true, data: JSON.stringify(payment, undefined, 2) })} key={`paymentKey-${endToEndId}`}>
       <td className="border-b border-slate-100  p-4 pl-8 ">{endToEndId}</td>
       <td className="border-b border-slate-100  p-4 pl-8 ">{payment.paymentStatus?.status ? payment.paymentStatus.status : ''}</td>
       <td className="border-b border-slate-100  p-4 pl-8 ">{payment.paymentStatus?.createDateTime ? payment.paymentStatus?.createDateTime : ''}</td>
       <td className="border-b border-slate-100  p-4 pl-8 ">
-        {payment.exception ? `${payment.exception[0].errorCode} - ${payment.exception[0].errorDescription}` : ''}
+        {payment.paymentStatus.exception ? `${payment.paymentStatus.exception[0].errorCode} ${payment.paymentStatus.exception[0].errorDescription ? `- ${payment.paymentStatus.exception[0].errorDescription}` : ''}` : ''}
       </td>
     </tr>
   );
@@ -73,7 +73,7 @@ function PreviousPaymentsGrid() {
       const endToEndId = payment[0][1] as string;
       return renderCells(previousPayment, endToEndId);
     }
-    return <div key={`empty-div-${key}`}/>;
+    return <div key={`empty-div-${key}`} />;
   });
 
   const renderTable = () => (

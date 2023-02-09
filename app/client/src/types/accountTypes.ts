@@ -1,3 +1,4 @@
+import { AgentType } from './globalPaymentApiTypes';
 import { ErrorType } from './globalTypes';
 
 export type BalanceDataType = {
@@ -13,32 +14,23 @@ export type AccountType = {
   currency: CurrencyType
   errorCode?: string | number,
   balanceList?: BalanceListType[],
+  agent?: AgentType
+  iban?:string,
 };
 
-export interface USAccountType extends AccountType {
-  aba: string,
-}
-export interface EUAccountType extends AccountType {
-  bic:BIC,
-  iban: string
-}
-export interface UKAccountType extends AccountType {
-  bic:BIC
-}
-
 export type BIC = 'CHASGB2L' | 'CHASINBX' | 'CHASAU2X' | 'CHASSGSG' | 'CHASUS33' | 'CHASMYKX' | 'CHASHKHH' | 'CHASBRSP' | 'CHASDEFX' |
-'CHASLULX' | 'CHASNL2X' | 'CHASIE4L' | 'CHASMXMX' | 'CHASCATT' | 'CHASIDJX' | 'CHASUS33MCY' | 'CHASDEFXONX';
+  'CHASLULX' | 'CHASNL2X' | 'CHASIE4L' | 'CHASMXMX' | 'CHASCATT' | 'CHASIDJX' | 'CHASUS33MCY' | 'CHASDEFXONX';
 
 export type CurrencyType = {
   code: string,
   description: string,
   decimalLocation?: number,
-  currencySequence? : number
+  currencySequence?: number
 };
 type BalanceListType = {
-  asOfDate : string,
+  asOfDate: string,
   openingAvailableAmount: number,
-  recordTimestamp?:string,
+  recordTimestamp?: string,
   currentDay?: boolean,
   openingLedgerAmount?: number,
   endingAvailableAmount?: number,
