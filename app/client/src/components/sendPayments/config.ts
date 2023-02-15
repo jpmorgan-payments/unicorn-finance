@@ -106,7 +106,7 @@ const SEPARTPAccounts: AccountType[] = [{
   accountId: 'DE45501108000041287103',
 },
 {
-  accountId: '0079601529',
+  accountId: 'IE90CHAS93090379601529',
   accountName: 'ACCT-0017960079601529-TITLE.1',
   branchId: '',
   bankName: '',
