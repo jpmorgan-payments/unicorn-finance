@@ -13,7 +13,8 @@ The proxy used is determined by the beginning of the request path.
 
 1. /cat/\* - This path takes all requests for JP CAT server
 2. /digitalSignature/\* - This path takes any requests that require a digital signature. More information on this is available below.
-3. /\* - any request not caught in below paths. This will proxy requests to JP UAT server.
+3. /sandbox/\* - This path is used for OAuth authentication
+4. /\* - any request not caught in below paths. This will proxy requests to JP UAT server.
 
 ## Digital Signature
 
