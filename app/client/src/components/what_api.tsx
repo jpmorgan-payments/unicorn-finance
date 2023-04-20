@@ -1,17 +1,20 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import { Switch, Tab } from '@headlessui/react';
-import { AppContext } from '../context/AppContext';
+import { AppContext, Environment } from '../context/AppContext';
 
-const ENVIRONMENTS = ['Mocked', 'Sandbox', 'UAT/CAT'];
 function WhatAPI() {
   const {
     displayingMockedData,
     setDisplayingMockedData,
     displayingApiData,
-    setDisplayingApiData
+    setDisplayingApiData,
+    setCurrentEnvironment,
+    currentEnvironment
 
   } = React.useContext(AppContext);
 
+  const environments = Object.keys(Environment)
+  const selectedEnvironmentIndex = environments.indexOf(currentEnvironment);
   return (
     <div className="fixed bottom-0 text-center left-1/2 -ml-56 mb-2 z-20">
       <div className="bg-yellow-100 pl-4 pr-2 py-2 text-xs rounded-3xl border border-yellow-300 text-yellow-700 shadow-xl flex items-center">
@@ -35,9 +38,24 @@ function WhatAPI() {
             </Switch>
           </div>
         </Switch.Group>
-        <Tab.Group>
+        <Tab.Group
+          onChange={(index) => {
+            setCurrentEnvironment(environments[index] as Environment)
+
+          }} selectedIndex={selectedEnvironmentIndex > -1 ? selectedEnvironmentIndex : 0}>
           <Tab.List>
-            {ENVIRONMENTS.map(env => <Tab key='tab-${env}'>{env}</Tab>)}
+            {environments.map(env => <Tab as={Fragment} key={env}>
+              {({ selected }) => (
+                /* Use the `selected` state to conditionally style the selected tab. */
+                <button
+                  className={
+                    selected ? 'bg-blue-500 text-white' : 'bg-white text-black'
+                  }
+                >
+                  {env}
+                </button>
+              )}
+            </Tab>)}
           </Tab.List>
         </Tab.Group>
         <Switch.Group>

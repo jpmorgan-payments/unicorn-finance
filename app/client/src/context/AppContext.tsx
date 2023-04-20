@@ -7,7 +7,9 @@ type PaymentIdentifiers = {
 };
 
 export enum Environment {
-  'MOCKED', 'SANDBOX', 'CAT'
+  MOCKED = 'Mocked',
+  SANDBOX = 'Sandbox',
+  CAT = 'CAT'
 }
 
 interface AppContextInterface {
