@@ -5,18 +5,25 @@ type PaymentIdentifiers = {
   firmRootId?: string,
   mocked: boolean,
 };
+
+export enum Environment {
+  'MOCKED', 'SANDBOX', 'CAT'
+}
+
 interface AppContextInterface {
   setDisplayingMockedData: (displayingMockedData: boolean) => void,
-  setDisplayingApiData: (displayingApiData:boolean) => void,
+  setDisplayingApiData: (displayingApiData: boolean) => void,
   displayingApiData: boolean,
   displayingMockedData: boolean,
   jsonDialogData: {
-    state:boolean,
+    state: boolean,
     data: string | null
   },
-  setJsonDialogData: ({ state, data }:{ state:boolean, data:string | null }) => void,
+  setJsonDialogData: ({ state, data }: { state: boolean, data: string | null }) => void,
   paymentIdentifiers: PaymentIdentifiers[],
-  setPaymentIdentifiers: (identifiers :PaymentIdentifiers[]) => void
+  setPaymentIdentifiers: (identifiers: PaymentIdentifiers[]) => void,
+  currentEnvironment: Environment
+  setCurrentEnvironment: (environment: Environment) => void
 }
 
 interface Props {
@@ -26,8 +33,8 @@ interface Props {
 const appCtxDefaultValue: AppContextInterface = {
   displayingApiData: false,
   displayingMockedData: true,
-  setDisplayingApiData: () => {},
-  setDisplayingMockedData: () => {},
+  setDisplayingApiData: () => { },
+  setDisplayingMockedData: () => { },
   jsonDialogData: {
     state: false,
     data: null,
@@ -38,8 +45,10 @@ const appCtxDefaultValue: AppContextInterface = {
     mocked: true,
   }],
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  setPaymentIdentifiers: ([{ endToEndId, firmRootId, mocked }]) => {},
-  setJsonDialogData: () => {},
+  setPaymentIdentifiers: ([{ endToEndId, firmRootId, mocked }]) => { },
+  setJsonDialogData: () => { },
+  currentEnvironment: Environment.MOCKED,
+  setCurrentEnvironment: () => { }
 };
 
 const AppContext = React.createContext<AppContextInterface>(appCtxDefaultValue);
@@ -49,6 +58,8 @@ function AppContextProvider({ children }: Props) {
   const [displayingApiData, setDisplayingApiData] = React.useState(appCtxDefaultValue.displayingApiData);
   const [jsonDialogData, setJsonDialogData] = React.useState(appCtxDefaultValue.jsonDialogData);
   const [paymentIdentifiers, setPaymentIdentifiers] = React.useState(appCtxDefaultValue.paymentIdentifiers);
+  const [currentEnvironment, setCurrentEnvironment] = React.useState(appCtxDefaultValue.currentEnvironment);
+
 
   return (
     <AppContext.Provider
@@ -62,6 +73,8 @@ function AppContextProvider({ children }: Props) {
         setJsonDialogData,
         paymentIdentifiers,
         setPaymentIdentifiers,
+        currentEnvironment,
+        setCurrentEnvironment
       }}
     >
       {children}
