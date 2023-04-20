@@ -92,7 +92,6 @@ async function createProxyConfigurationForSandbox(target, accessToken) {
     },
     onProxyReq: async (proxyReq, req) => {
       proxyReq.setHeader('Authorization', `bearer ${accessToken}`);
-      console.log(req.path);
       if (req.body && req.method === 'POST' && req.path.includes('/tsapi/v1/payments')) {
         const bodyData = JSON.stringify(req.body);
         proxyReq.setHeader('Content-Type', 'application/json');
