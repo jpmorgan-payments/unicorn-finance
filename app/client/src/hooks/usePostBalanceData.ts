@@ -31,7 +31,7 @@ export default function usePostBalanceData(
   body: string,
   currentEnvironment: Environment
 ) {
-  return useQuery([id], () => sendPost(path, body), {
+  return useQuery([id + '-' + currentEnvironment], () => sendPost(path, body), {
     refetchInterval: intervalMs,
     retry: 0,
     staleTime: intervalMs,

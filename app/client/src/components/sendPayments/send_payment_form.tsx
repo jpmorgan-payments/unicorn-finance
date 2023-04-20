@@ -11,9 +11,10 @@ import InputField from './FormFields/input_field';
 import SelectField from './FormFields/select_field';
 import generateApiBody, { today, updateSessionStorageTransactions } from './send_payments_utils';
 import { paymentTypesConfiguration } from './config';
-import { AppContext } from '../../context/AppContext';
+import { AppContext, Environment } from '../../context/AppContext';
 import { config } from '../../config';
 import { sendGet } from '../../hooks/useGet';
+import { gatherPath } from '../utils';
 
 type SendPaymentFormProps = {
   setApiResponse: (apiResponse: PaymentsResponse) => void
@@ -24,7 +25,7 @@ type SendPaymentFormProps = {
 };
 function SendPaymentForm({ setApiResponse, setApiError, createPaymentMutation }: SendPaymentFormProps) {
   const {
-    displayingMockedData, setJsonDialogData, paymentIdentifiers, setPaymentIdentifiers,
+    setJsonDialogData, paymentIdentifiers, setPaymentIdentifiers, currentEnvironment
   } = React.useContext(AppContext);
   const {
     register,
@@ -49,7 +50,7 @@ function SendPaymentForm({ setApiResponse, setApiError, createPaymentMutation }:
     };
     const newPayment = {
       endToEndId,
-      mocked: true,
+      environment: currentEnvironment
     };
     updateSessionStorageTransactions(mockedResponse, paymentConfig.mockedSessionStorageKey);
     setApiResponse({
@@ -64,7 +65,7 @@ function SendPaymentForm({ setApiResponse, setApiError, createPaymentMutation }:
 
   const onSubmit = (formData: FormValuesType) => {
     const globalPaymentApiPayload = generateApiBody(formData);
-    if (!displayingMockedData) {
+    if (currentEnvironment !== Environment.MOCKED) {
       createPaymentMutation.mutate(globalPaymentApiPayload, {
         async onSuccess(data) {
           const responseJson: PaymentsResponse = data as PaymentsResponse;
@@ -77,12 +78,12 @@ function SendPaymentForm({ setApiResponse, setApiError, createPaymentMutation }:
             const newPayment = {
               firmRootId,
               endToEndId,
-              mocked: false,
+              environment: currentEnvironment
             };
             setPaymentIdentifiers([...paymentIdentifiers, newPayment]);
             await queryClient.prefetchQuery(
-              ['globalPaymentStatus', endToEndId],
-              () => sendGet(paymentConfig.apiDetails[1].backendPath.replace('<endToEndId>', endToEndId)),
+              ['globalPaymentStatus-' + currentEnvironment, endToEndId],
+              () => sendGet(gatherPath(currentEnvironment, paymentConfig.apiDetails[1]).replace('<endToEndId>', endToEndId)),
             );
           }
         },

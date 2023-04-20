@@ -14,8 +14,7 @@ export const sendGet = async (path:string) => {
   return response.json();
 };
 
-export default function
-useAccountGet(path: string, id: string, intervalMs: number, displayingMockedData: boolean) {
+export default function useAccountGet(path: string, id: string, intervalMs: number, displayingMockedData: boolean) {
   return useQuery([id], () => sendGet(path), {
     refetchInterval: intervalMs,
     retry: 0,

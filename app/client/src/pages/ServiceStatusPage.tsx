@@ -7,7 +7,6 @@ import mockedDataUntyped from '../mockedJson/uf-service-status.json';
 
 import { config } from '../config';
 import { BankType } from '../types/serviceStatusTypes';
-import { gatherPath } from '../components/utils';
 
 const mockedData: BankType[] = mockedDataUntyped as BankType[];
 
@@ -17,7 +16,7 @@ function ServiceStatusPage() {
 
 
   const { isError, data, error } = useServiceStatusGet(
-    gatherPath(currentEnvironment, statusConfig.apiDetails[0]),
+    statusConfig.apiDetails[0],
     statusConfig.apiDetails[0].cacheKey,
     statusConfig.apiDetails[0].refreshInterval,
     currentEnvironment,

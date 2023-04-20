@@ -55,9 +55,6 @@ async function createProxyConfiguration(target, httpsOpts, pathRewrite) {
     agent: new https.Agent(httpsOpts),
     pathRewrite,
     onProxyRes: responseInterceptor(handleProxyResponse),
-    onError: (err) => {
-      console.log(err);
-    },
   };
   return createProxyMiddleware(options);
 }
@@ -79,9 +76,6 @@ async function createProxyConfigurationForDigital(target, httpsOpts, digitalSign
       }
     },
     onProxyRes: responseInterceptor(handleProxyResponse),
-    onError: (err) => {
-      console.log(err);
-    },
   };
   return createProxyMiddleware(options);
 }
@@ -92,15 +86,24 @@ async function createProxyConfigurationForSandbox(target, accessToken) {
     changeOrigin: true,
     selfHandleResponse: true,
     pathRewrite: {
+      '^/api/sandbox/digitalSignature': '',
       '^/api/sandbox': '',
+
     },
-    onProxyReq: async (proxyReq) => {
+    onProxyReq: async (proxyReq, req) => {
       proxyReq.setHeader('Authorization', `bearer ${accessToken}`);
+      console.log(req.path);
+      if (req.body && req.method === 'POST' && req.path.includes('/tsapi/v1/payments')) {
+        const bodyData = JSON.stringify(req.body);
+        proxyReq.setHeader('Content-Type', 'application/json');
+        proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+        // stream the content
+        proxyReq.write(bodyData);
+        proxyReq.end();
+      }
     },
     onProxyRes: responseInterceptor(handleProxyResponse),
-    onError: (err) => {
-      console.log(err);
-    },
+
   };
   return createProxyMiddleware(options);
 }
@@ -108,7 +111,7 @@ async function createProxyConfigurationForSandbox(target, accessToken) {
 app.use('/api/digitalSignature/*', async (req, res, next) => {
   const httpsOpts = await gatherHttpsOptions();
   const digitalSignature = await generateJWTJose(req.body, httpsOpts.digital);
-  const func = await createProxyConfigurationForDigital('https://apigatewayqaf.jpmorgan.com', httpsOpts, digitalSignature);
+  const func = await createProxyConfigurationForDigital('https://apigatewaycat.jpmorgan.com', httpsOpts, digitalSignature);
   func(req, res, next);
 });
 

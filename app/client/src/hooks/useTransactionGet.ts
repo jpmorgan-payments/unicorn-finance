@@ -29,7 +29,7 @@ const sendGet = async (path: string) => {
 export default function
   useTransactionGet(path: string, id: string, intervalMs: number,   currentEnvironment: Environment
     ) {
-  return useQuery([id], () => sendGet(path), {
+  return useQuery([id + '-' + currentEnvironment], () => sendGet(path), {
     refetchInterval: intervalMs,
     retry: 0,
     staleTime: intervalMs,
