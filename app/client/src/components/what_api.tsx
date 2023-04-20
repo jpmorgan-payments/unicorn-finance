@@ -45,7 +45,7 @@ function WhatAPI() {
 
             }} selectedIndex={selectedEnvironmentIndex > -1 ? selectedEnvironmentIndex : 0}>
             <Tab.List>
-              {environments.map(env => <Tab as={Fragment} key={env}>
+              {environments.map(env => <Tab as={Fragment} key={env} data-cy={`env-${env}`}>
                 {({ selected }) => (
                   /* Use the `selected` state to conditionally style the selected tab. */
                   <button

@@ -21,14 +21,17 @@ describe('Account page', () => {
     cy.contains('Balances API').should('not.exist');
   });
 
-  it('Toggles Mocked data on/off', () => {
+  it('Toggles between Envs', () => {
     const errorMessage =
       'Error gathering information from API. Toggle on mocked data below to see example information';
     cy.contains(mockedTotal);
-    cy.get('[data-cy="showMockedData"]').click();
+    cy.get('[data-cy="env-CAT"]').click();
     cy.get('[data-cy="errorMessage"]').contains(errorMessage);
     cy.contains(mockedTotal).should('not.exist');
-    cy.get('[data-cy="showMockedData"]').click();
+    cy.get('[data-cy="env-SANDBOX"]').click();
+    cy.get('[data-cy="errorMessage"]').contains(errorMessage);
+    cy.contains(mockedTotal).should('not.exist');
+    cy.get('[data-cy="env-MOCKED"]').click();
     cy.contains(errorMessage).should('not.exist');
     cy.contains(mockedTotal);
   });

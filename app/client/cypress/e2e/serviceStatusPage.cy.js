@@ -4,6 +4,7 @@ describe('Service status page', () => {
     cy.visit('/service_status');
   });
 
+  
   it('Render mocked data', () => {
     cy.contains('Bankers Bank Test3');
     cy.get('[data-cy="completeTab"]')
@@ -35,9 +36,11 @@ describe('Service status page', () => {
     const errorMessage =
       'Error gathering information from API. Toggle on mocked data below to see example information';
     cy.get('h2').contains('Service status');
-    cy.get('[data-cy="showMockedData"]').click();
+    cy.get('[data-cy="env-CAT"]').click();
     cy.get('[data-cy="errorMessage"]').contains(errorMessage);
-    cy.get('[data-cy="showMockedData"]').click();
+    cy.get('[data-cy="env-SANDBOX"]').click();
+    cy.get('[data-cy="errorMessage"]').contains(errorMessage);
+    cy.get('[data-cy="env-MOCKED"]').click();
     cy.contains(errorMessage).should('not.exist');
     cy.contains('200000041T1');
   });
