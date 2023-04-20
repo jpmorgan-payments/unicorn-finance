@@ -7,8 +7,8 @@ type PaymentIdentifiers = {
 };
 
 export enum Environment {
-  MOCKED = 'Mocked',
-  SANDBOX = 'Sandbox',
+  MOCKED = 'MOCKED',
+  SANDBOX = 'SANDBOX',
   CAT = 'CAT'
 }
 

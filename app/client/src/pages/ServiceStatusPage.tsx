@@ -2,7 +2,7 @@ import React from 'react';
 import StatusTable from '../components/statusTable';
 import Spinner from '../components/spinner';
 import useServiceStatusGet from '../hooks/useServiceStatusGet';
-import { AppContext } from '../context/AppContext';
+import { AppContext, Environment } from '../context/AppContext';
 import mockedDataUntyped from '../mockedJson/uf-service-status.json';
 
 import { config } from '../config';
@@ -12,42 +12,54 @@ const mockedData: BankType[] = mockedDataUntyped as BankType[];
 
 function ServiceStatusPage() {
   const { statusConfig } = config;
-  const { displayingMockedData } = React.useContext(AppContext);
+  const { currentEnvironment } = React.useContext(AppContext);
+
+  const gatherPath = () => {
+    switch (currentEnvironment) {
+      case Environment.CAT:
+        return statusConfig.apiDetails[0].backendPath;
+      case Environment.SANDBOX:
+        return statusConfig.apiDetails[0].oAuthBackendPath;
+      default:
+        return '';
+    }
+  }
   const { isError, data, error } = useServiceStatusGet(
-    statusConfig.apiDetails[0].backendPath,
+    gatherPath(),
     statusConfig.apiDetails[0].cacheKey,
     statusConfig.apiDetails[0].refreshInterval,
-    displayingMockedData,
+    currentEnvironment,
   );
 
   const displayTable = () => {
-    if (displayingMockedData) {
+    if (currentEnvironment === Environment.MOCKED) {
       return (
         <StatusTable
           serviceStatusData={mockedData}
         />
       );
-    }
-    if (!displayingMockedData && (isError || error)) {
+    } else {
+      if (isError || error) {
+        return (
+          <div className="pt-24 text-center" data-cy="errorMessage">
+            Error gathering information from API. Toggle on mocked data below to see example information
+          </div>
+        );
+      }
+      if (data) {
+        return (
+          <StatusTable
+            serviceStatusData={data}
+          />
+        );
+      }
       return (
-        <div className="pt-24 text-center" data-cy="errorMessage">
-          Error gathering information from API. Toggle on mocked data below to see example information
+        <div className="text-center pt-24">
+          <Spinner />
         </div>
       );
     }
-    if (data && !displayingMockedData) {
-      return (
-        <StatusTable
-          serviceStatusData={data}
-        />
-      );
-    }
-    return (
-      <div className="text-center pt-24">
-        <Spinner />
-      </div>
-    );
-  };
+  }
 
   return (
     <div className="relative p-8">
