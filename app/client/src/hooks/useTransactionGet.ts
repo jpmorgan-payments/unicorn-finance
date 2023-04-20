@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { TransactionDataType } from '../types/transactionTypes';
+import { Environment } from '../context/AppContext';
 
 const sendGet = async (path: string) => {
   const requestOptions: RequestInit = {
@@ -26,11 +27,12 @@ const sendGet = async (path: string) => {
 };
 
 export default function
-  useTransactionGet(path: string, id: string, intervalMs: number, displayingMockedData: boolean) {
+  useTransactionGet(path: string, id: string, intervalMs: number,   currentEnvironment: Environment
+    ) {
   return useQuery([id], () => sendGet(path), {
     refetchInterval: intervalMs,
     retry: 0,
     staleTime: intervalMs,
-    enabled: !displayingMockedData,
+    enabled: currentEnvironment !== Environment.MOCKED,
   });
 }

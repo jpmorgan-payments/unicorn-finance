@@ -66,8 +66,8 @@ export const config: ConfigDataInterface = {
         path: 'https://apigatewayqaf.jpmorgan.com/tsapi/v2/transactions?relativeDateType=CURRENT_DAY',
         description:
           'This API returns all the transactions for a specific account for a specific time period.',
-        backendPath: `/api/tsapi/v2/transactions?relativeDateType=CURRENT_DAY&accountIds=${accounts.toString()}`,
-        oAuthBackendPath: `/api/sandbox/tsapi/v2/transactions?relativeDateType=CURRENT_DAY&accountIds=${accounts.toString()}`,
+        backendPath: `/api/tsapi/v3/transactions?relativeDateType=CURRENT_DAY&accountIds=${accounts.toString()}`,
+        oAuthBackendPath: `/api/sandbox/tsapi/v3/transactions?relativeDateType=CURRENT_DAY&accountIds=${accounts.toString()}`,
         cacheKey: 'transactions',
         refreshInterval: 1800000,
       },

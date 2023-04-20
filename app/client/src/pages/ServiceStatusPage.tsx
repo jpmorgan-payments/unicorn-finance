@@ -7,6 +7,7 @@ import mockedDataUntyped from '../mockedJson/uf-service-status.json';
 
 import { config } from '../config';
 import { BankType } from '../types/serviceStatusTypes';
+import { gatherPath } from '../components/utils';
 
 const mockedData: BankType[] = mockedDataUntyped as BankType[];
 
@@ -14,18 +15,9 @@ function ServiceStatusPage() {
   const { statusConfig } = config;
   const { currentEnvironment } = React.useContext(AppContext);
 
-  const gatherPath = () => {
-    switch (currentEnvironment) {
-      case Environment.CAT:
-        return statusConfig.apiDetails[0].backendPath;
-      case Environment.SANDBOX:
-        return statusConfig.apiDetails[0].oAuthBackendPath;
-      default:
-        return '';
-    }
-  }
+
   const { isError, data, error } = useServiceStatusGet(
-    gatherPath(),
+    gatherPath(currentEnvironment, statusConfig.apiDetails[0]),
     statusConfig.apiDetails[0].cacheKey,
     statusConfig.apiDetails[0].refreshInterval,
     currentEnvironment,
