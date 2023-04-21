@@ -14,7 +14,7 @@ function WhatAPI() {
   const environments = Object.keys(Environment)
   const selectedEnvironmentIndex = environments.indexOf(currentEnvironment);
   return (
-    <div className="gap-2 fixed bottom-0 text-center left-1/2 -ml-56 mb-2 z-20 bg-yellow-100 pl-4 pr-2 py-2 text-xs rounded-3xl border border-yellow-300 text-yellow-700 shadow-xl flex items-center">
+    <div className="gap-2 fixed bottom-0 text-center left-1/2 z-20 bg-yellow-100 text-xs rounded-3xl border border-yellow-300 text-yellow-700 shadow-xl flex items-center -translate-x-2/4	-translate-y-2/4	">
       <Switch.Group>
         <div className="flex items-center ml-4">
           <Switch.Label className="text-xs mr-2">
@@ -23,8 +23,8 @@ function WhatAPI() {
           <Switch
             checked={displayingApiData}
             onChange={() => setDisplayingApiData(!displayingApiData)}
-            className={`${displayingApiData ? 'bg-green-400 ' : 'bg-gray-200'
-              } relative inline-flex items-center h-6 rounded-full w-11 txt-xs`}
+            className={`${displayingApiData ? 'bg-pink-700 ' : 'bg-pink-300'
+              } relative inline-flex items-center h-6 rounded-full w-11 txt-xs border-pink-300 border`}
             data-cy="showApiData"
           >
             <span className="sr-only">Show api data</span>
@@ -38,7 +38,7 @@ function WhatAPI() {
       <div className='flex flex-row gap-2 items-center'>
 
         <p>Select the environment to test</p>
-        <span className='bg-gray-200 rounded-full'>
+        <span className='bg-pink-300 rounded-full border-pink-300 border'>
           <Tab.Group
             onChange={(index) => {
               setCurrentEnvironment(environments[index] as Environment)
@@ -50,7 +50,7 @@ function WhatAPI() {
                   /* Use the `selected` state to conditionally style the selected tab. */
                   <button
                     className={
-                      ` rounded-full font-bold px-4 py-2 ${selected ? 'bg-green-400 text-white' : 'bg-gray-200 text-black'}`
+                      ` rounded-full px-4 py-2 ${selected ? 'bg-pink-700 text-white border-pink-700 border' : 'bg-pink-300 text-white'}`
                     }
                   >
                     {env}
