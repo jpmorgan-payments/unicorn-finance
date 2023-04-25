@@ -23,14 +23,14 @@ function WhatAPI() {
           <Switch
             checked={displayingApiData}
             onChange={() => setDisplayingApiData(!displayingApiData)}
-            className={`${displayingApiData ? 'bg-pink-700 ' : 'bg-pink-300'
-              } relative inline-flex items-center h-6 rounded-full w-11 txt-xs border-pink-300 border`}
+            className={`${displayingApiData ? 'bg-green-700 ' : 'bg-amber-50'
+              } relative inline-flex items-center h-6 rounded-full w-11 txt-xs border-yellow-600  border`}
             data-cy="showApiData"
           >
             <span className="sr-only">Show api data</span>
             <span
-              className={`${displayingApiData ? 'translate-x-6' : 'translate-x-1'
-                } inline-block w-4 h-4 transform bg-white rounded-full`}
+              className={`${displayingApiData ? 'translate-x-6 bg-white' : 'translate-x-1 bg-yellow-600'
+                } inline-block w-4 h-4 transform rounded-full`}
             />
           </Switch>
         </div>
@@ -38,7 +38,7 @@ function WhatAPI() {
       <div className='flex flex-row gap-2 items-center'>
 
         <p>Select the environment to test</p>
-        <span className='bg-pink-300 rounded-full border-pink-300 border'>
+        <span className='bg-amber-50 rounded-full border-yellow-600 border font-bold'>
           <Tab.Group
             onChange={(index) => {
               setCurrentEnvironment(environments[index] as Environment)
@@ -50,7 +50,7 @@ function WhatAPI() {
                   /* Use the `selected` state to conditionally style the selected tab. */
                   <button
                     className={
-                      ` rounded-full px-4 py-2 ${selected ? 'bg-pink-700 text-white border-pink-700 border' : 'bg-pink-300 text-white'}`
+                      ` rounded-full px-4 py-2 ${selected ? 'bg-green-700 text-white border-green-700 border' : 'bg-amber-50 text-yellow-700'}`
                     }
                   >
                     {env}
