@@ -1,8 +1,8 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable @typescript-eslint/no-misused-promises */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useMutation } from '@tanstack/react-query';
-import { AppContext } from '../../context/AppContext';
+import { AppContext, Environment } from '../../context/AppContext';
 import { PaymentsResponse, GlobalPaymentRequest } from '../../types/globalPaymentApiTypes';
 import { config } from '../../config';
 import Spinner from '../spinner';
@@ -11,17 +11,18 @@ import FormButton from './form_button';
 import { sendPostGlobalPaymentInit } from '../../hooks/usePostGlobalPaymentInit';
 import SendPaymentForm from './send_payment_form';
 import Banner from './banner';
+import { gatherPath } from '../utils';
 
 function MakePaymentForm() {
   const {
-    displayingMockedData, displayingApiData,
+    displayingApiData, currentEnvironment
   } = React.useContext(AppContext);
   const { paymentConfig } = config;
   const [apiResponse, setApiResponse] = React.useState<PaymentsResponse>();
   const [apiError, setApiError] = React.useState<Error>();
 
   const createPaymentMutation = useMutation({
-    mutationFn: (data: GlobalPaymentRequest) => sendPostGlobalPaymentInit(paymentConfig.apiDetails[0].backendPath, JSON.stringify(data)),
+    mutationFn: (data: GlobalPaymentRequest) => sendPostGlobalPaymentInit(gatherPath(currentEnvironment, paymentConfig.apiDetails[0]), JSON.stringify(data)),
   });
 
   const formReset = () => {
@@ -29,6 +30,10 @@ function MakePaymentForm() {
     setApiResponse(undefined);
     setApiError(undefined);
   };
+
+  useEffect(() => {
+    formReset()
+  }, [currentEnvironment])
 
   return (
     <div className=" w-full flex flex-col h-full pb-20">
@@ -57,7 +62,7 @@ function MakePaymentForm() {
         </>
       )}
       {!displayingApiData && (createPaymentMutation.isLoading) && <div className="text-center pt-24"><Spinner text="Loading API Response..." /></div>}
-      {((!displayingApiData && createPaymentMutation.isSuccess) || (displayingMockedData && apiResponse)) && (!apiError && !apiResponse?.errors) && (
+      {((!displayingApiData && createPaymentMutation.isSuccess) || (currentEnvironment === Environment.MOCKED && apiResponse)) && (!apiError && !apiResponse?.errors) && (
         <>
           <Banner bannerText="Success! API response details:" isSuccess />
           <pre
@@ -73,7 +78,7 @@ function MakePaymentForm() {
           />
         </>
       )}
-      {(!displayingApiData && ((createPaymentMutation.isIdle && !displayingMockedData) || (displayingMockedData && !apiResponse))) && (
+      {(!displayingApiData && ((createPaymentMutation.isIdle && currentEnvironment !== Environment.MOCKED) || (currentEnvironment === Environment.MOCKED && !apiResponse))) && (
         <SendPaymentForm setApiResponse={setApiResponse} setApiError={setApiError} createPaymentMutation={createPaymentMutation} />
       )}
 

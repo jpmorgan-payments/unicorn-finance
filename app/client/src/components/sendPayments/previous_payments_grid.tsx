@@ -2,13 +2,14 @@
 /* eslint-disable no-nested-ternary */
 import React from 'react';
 import { useQueries, useQueryClient } from '@tanstack/react-query';
-import { AppContext } from '../../context/AppContext';
+import { AppContext, Environment } from '../../context/AppContext';
 import { PaymentStatusResponseType } from '../../types/globalPaymentApiTypes';
 import previousMockedTransactionsUntyped from '../../mockedJson/uf-mocked-previous-payments.json';
 import { config } from '../../config';
 import APIDetails from '../api_details';
 import { sendGet } from '../../hooks/useGet';
 import Spinner from '../spinner';
+import { gatherPath } from '../utils';
 
 const headers: string[] = [
   'End To End Id',
@@ -24,22 +25,22 @@ const previousMockedTransactions: MockedTransactions = previousMockedTransaction
 
 function PreviousPaymentsGrid() {
   const {
-    displayingMockedData,
     displayingApiData,
     setJsonDialogData,
     paymentIdentifiers,
+    currentEnvironment
   } = React.useContext(AppContext);
   const { paymentConfig } = config;
   const queryClient = useQueryClient();
 
-  const data = queryClient.getQueriesData(['globalPaymentStatus']);
+  const data = queryClient.getQueriesData(['globalPaymentStatus-' + currentEnvironment]);
 
   const previousPayments = useQueries({
-    queries: paymentIdentifiers.filter((payment) => !payment.mocked).map((id) => ({
-      queryKey: ['globalPaymentStatus', id.endToEndId],
-      queryFn: () => sendGet(paymentConfig.apiDetails[1].backendPath.replace('<endToEndId>', id.endToEndId || '')),
+    queries: paymentIdentifiers.filter((payment) => payment.environment === currentEnvironment).map((id) => ({
+      queryKey: ['globalPaymentStatus-' + currentEnvironment, id.endToEndId],
+      queryFn: () => sendGet(gatherPath(currentEnvironment, paymentConfig.apiDetails[1]).replace('<endToEndId>', id.endToEndId || '')),
       refetchInterval: 0,
-      enabled: !displayingMockedData,
+      enabled: currentEnvironment !== Environment.MOCKED,
       staleTime: Infinity,
     })),
   });
@@ -50,7 +51,7 @@ function PreviousPaymentsGrid() {
     sessionStorage.getItem(paymentConfig.mockedSessionStorageKey) || '[]',
   ) as PaymentStatusResponseType[];
 
-  if (displayingMockedData) {
+  if (currentEnvironment === Environment.MOCKED) {
     mockedData = [...mockedPreviousPaymentsSession, ...previousMockedTransactions.payments];
   }
 
@@ -83,7 +84,7 @@ function PreviousPaymentsGrid() {
       </thead>
 
       <tbody>
-        {displayingMockedData ? renderMockedCells() : renderTableCells()}
+        {currentEnvironment === Environment.MOCKED ? renderMockedCells() : renderTableCells()}
       </tbody>
     </table>
   );
@@ -93,7 +94,7 @@ function PreviousPaymentsGrid() {
   );
 
   const refreshQueries = async () => {
-    await queryClient.refetchQueries({ queryKey: ['globalPaymentStatus'] });
+    await queryClient.refetchQueries({ queryKey: ['globalPaymentStatus-' + currentEnvironment] });
   };
 
   return (
@@ -107,8 +108,8 @@ function PreviousPaymentsGrid() {
 
       {displayingApiData
         ? <APIDetails details={paymentConfig.apiDetails[1]} absolute={false} />
-        : !displayingMockedData && previousPaymentsLoading ? <Spinner text="Updating payment status data...." />
-          : (displayingMockedData && mockedData.length === 0) || (!displayingMockedData && (!previousPayments || previousPayments.length === 0)) ? renderEmptyPrevious() : renderTable()}
+        : currentEnvironment !== Environment.MOCKED && previousPaymentsLoading ? <Spinner text="Updating payment status data...." />
+          : (currentEnvironment === Environment.MOCKED && mockedData.length === 0) || (currentEnvironment !== Environment.MOCKED && (!previousPayments || previousPayments.length === 0)) ? renderEmptyPrevious() : renderTable()}
     </div>
   );
 }

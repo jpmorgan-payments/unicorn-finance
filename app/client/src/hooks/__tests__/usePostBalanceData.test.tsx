@@ -6,6 +6,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { config } from '../../config';
 import usePostBalanceData from '../usePostBalanceData';
 import accountBalanceMockedResponse from '../../mockedJson/uf-balances.json';
+import { Environment } from '../../context/AppContext';
 
 const HOSTNAME = 'http://localhost:80';
 const queryClient = new QueryClient({
@@ -13,10 +14,10 @@ const queryClient = new QueryClient({
     log: console.log,
     warn: console.warn,
     // ✅ no more errors on the console for tests
-    error: process.env.NODE_ENV === 'test' ? () => {} : console.error,
+    error: process.env.NODE_ENV === 'test' ? () => { } : console.error,
   },
 });
-const wrapper = ({ children }: { children:React.ReactNode }) => (
+const wrapper = ({ children }: { children: React.ReactNode }) => (
   <QueryClientProvider client={queryClient}>
     {children}
   </QueryClientProvider>
@@ -31,7 +32,7 @@ describe('Test responses from server for balances', () => {
       config.accountsConfig.apiDetails[0].cacheKey,
       config.accountsConfig.apiDetails[0].refreshInterval,
       JSON.stringify(config.accountsConfig.apiDetails[0].body),
-      false,
+      Environment.CAT,
     ), { wrapper });
 
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
@@ -45,7 +46,7 @@ describe('Test responses from server for balances', () => {
       config.accountsConfig.apiDetails[0].cacheKey,
       config.accountsConfig.apiDetails[0].refreshInterval,
       JSON.stringify(config.accountsConfig.apiDetails[0].body),
-      false,
+      Environment.CAT,
     ), { wrapper });
 
     await waitFor(() => expect(result.current.isError).toBe(true));

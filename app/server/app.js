@@ -7,12 +7,13 @@ const {
   createProxyMiddleware,
   responseInterceptor,
 } = require('http-proxy-middleware');
+require('dotenv').config();
 const { gatherHttpsOptionsAsync } = require('./grabSecret');
 const { generateJWTJose } = require('./digitalSignature');
+const { gatherAccessToken } = require('./oAuthHandler');
 
 const app = express();
 app.use(bodyParser.json());
-
 const env = process.env.NODE_ENV;
 
 const gatherHttpsOptions = async () => {
@@ -54,9 +55,6 @@ async function createProxyConfiguration(target, httpsOpts, pathRewrite) {
     agent: new https.Agent(httpsOpts),
     pathRewrite,
     onProxyRes: responseInterceptor(handleProxyResponse),
-    onError: (err) => {
-      console.log(err);
-    },
   };
   return createProxyMiddleware(options);
 }
@@ -78,9 +76,33 @@ async function createProxyConfigurationForDigital(target, httpsOpts, digitalSign
       }
     },
     onProxyRes: responseInterceptor(handleProxyResponse),
-    onError: (err) => {
-      console.log(err);
+  };
+  return createProxyMiddleware(options);
+}
+
+async function createProxyConfigurationForSandbox(target, accessToken) {
+  const options = {
+    target,
+    changeOrigin: true,
+    selfHandleResponse: true,
+    pathRewrite: {
+      '^/api/sandbox/digitalSignature': '',
+      '^/api/sandbox': '',
+
     },
+    onProxyReq: async (proxyReq, req) => {
+      proxyReq.setHeader('Authorization', `bearer ${accessToken}`);
+      if (req.body && req.method === 'POST' && req.path.includes('/tsapi/v1/payments')) {
+        const bodyData = JSON.stringify(req.body);
+        proxyReq.setHeader('Content-Type', 'application/json');
+        proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+        // stream the content
+        proxyReq.write(bodyData);
+        proxyReq.end();
+      }
+    },
+    onProxyRes: responseInterceptor(handleProxyResponse),
+
   };
   return createProxyMiddleware(options);
 }
@@ -88,8 +110,16 @@ async function createProxyConfigurationForDigital(target, httpsOpts, digitalSign
 app.use('/api/digitalSignature/*', async (req, res, next) => {
   const httpsOpts = await gatherHttpsOptions();
   const digitalSignature = await generateJWTJose(req.body, httpsOpts.digital);
-  const func = await createProxyConfigurationForDigital('https://apigatewayqaf.jpmorgan.com', httpsOpts, digitalSignature);
+  const func = await createProxyConfigurationForDigital('https://apigatewaycat.jpmorgan.com', httpsOpts, digitalSignature);
   func(req, res, next);
+});
+
+app.use('/api/sandbox/*', async (req, res, next) => {
+  const accessToken = await gatherAccessToken();
+  if (accessToken) {
+    const func = await createProxyConfigurationForSandbox('https://api-mock-akm-ptpoc.payments.jpmorgan.com', accessToken);
+    func(req, res, next);
+  }
 });
 
 app.use('/*', async (req, res, next) => {

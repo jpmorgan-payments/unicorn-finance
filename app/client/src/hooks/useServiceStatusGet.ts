@@ -1,5 +1,8 @@
 import { useQuery } from '@tanstack/react-query';
 import { ServiceStatusDataType } from '../types/serviceStatusTypes';
+import { Environment } from '../context/AppContext';
+import { gatherPath } from '../components/utils';
+import { ApiDetailsInterface } from '../config';
 
 const sendGet = async (path: string) => {
   const requestOptions: RequestInit = {
@@ -26,11 +29,12 @@ const sendGet = async (path: string) => {
 };
 
 export default function
-  useServiceStatusGet(path: string, id: string, intervalMs: number, displayingMockedData: boolean) {
-  return useQuery([id], () => sendGet(path), {
+  useServiceStatusGet(config: ApiDetailsInterface, id: string, intervalMs: number, currentEnvironment: Environment) {
+
+  return useQuery([id + '-' + currentEnvironment], () => sendGet(gatherPath(currentEnvironment, config)), {
     refetchInterval: intervalMs,
     retry: 0,
     staleTime: intervalMs,
-    enabled: !displayingMockedData,
+    enabled: currentEnvironment !== Environment.MOCKED,
   });
 }

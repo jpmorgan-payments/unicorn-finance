@@ -6,6 +6,7 @@ import { renderHook, waitFor } from '@testing-library/react';
 import { config } from '../../config';
 import useTransactionGet from '../useTransactionGet';
 import transactionsMockedResponse from '../../mockedJson/uf-transactions.json';
+import { Environment } from '../../context/AppContext';
 
 const HOSTNAME = 'http://localhost:80';
 
@@ -14,10 +15,10 @@ const queryClient = new QueryClient({
     log: console.log,
     warn: console.warn,
     // ✅ no more errors on the console for tests
-    error: process.env.NODE_ENV === 'test' ? () => {} : console.error,
+    error: process.env.NODE_ENV === 'test' ? () => { } : console.error,
   },
 });
-const wrapper = ({ children }: { children:React.ReactNode }) => (
+const wrapper = ({ children }: { children: React.ReactNode }) => (
   <QueryClientProvider client={queryClient}>
     {children}
   </QueryClientProvider>
@@ -29,7 +30,7 @@ describe('Test responses from server for transactions', () => {
       `${HOSTNAME}${config.accountsConfig.apiDetails[1].backendPath}&statusCode=200`,
       config.accountsConfig.apiDetails[1].cacheKey,
       config.accountsConfig.apiDetails[1].refreshInterval,
-      false,
+      Environment.CAT,
     ), { wrapper });
     await waitFor(() => expect(result.current.isSuccess).toBe(true));
     await waitFor(() => expect(result.current.data).toEqual(transactionsMockedResponse));
@@ -40,7 +41,7 @@ describe('Test responses from server for transactions', () => {
       `${HOSTNAME}${config.accountsConfig.apiDetails[1].backendPath}&statusCode=500`,
       config.accountsConfig.apiDetails[1].cacheKey,
       config.accountsConfig.apiDetails[1].refreshInterval,
-      false,
+      Environment.CAT,
     ), { wrapper });
 
     await waitFor(() => expect(result.current.isError).toBe(true));

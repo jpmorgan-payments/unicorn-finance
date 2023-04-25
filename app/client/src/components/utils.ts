@@ -1,3 +1,6 @@
+import { ApiDetailsInterface } from "../config";
+import { Environment } from "../context/AppContext";
+
 // Keeping this as any as any object can be checked
 export function isEmptyObject<Type>(value: Type) : boolean {
   return (
@@ -35,5 +38,16 @@ export function gatherCurrencySymbol(currencyCode: string): string {
       return '£';
     default:
       return '*';
+  }
+}
+
+export   const gatherPath = (currentEnvironment: Environment, config: ApiDetailsInterface ) => {
+  switch (currentEnvironment) {
+    case Environment.CAT:
+      return config.backendPath;
+    case Environment.SANDBOX:
+      return config.oAuthBackendPath;
+    default:
+      return '';
   }
 }

@@ -19,7 +19,7 @@ const errorResponse = {
 // Define handlers that catch the corresponding requests and returns the mock data.
 export const handlers = [
 
-  rest.get('*/api/tsapi/v2/transactions', (req, res, ctx) => {
+  rest.get('*/api/tsapi/v3/transactions', (req, res, ctx) => {
     const statusCode = req.url.searchParams.get('statusCode');
     if(statusCode === "500"){
         return res(ctx.status(500), ctx.json(errorResponse))

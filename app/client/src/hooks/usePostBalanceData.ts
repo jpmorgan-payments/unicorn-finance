@@ -1,5 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { BalanceDataType } from '../types/accountTypes';
+import { Environment } from '../context/AppContext';
 
 export const sendPost = async (path: string, body: string) => {
   const requestOptions: RequestInit = {
@@ -28,12 +29,12 @@ export default function usePostBalanceData(
   id: string,
   intervalMs: number,
   body: string,
-  displayingMockedData: boolean,
+  currentEnvironment: Environment
 ) {
-  return useQuery([id], () => sendPost(path, body), {
+  return useQuery([id + '-' + currentEnvironment], () => sendPost(path, body), {
     refetchInterval: intervalMs,
     retry: 0,
     staleTime: intervalMs,
-    enabled: !displayingMockedData,
+    enabled: currentEnvironment !== Environment.MOCKED,
   });
 }
