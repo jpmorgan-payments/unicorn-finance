@@ -13,11 +13,11 @@ describe('Account page', () => {
 
   it('Toggles APIs being used on page on/off', () => {
     cy.contains('Balances API').should('not.exist');
-    cy.get('[data-cy="showApiData"]').click();
+    cy.get('[data-cy="show-tab"]').click();
     cy.contains('Balances API');
     cy.contains('Transactions API');
 
-    cy.get('[data-cy="showApiData"]').click();
+    cy.get('[data-cy="hide-tab"]').click();
     cy.contains('Balances API').should('not.exist');
   });
 
