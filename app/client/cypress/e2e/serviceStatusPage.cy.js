@@ -22,11 +22,11 @@ describe('Service status page', () => {
   });
   it('Toggles APIs being used on page on/off', () => {
     cy.get('h2').contains('Service status');
-    cy.get('[data-cy="showApiData"]').click();
+    cy.get('[data-cy="show-tab"]').click();
     cy.get('h1').contains(
       'Platform Availability Communication Manangement API',
     );
-    cy.get('[data-cy="showApiData"]').click();
+    cy.get('[data-cy="hide-tab"]').click();
     cy.contains('Platform Availability Communication Manangement API').should(
       'not.exist',
     );

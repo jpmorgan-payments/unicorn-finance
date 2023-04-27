@@ -6,12 +6,8 @@ describe('Payments page', () => {
       cy.visit('/payments');
     });
 
-    const mockedAccount = '000000010962009';
     const today = new Date();
-    const oneMonth = new Date(new Date(today).setDate(today.getDate() + 31)).toISOString()
-    .split('T')[0];
-    const oneMonthAndADay = new Date(new Date(today).setDate(today.getDate() + 32)).toISOString()
-    .split('T')[0];
+
   
     it('Previous JSON button selected', () => {
       viewports.forEach((viewport) => {
@@ -79,7 +75,7 @@ describe('Payments page', () => {
       .select('US RTP');
     });
 
-    it.only('Check amount is sent as number in JSON', () => {
+    it('Check amount is sent as number in JSON', () => {
       cy.get('[data-cy="amount"]').clear().type(26.99)
       cy.contains('Preview JSON')
       .click();
