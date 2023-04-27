@@ -15,11 +15,11 @@ function WhatAPI() {
   const selectedEnvironmentIndex = environments.indexOf(currentEnvironment);
 
   return (
-    <div className="text-white gap-2 fixed bottom-0 text-center left-1/2 z-20 bg-stone-500 text-sm rounded-3xl border border-stone-500 font-bold shadow-xl flex items-center -translate-x-2/4	-translate-y-2/4	p-2">
+    <div className="text-white gap-2 fixed bottom-0 text-center left-1/2 z-20 bg-stone-500 text-sm rounded-3xl border border-stone-500 font-semibold shadow-xl flex items-center -translate-x-2/4	-translate-y-2/4	p-2">
 
       <div className='flex flex-row gap-2 items-center ml-2'>
         <p>API labels</p>
-        <span className='bg-stone-700 rounded-full border-stone-700 border font-semibold'>
+        <span className='bg-stone-700 rounded-full border-stone-700 border font-normal'>
           <Tab.Group
             onChange={() => setDisplayingApiData(!displayingApiData)}
             selectedIndex={displayingApiData ? 1 : -1}>
@@ -53,10 +53,10 @@ function WhatAPI() {
         </span>
       </div>
 
-      <div className='flex flex-row gap-2 items-center'>
+      <div className='flex flex-row gap-2 items-center ml-2'>
 
         <p>Test environment</p>
-        <span className='bg-stone-700 rounded-full border-stone-700 border font-semibold'>
+        <span className='bg-stone-700 rounded-full border-stone-700 border font-normal'>
           <Tab.Group
             onChange={(index) => {
               setCurrentEnvironment(environments[index] as Environment)
