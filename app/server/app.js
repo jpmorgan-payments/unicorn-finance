@@ -124,7 +124,7 @@ app.use('/api/sandbox/*', async (req, res, next) => {
 
 app.use('/*', async (req, res, next) => {
   const httpsOpts = await gatherHttpsOptions();
-  const func = await createProxyConfiguration('https://apigatewayqaf.jpmorgan.com', httpsOpts, {
+  const func = await createProxyConfiguration('https://apigatewaycat.jpmorgan.com', httpsOpts, {
     '^/api': '',
   });
   func(req, res, next);
