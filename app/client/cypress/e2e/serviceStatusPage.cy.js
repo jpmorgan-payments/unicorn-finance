@@ -38,8 +38,8 @@ describe('Service status page', () => {
     cy.get('h2').contains('Service status');
     cy.get('[data-cy="env-CAT"]').click();
     cy.get('[data-cy="errorMessage"]').contains(errorMessage);
-    cy.get('[data-cy="env-SANDBOX"]').click();
-    cy.get('[data-cy="errorMessage"]').contains(errorMessage);
+    // cy.get('[data-cy="env-SANDBOX"]').click();
+    // cy.get('[data-cy="errorMessage"]').contains(errorMessage);
     cy.get('[data-cy="env-MOCKED"]').click();
     cy.contains(errorMessage).should('not.exist');
     cy.contains('200000041T1');

@@ -45,8 +45,8 @@ export   const gatherPath = (currentEnvironment: Environment, config: ApiDetails
   switch (currentEnvironment) {
     case Environment.CAT:
       return config.backendPath;
-    case Environment.SANDBOX:
-      return config.oAuthBackendPath;
+    // case Environment.SANDBOX:
+    //   return config.oAuthBackendPath;
     default:
       return '';
   }
