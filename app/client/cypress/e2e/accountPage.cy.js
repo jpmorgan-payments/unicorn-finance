@@ -28,8 +28,8 @@ describe('Account page', () => {
     cy.get('[data-cy="env-CAT"]').click();
     cy.get('[data-cy="errorMessage"]').contains(errorMessage);
     cy.contains(mockedTotal).should('not.exist');
-    cy.get('[data-cy="env-SANDBOX"]').click();
-    cy.get('[data-cy="errorMessage"]').contains(errorMessage);
+    // cy.get('[data-cy="env-SANDBOX"]').click();
+    // cy.get('[data-cy="errorMessage"]').contains(errorMessage);
     cy.contains(mockedTotal).should('not.exist');
     cy.get('[data-cy="env-MOCKED"]').click();
     cy.contains(errorMessage).should('not.exist');
