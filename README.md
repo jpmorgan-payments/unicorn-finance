@@ -1,8 +1,8 @@
 # Unicorn Finance
 
 We have created Unicorn Finance as a sample application showcasing the
-capabilities of our JP Morgan core external APIs.
-We hit a number of JP Morgan
+capabilities of our J.P. Morgan core external APIs.
+We hit a number of J.P. Morgan
 APIs in the UAT and CAT environment via SSL authentication.
 
 See our project running on AWS Amplify
@@ -13,7 +13,7 @@ See our project running on AWS Amplify
 ## What APIs are you hitting?
 
 1. Service Status Page: We hit the Platform Availability Communication
-   Management API on this page. This returns a list of current outages within JP
+   Management API on this page. This returns a list of current outages within J.P.
    Morgan external APIs. If no outages are returned a message is displayed for
    the user.
 2. Accounts Page: We hit two APIs on this page:
@@ -52,20 +52,20 @@ Proxy error: Could not proxy request /api/tsapi/v1/participants from localhost:3
 See https://nodejs.org/api/errors.html#errors_common_system_errors for more information (ECONNREFUSED).
 ```
 
-You can ignore it as this is because our server is not running. (See [Hitting JP Morgan APIs locally section](#hitting-jp-morgan-apis-locally))
+You can ignore it as this is because our server is not running. (See [Hitting J.P. Morgan APIs locally section](#hitting-jp-morgan-apis-locally))
 
 When looking at the code we recommend looking at the pages files within the src folder, we have 3 core pages; accounts, payments and service status.
 Each page refers to a set of APIs (account services, sending a payment and gathering service status updates).
 Within client and server folders we have readme with more details on each section.
 
-### Hitting JP Morgan APIs
+### Hitting J.P. Morgan APIs
 
 This will require you to provide some SSL certificates.
-You will need to onboard to JP Morgan to access this information. Further details are available [here](http://developer.jpmorgan.com/).
+You will need to onboard to J.P. Morgan to access this information. Further details are available [here](http://developer.jpmorgan.com/).
 
 Once you have the correct files ready you can upload them to your server (DO NOT COMMIT THESE FILES TO YOUR CODEBASE).
 
-#### Hitting JP Morgan APIs locally
+#### Hitting J.P. Morgan APIs locally
 
 1. Store your certs in a folder that is included in .gitignore (eg. certs)
 2. Open server/app.js and check below lines relate to where your certs are
