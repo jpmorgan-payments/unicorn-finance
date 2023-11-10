@@ -3,7 +3,7 @@
 Currently we are deploying the backend using Lambda with an API Gateway.
 
 The code is an express server using the http-proxy-middleware package.
-The server acts as a proxy between our frontend application and JP Morgan APIs.
+The server acts as a proxy between our frontend application and J.P. Morgan APIs.
 Requests are received, we add our TLS details and then forward the request on to the API.
 
 ## Types of request
@@ -18,7 +18,7 @@ The proxy used is determined by the beginning of the request path.
 
 ## Digital Signature
 
-For some JP Morgan APIs we need to use a digital signature.
+For some J.P. Morgan APIs we need to use a digital signature.
 We are using 'jose' nodejs package to generate a digital signature.
 
 ![Screenshot of digital signature flow](digitalSignature.png "Screenshot of digital signature flow")
@@ -31,7 +31,7 @@ We store our certificates on AWS Secrets manager.
 
 ## Running the server
 
-For the server to hit JP Morgan APIs you will need to create a ssl certificate and upload it to developer.jpmorgan.com
+For the server to hit J.P. Morgan APIs you will need to create a ssl certificate and upload it to developer.jpmorgan.com
 Please reach out to your technical implementation manager for further help.
 
 1. Store your certs in a folder that is included in .gitignore (eg. certs)
