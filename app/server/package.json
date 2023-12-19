@@ -27,5 +27,8 @@
         "start:local": "NODE_ENV='development' nodemon app.local.js",
         "build": "zip archive.zip . -r -x \"/certs/**\" -x \"*/.DS_Store\" -x \"app.local.js\""
     },
-    "license": "UNLICENSED"
+    "license": "UNLICENSED",
+    "resolutions": {
+        "semver": "^6.3.1"
+    }
 }
