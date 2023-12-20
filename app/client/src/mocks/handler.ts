@@ -1,4 +1,4 @@
-import { rest } from "msw";
+import { HttpResponse, http } from "msw";
 import transactionsMockedResponse from "../mockedJson/uf-transactions.json";
 import accountBalanceMockedResponse from "../mockedJson/uf-balances.json";
 import serviceStatusMockedResponse from "../mockedJson/uf-service-status.json";
@@ -18,39 +18,45 @@ export const paymentInitiationResponse = {
 };
 // Define handlers that catch the corresponding requests and returns the mock data.
 export const handlers = [
-  rest.get("*/api/tsapi/v3/transactions", (req, res, ctx) => {
-    const statusCode = req.url.searchParams.get("statusCode");
+  http.get("*/api/tsapi/v3/transactions", ({ request }) => {
+    const url = new URL(request.url);
+    const statusCode = url.searchParams.get("statusCode");
     if (statusCode === "500") {
-      return res(ctx.status(500), ctx.json(errorResponse));
+      return new HttpResponse(JSON.stringify(errorResponse), { status: 500 });
     }
-    return res(ctx.status(200), ctx.json({ data: transactionsMockedResponse }));
-  }),
-  rest.get("*/api/tsapi/v1/participants", (req, res, ctx) => {
-    const statusCode = req.url.searchParams.get("statusCode");
-    if (statusCode === "500") {
-      return res(ctx.status(500), ctx.json(errorResponse));
-    }
-    return res(
-      ctx.status(200),
-      ctx.json({ bankStatus: serviceStatusMockedResponse })
+    return HttpResponse.json(
+      { data: transactionsMockedResponse },
+      { status: 200 }
     );
   }),
-  rest.post("*/api/accessapi/balance", (req, res, ctx) => {
-    const statusCode = req.url.searchParams.get("statusCode");
+  http.get("*/api/tsapi/v1/participants", ({ request }) => {
+    const url = new URL(request.url);
+    const statusCode = url.searchParams.get("statusCode");
     if (statusCode === "500") {
-      return res(ctx.status(500), ctx.json(errorResponse));
+      return new HttpResponse(JSON.stringify(errorResponse), { status: 500 });
     }
-    console.log("jere");
-    return res(
-      ctx.status(200),
-      ctx.json({ accountList: accountBalanceMockedResponse })
+    return HttpResponse.json(
+      { bankStatus: serviceStatusMockedResponse },
+      { status: 200 }
     );
   }),
-  rest.post("*/api/digitalSignature/tsapi/v1/payments", (req, res, ctx) => {
-    const statusCode = req.url.searchParams.get("statusCode");
+  http.post("*/api/accessapi/balance", ({ request }) => {
+    const url = new URL(request.url);
+    const statusCode = url.searchParams.get("statusCode");
+    if (statusCode === "500") {
+      return new HttpResponse(JSON.stringify(errorResponse), { status: 500 });
+    }
+    return HttpResponse.json(
+      { accountList: accountBalanceMockedResponse },
+      { status: 200 }
+    );
+  }),
+  http.post("*/api/digitalSignature/tsapi/v1/payments", ({ request }) => {
+    const url = new URL(request.url);
+    const statusCode = url.searchParams.get("statusCode");
     if (statusCode === "401") {
-      return res(ctx.status(500), ctx.json(errorResponse));
+      return new HttpResponse(JSON.stringify(errorResponse), { status: 500 });
     }
-    return res(ctx.status(200), ctx.json({ paymentInitiationResponse }));
+    return HttpResponse.json({ paymentInitiationResponse }, { status: 200 });
   }),
 ];
