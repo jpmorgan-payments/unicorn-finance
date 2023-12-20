@@ -11,7 +11,18 @@ const errorResponse = {
     },
   ],
 };
+  errors: [
+    {
+      errorCode: "GCA-099",
+      errorMsg: "System is Unavailable",
+    },
+  ],
+};
 
+export const paymentInitiationResponse = {
+  endToEndId: "1234",
+  firmRootId: "5679",
+};
 export const paymentInitiationResponse = {
   endToEndId: "1234",
   firmRootId: "5679",
@@ -59,4 +70,6 @@ export const handlers = [
     }
     return HttpResponse.json({ paymentInitiationResponse }, { status: 200 });
   }),
+];
+
 ];
