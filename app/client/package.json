@@ -78,7 +78,8 @@
     "@babel/traverse": "^7.23.2",
     "vite": "^4.0.5",
     "word-wrap": "^1.2.4",
-    "semver": "^7.5.2"
+    "semver": "^7.5.2",
+    "postcss": "^8.4.31"
   },
   "browserslist": {
     "production": [
