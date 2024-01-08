@@ -5,7 +5,7 @@ name: Run metrics
 
 on:
   schedule:
-    - cron: "49 16 * * *"
+    - cron: "19 16 * * *"
 
 jobs:
   generate-metrics:
