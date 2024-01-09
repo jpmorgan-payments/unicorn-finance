@@ -5,7 +5,7 @@ name: Run metrics
 
 on:
   schedule:
-    - cron: "19 09 * * *"
+    - cron: "57 10 * * *"
 
 jobs:
   generate-metrics:
@@ -37,9 +37,9 @@ jobs:
           ls
       - name: Run merge script
         run: |
-          ./merge.sh clone-stats.csv merged-file-clone    
-          ./merge.sh traffic-stats.csv merged-file-traffic
-          ./merge.sh referrer-stats.csv merged-file-referrer
+          ./merge.sh clone-stats.csv clone-stats 
+          ./merge.sh traffic-stats.csv traffic-stats
+          ./merge.sh referrer-stats.csv referrer-stats
       - uses: stefanzweifel/git-auto-commit-action@v5
         with:
           commit_message: Apply metrics changes
