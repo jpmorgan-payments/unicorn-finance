@@ -46,7 +46,7 @@ if [ ! -f "$output_file" ]; then
 fi
 
 # Sort the CSV file by the second column (date)
-sorted_csv_file="./${2}_sorted.csv"
+sorted_csv_file="./${2}-sorted.csv"
 if [ -e "$sorted_csv_file" ]; then
   rm "$sorted_csv_file"
 fi
