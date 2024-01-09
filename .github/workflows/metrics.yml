@@ -5,7 +5,7 @@ name: Run metrics
 
 on:
   schedule:
-    - cron: "57 16 * * *"
+    - cron: "19 09 * * *"
 
 jobs:
   generate-metrics:
@@ -19,6 +19,8 @@ jobs:
         working-directory: ./metrics
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: metrics
       - uses: stefanzweifel/git-auto-commit-action@v5
       - name: Set up Python 3.10
         uses: actions/setup-python@v3
