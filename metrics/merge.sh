@@ -18,7 +18,7 @@ output_file="./${2}.csv"
 
 # Specify the input file names
 file1="1.csv"
-file2=$(find "./" -type f -name "*$file_name" -print -quit)
+file2=$(find "./" -type f -name "*-$file_name" -print -quit)
 
 # Specify the output file name
 
