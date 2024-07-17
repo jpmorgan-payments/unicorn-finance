@@ -1,11 +1,11 @@
 repository_name,site,views,unique_visitors/cloners
-unicorn-finance,Google,1,1
+unicorn-finance,Google,6,4
 unicorn-finance,payments-preview.prod.aws.jpmchase.net,1,1
-unicorn-finance,mail.google.com,5,1
-unicorn-finance,github.com,9,4
 unicorn-finance,embedded-banking-dev.com,1,1
+unicorn-finance,github.com,5,3
+unicorn-finance,mail.google.com,5,1
 unicorn-finance,jpmorgan.com,12,1
-unicorn-finance,developer.payments.jpmorgan.com,2,2
 unicorn-finance,linkedin.com,1,1
+unicorn-finance,developer.payments.jpmorgan.com,1,1
 unicorn-finance,theforage.com,1,1
 unicorn-finance,online-payments-dev.com,1,1
