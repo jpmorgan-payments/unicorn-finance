@@ -4,7 +4,7 @@ unicorn-finance,Google,7,3
 unicorn-finance,confluence.prod.aws.jpmchase.net,8,1
 unicorn-finance,developer.payments.jpmorgan.com,18,1
 unicorn-finance,embedded-banking-dev.com,1,1
-unicorn-finance,github.com,30,7
+unicorn-finance,github.com,21,6
 unicorn-finance,global-payments-dev.com,5,1
 unicorn-finance,jpmorgan.com,2,1
 unicorn-finance,linkedin.com,1,1
@@ -12,4 +12,4 @@ unicorn-finance,mail.google.com,5,1
 unicorn-finance,online-payments-dev.com,1,1
 unicorn-finance,payments-preview.prod.aws.jpmchase.net,1,1
 unicorn-finance,t.co,1,1
-unicorn-finance,theforage.com,7,2
+unicorn-finance,theforage.com,1,1
