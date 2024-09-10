@@ -43,8 +43,6 @@ yarn install
 yarn start
 ```
 
-Then open [http://localhost:3000/](http://localhost:3000/) to see your app.
-
 If you see an error like this:
 
 ```
@@ -61,7 +59,7 @@ Within client and server folders we have readme with more details on each sectio
 ### Hitting J.P. Morgan APIs
 
 This will require you to provide some SSL certificates.
-You will need to onboard to J.P. Morgan to access this information. Further details are available [here](http://developer.jpmorgan.com/).
+You will need to onboard to J.P. Morgan to access this information. Further details are available [here](https://developer.jpmorgan.com/).
 
 Once you have the correct files ready you can upload them to your server (DO NOT COMMIT THESE FILES TO YOUR CODEBASE).
 
