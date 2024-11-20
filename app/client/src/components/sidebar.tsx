@@ -14,7 +14,7 @@ const submenuClassName = 'block py-2 hover:text-gray-700';
 function Sidebar() {
   return (
     <div className="flex lg:flex-none w-full lg:w-1/12 border-b lg:border-r border-gray-200 ">
-      <nav className="px-4 py-4 lg:p-8 lg:pr-0 flex flex-row lg:flex-col justify-between w-full items-center ">
+      <nav className="px-4 py-4 lg:p-8 lg:pr-0 flex flex-row lg:flex-col justify-between w-full ">
         <div className="flex flex-row lg:flex-col">
           <NavLink to="accounts" className="mb-0 lg:mb-12 block" data-cy="logo">
             <img
@@ -63,7 +63,7 @@ function Sidebar() {
                     Service Status
                   </a>
                 </div>
-                <div className="relative p-4 bg-gray-50 grid grid-cols-1 gap-2">
+                <div className="relative p-4 bg-gray-50 grid grid-cols-1 gap-2 flex items-center justify-center">
                   <p className="font-medium w-auto">Business Unicorn</p>
                 </div>
               </div>
