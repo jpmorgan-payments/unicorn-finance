@@ -9,10 +9,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
       - name: Install modules
-        run: yarn
-        working-directory: ./app/client
+        run: pnpm install
+        working-directory: ./v2
       - name: Run tests
-        run: yarn run test:no-watch
-        working-directory: ./app/client
+        run: pnpm test
+        working-directory: ./v2
