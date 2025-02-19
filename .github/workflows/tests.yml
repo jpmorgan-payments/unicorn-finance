@@ -11,8 +11,8 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Install modules
-        run: yarn
-        working-directory: ./app/client
+        run: pnpm install
+        working-directory: ./v2
       - name: Run tests
-        run: yarn run test:no-watch
-        working-directory: ./app/client
+        run: pnpm test
+        working-directory: ./v2
