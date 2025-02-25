@@ -16,4 +16,4 @@ applications:
       cache:
         paths:
           - node_modules/**/*
-    appRoot: v2
+    appRoot: v2/frontend
