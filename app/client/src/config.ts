@@ -75,20 +75,6 @@ export const config: ConfigDataInterface = {
       },
     ],
   },
-  statusConfig: {
-    apiDetails: [
-      {
-        name: "Platform Availability Communication Manangement",
-        backendPath: "/api/tsapi/v1/participants",
-        oAuthBackendPath: "/api/tsapi/v1/participants",
-        cacheKey: "serviceStatus",
-        path: "https://apigatewayqaf.jpmorgan.com/tsapi/v1/participants",
-        refreshInterval: 1800000,
-        description:
-          "This API returns a list of current outages within J.P. Morgan external APIs. If no outages are returned a message is displayed for the user.",
-      },
-    ],
-  },
   paymentConfig: {
     mockedSessionStorageKey: "mockedPreviousTransactions",
     sessionStorageKey: "previousTransactions",
@@ -98,7 +84,7 @@ export const config: ConfigDataInterface = {
         backendPath: "/api/digitalSignature/tsapi/v1/payments",
         oAuthBackendPath: "/api/sandbox/digitalSignature/tsapi/v1/payments",
         cacheKey: "globalPayments",
-        path: "https://apigatewaycat.jpmorgan.com/tsapi/v1/payments",
+        path: "https://api-sandbox.payments.jpmorgan.com/payment/v2/payments",
         refreshInterval: 1800000,
         description:
           "The Global Payments API offers our clients a unified experience for which multiple payment types can be initiated through a single API." +
