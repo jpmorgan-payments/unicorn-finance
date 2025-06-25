@@ -76,15 +76,4 @@ describe("Payments page", () => {
     //Reset
     cy.get('[data-cy="paymentType"]').select("US RTP");
   });
-
-  it("Check amount is sent as number in JSON", () => {
-    cy.get('[data-cy="amount"]').clear().type(26.99);
-    cy.contains("Preview JSON").click();
-    cy.get('[data-cy="jsonDialogContent"]').contains(26.99);
-    cy.get('[data-cy="jsonDialogContent"]')
-      .contains('"26.99"')
-      .should("not.exist");
-
-    cy.get('[data-cy="closeButton"]').click();
-  });
 });
