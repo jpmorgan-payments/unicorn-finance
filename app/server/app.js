@@ -47,15 +47,26 @@ const handleProxyResponse = async (responseBuffer, proxyRes, req) => {
 };
 
 async function createProxyConfiguration(target, httpsOpts, pathRewrite) {
+  console.log('Creating proxy configuration for:', target);
+  console.log('PathRewrite:', pathRewrite);
   const options = {
     target,
     changeOrigin: true,
     selfHandleResponse: true,
     agent: new https.Agent(httpsOpts),
     pathRewrite,
-    onProxyRes: responseInterceptor(handleProxyResponse),
+    on: {
+      proxyRes: responseInterceptor(handleProxyResponse),
+      error: (err, req, res) => {
+        console.error('Proxy error:', err);
+        if (!res.headersSent) {
+          res.status(500).json({ error: 'Proxy error' });
+        }
+      },
+    },
   };
-  return createProxyMiddleware(options);
+  const middleware = createProxyMiddleware(options);
+  return middleware;
 }
 
 async function createProxyConfigurationForDigital(
@@ -68,20 +79,32 @@ async function createProxyConfigurationForDigital(
     changeOrigin: true,
     selfHandleResponse: true,
     agent: new https.Agent(httpsOpts),
-    pathRewrite: {
-      '^/api/digitalSignature': '',
-    },
-    onProxyReq: async (proxyReq, req) => {
-      if (req.body) {
-        proxyReq.setHeader('Content-Type', 'text/xml');
-        proxyReq.setHeader(
-          'Content-Length',
-          Buffer.byteLength(digitalSignature)
-        );
-        proxyReq.write(digitalSignature);
+    pathRewrite(path, req) {
+      const splat = req.params.splat || '';
+      if (splat) {
+        return path + splat.join('/');
       }
     },
-    onProxyRes: responseInterceptor(handleProxyResponse),
+    on: {
+      proxyReq: async (proxyReq, req) => {
+        console.log('Digital proxy proxyReq called');
+        if (req.body) {
+          proxyReq.setHeader('Content-Type', 'text/xml');
+          proxyReq.setHeader(
+            'Content-Length',
+            Buffer.byteLength(digitalSignature)
+          );
+          proxyReq.write(digitalSignature);
+        }
+      },
+      proxyRes: responseInterceptor(handleProxyResponse),
+      error: (err, req, res) => {
+        console.error('Digital proxy error:', err);
+        if (!res.headersSent) {
+          res.status(500).json({ error: 'Digital proxy error' });
+        }
+      },
+    },
   };
   return createProxyMiddleware(options);
 }
@@ -95,58 +118,77 @@ async function createProxyConfigurationForSandbox(target, accessToken) {
       '^/api/sandbox/digitalSignature': '',
       '^/api/sandbox': '',
     },
-    onProxyReq: async (proxyReq, req) => {
-      proxyReq.setHeader('Authorization', `bearer ${accessToken}`);
-      if (
-        req.body &&
-        req.method === 'POST' &&
-        req.path.includes('/tsapi/v1/payments')
-      ) {
-        const bodyData = JSON.stringify(req.body);
-        proxyReq.setHeader('Content-Type', 'application/json');
-        proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
-        // stream the content
-        proxyReq.write(bodyData);
-        proxyReq.end();
-      }
+    on: {
+      proxyReq: async (proxyReq, req) => {
+        proxyReq.setHeader('Authorization', `bearer ${accessToken}`);
+        if (
+          req.body &&
+          req.method === 'POST' &&
+          req.path.includes('/tsapi/v1/payments')
+        ) {
+          const bodyData = JSON.stringify(req.body);
+          proxyReq.setHeader('Content-Type', 'application/json');
+          proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
+          // stream the content
+          proxyReq.write(bodyData);
+          proxyReq.end();
+        }
+      },
+      proxyRes: responseInterceptor(handleProxyResponse),
     },
-    onProxyRes: responseInterceptor(handleProxyResponse),
   };
   return createProxyMiddleware(options);
 }
 
-app.use('/api/digitalSignature/*', async (req, res, next) => {
-  const httpsOpts = await gatherHttpsOptions();
-  const digitalSignature = await generateJWTJose(req.body, httpsOpts.digital);
-  const func = await createProxyConfigurationForDigital(
-    'https://api-sandbox.payments.jpmorgan.com',
-    httpsOpts,
-    digitalSignature
-  );
-  func(req, res, next);
-});
-
-app.use('/api/sandbox/*', async (req, res, next) => {
-  const accessToken = await gatherAccessToken();
-  if (accessToken) {
-    const func = await createProxyConfigurationForSandbox(
-      'https://api-mock-akm-ptpoc.payments.jpmorgan.com',
-      accessToken
+app.use('/api/digitalSignature/*splat', async (req, res, next) => {
+  try {
+    const httpsOpts = await gatherHttpsOptions();
+    const digitalSignature = await generateJWTJose(req.body, httpsOpts.digital);
+    const func = await createProxyConfigurationForDigital(
+      'https://api-sandbox.payments.jpmorgan.com',
+      httpsOpts,
+      digitalSignature
     );
     func(req, res, next);
+  } catch (error) {
+    console.error('Error in digital signature route:', error);
+    res.status(500).json({ error: 'Internal server error' });
   }
 });
 
-app.use('/*', async (req, res, next) => {
-  const httpsOpts = await gatherHttpsOptions();
-  const func = await createProxyConfiguration(
-    'https://apigatewaycat.jpmorgan.com',
-    httpsOpts,
-    {
-      '^/api': '',
+app.use('/api/sandbox/{*splat}', async (req, res, next) => {
+  try {
+    const accessToken = await gatherAccessToken();
+    if (accessToken) {
+      const func = await createProxyConfigurationForSandbox(
+        'https://api-mock-akm-ptpoc.payments.jpmorgan.com',
+        accessToken
+      );
+      func(req, res, next);
+    } else {
+      res.status(401).json({ error: 'Unable to obtain access token' });
     }
-  );
-  func(req, res, next);
+  } catch (error) {
+    console.error('Error in sandbox route:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+app.use('/:slug', async (req, res, next) => {
+  try {
+    const httpsOpts = await gatherHttpsOptions();
+    const func = await createProxyConfiguration(
+      'https://apigatewaycat.jpmorgan.com',
+      httpsOpts,
+      {
+        '^/api': '',
+      }
+    );
+    func(req, res, next);
+  } catch (error) {
+    console.error('Error in catch-all route:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
 });
 
 module.exports = app;
