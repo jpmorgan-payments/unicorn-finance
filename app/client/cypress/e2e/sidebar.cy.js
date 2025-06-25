@@ -22,7 +22,7 @@ describe("Sidebar", () => {
   });
 
   it("Navigates to accounts using logo", () => {
-    cy.visit("/service_status");
+    cy.visit("/payments");
     cy.get('[data-cy="logo"]').click();
     cy.location("pathname", { timeout: 60000 }).should("include", "/accounts");
   });
