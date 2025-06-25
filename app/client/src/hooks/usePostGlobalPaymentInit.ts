@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { PaymentsResponse } from "../types/globalPaymentApiTypes";
 
 export const sendPostGlobalPaymentInit = async (path: string, body: string) => {
+  console.log("Sending POST request to:", path);
   const requestOptions: RequestInit = {
     method: "POST",
     body,
