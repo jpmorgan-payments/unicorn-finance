@@ -21,9 +21,9 @@ const gatherHttpsOptions = async () => {
   if (env === 'development') {
     // Required for local execution
     httpsOpts = {
-      KEY: fs.readFileSync('./certs/jpmc.key', 'utf-8'),
-      CERT: fs.readFileSync('./certs/jpmc.crt', 'utf-8'),
-      DIGITAL: fs.readFileSync('certs/treasury-services/digital-signature/key.key', 'utf-8'),
+      KEY: fs.readFileSync('../certs/jpmc.key', 'utf-8'),
+      CERT: fs.readFileSync('../certs/jpmc.crt', 'utf-8'),
+      DIGITAL: fs.readFileSync('../certs/digital-signature/key.key', 'utf-8'),
     };
   } else {
     // Required for AWS Lambda to gather secrets
@@ -33,7 +33,6 @@ const gatherHttpsOptions = async () => {
     key: httpsOpts.KEY && httpsOpts.KEY.replace(/\\n/g, '\n'),
     cert: httpsOpts.CERT && httpsOpts.CERT.replace(/\\n/g, '\n'),
     digital: httpsOpts.DIGITAL && httpsOpts.DIGITAL.replace(/\\n/g, '\n'),
-
   };
 };
 
@@ -59,7 +58,11 @@ async function createProxyConfiguration(target, httpsOpts, pathRewrite) {
   return createProxyMiddleware(options);
 }
 
-async function createProxyConfigurationForDigital(target, httpsOpts, digitalSignature) {
+async function createProxyConfigurationForDigital(
+  target,
+  httpsOpts,
+  digitalSignature
+) {
   const options = {
     target,
     changeOrigin: true,
@@ -71,7 +74,10 @@ async function createProxyConfigurationForDigital(target, httpsOpts, digitalSign
     onProxyReq: async (proxyReq, req) => {
       if (req.body) {
         proxyReq.setHeader('Content-Type', 'text/xml');
-        proxyReq.setHeader('Content-Length', Buffer.byteLength(digitalSignature));
+        proxyReq.setHeader(
+          'Content-Length',
+          Buffer.byteLength(digitalSignature)
+        );
         proxyReq.write(digitalSignature);
       }
     },
@@ -88,11 +94,14 @@ async function createProxyConfigurationForSandbox(target, accessToken) {
     pathRewrite: {
       '^/api/sandbox/digitalSignature': '',
       '^/api/sandbox': '',
-
     },
     onProxyReq: async (proxyReq, req) => {
       proxyReq.setHeader('Authorization', `bearer ${accessToken}`);
-      if (req.body && req.method === 'POST' && req.path.includes('/tsapi/v1/payments')) {
+      if (
+        req.body &&
+        req.method === 'POST' &&
+        req.path.includes('/tsapi/v1/payments')
+      ) {
         const bodyData = JSON.stringify(req.body);
         proxyReq.setHeader('Content-Type', 'application/json');
         proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
@@ -102,7 +111,6 @@ async function createProxyConfigurationForSandbox(target, accessToken) {
       }
     },
     onProxyRes: responseInterceptor(handleProxyResponse),
-
   };
   return createProxyMiddleware(options);
 }
@@ -110,23 +118,34 @@ async function createProxyConfigurationForSandbox(target, accessToken) {
 app.use('/api/digitalSignature/*', async (req, res, next) => {
   const httpsOpts = await gatherHttpsOptions();
   const digitalSignature = await generateJWTJose(req.body, httpsOpts.digital);
-  const func = await createProxyConfigurationForDigital('https://apigatewaycat.jpmorgan.com', httpsOpts, digitalSignature);
+  const func = await createProxyConfigurationForDigital(
+    'https://api-sandbox.payments.jpmorgan.com',
+    httpsOpts,
+    digitalSignature
+  );
   func(req, res, next);
 });
 
 app.use('/api/sandbox/*', async (req, res, next) => {
   const accessToken = await gatherAccessToken();
   if (accessToken) {
-    const func = await createProxyConfigurationForSandbox('https://api-mock-akm-ptpoc.payments.jpmorgan.com', accessToken);
+    const func = await createProxyConfigurationForSandbox(
+      'https://api-mock-akm-ptpoc.payments.jpmorgan.com',
+      accessToken
+    );
     func(req, res, next);
   }
 });
 
 app.use('/*', async (req, res, next) => {
   const httpsOpts = await gatherHttpsOptions();
-  const func = await createProxyConfiguration('https://apigatewaycat.jpmorgan.com', httpsOpts, {
-    '^/api': '',
-  });
+  const func = await createProxyConfiguration(
+    'https://apigatewaycat.jpmorgan.com',
+    httpsOpts,
+    {
+      '^/api': '',
+    }
+  );
   func(req, res, next);
 });
 

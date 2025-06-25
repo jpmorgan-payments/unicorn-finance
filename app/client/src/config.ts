@@ -12,12 +12,6 @@ interface AccountsConfigInterface {
   };
 }
 
-interface StatusConfigInterface {
-  statusConfig: {
-    apiDetails: ApiDetailsInterface[];
-  };
-}
-
 export interface PaymentConfigInterface {
   paymentConfig: {
     mockedSessionStorageKey: string;
@@ -41,7 +35,6 @@ export interface ApiDetailsInterface {
 }
 interface ConfigDataInterface
   extends AccountsConfigInterface,
-    StatusConfigInterface,
     PaymentConfigInterface {}
 
 export const config: ConfigDataInterface = {
@@ -81,7 +74,7 @@ export const config: ConfigDataInterface = {
     apiDetails: [
       {
         name: "Global Payments",
-        backendPath: "/api/digitalSignature/tsapi/v1/payments",
+        backendPath: "/api/digitalSignature/payment/v2/payments",
         oAuthBackendPath: "/api/sandbox/digitalSignature/tsapi/v1/payments",
         cacheKey: "globalPayments",
         path: "https://api-sandbox.payments.jpmorgan.com/payment/v2/payments",
@@ -92,11 +85,11 @@ export const config: ConfigDataInterface = {
       },
       {
         name: "Global Payments Status",
-        backendPath: "/api/tsapi/v1/payments/status?endToEndId=<endToEndId>",
+        backendPath: "/api/digitalSignature/payment/v2/payments/<endToEndId>",
         oAuthBackendPath:
           "/api/sandbox/tsapi/v1/payments/status?endToEndId=<endToEndId>",
         cacheKey: "globalPaymentsStatus",
-        path: "https://apigatewaycat.jpmorgan.com/tsapi/v1/payments/status",
+        path: "https://api-sandbox.payments.jpmorgan.com/payment/v2/payments",
         refreshInterval: 1800000,
         description:
           "The Global Payments API offers our clients a unified experience for which multiple payment types can be initiated through a single API." +
