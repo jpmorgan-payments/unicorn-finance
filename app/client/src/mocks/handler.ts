@@ -51,7 +51,7 @@ export const handlers = [
       { status: 200 }
     );
   }),
-  http.post("*/api/digitalSignature/tsapi/v1/payments", ({ request }) => {
+  http.post("*/api/digitalSignature/payment/v2/payments", ({ request }) => {
     const url = new URL(request.url);
     const statusCode = url.searchParams.get("statusCode");
     if (statusCode === "401") {
