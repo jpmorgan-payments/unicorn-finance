@@ -21,8 +21,8 @@ const gatherHttpsOptions = async () => {
   if (env === 'development') {
     // Required for local execution
     httpsOpts = {
-      KEY: fs.readFileSync('./certs/jpmc.key', 'utf-8'),
-      CERT: fs.readFileSync('./certs/jpmc.crt', 'utf-8'),
+      KEY: fs.readFileSync('../certs/jpmc.key', 'utf-8'),
+      CERT: fs.readFileSync('../certs/jpmc.crt', 'utf-8'),
       DIGITAL: fs.readFileSync('certs/treasury-services/digital-signature/key.key', 'utf-8'),
     };
   } else {
