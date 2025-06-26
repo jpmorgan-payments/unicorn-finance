@@ -22,29 +22,8 @@ describe("Sidebar", () => {
   });
 
   it("Navigates to accounts using logo", () => {
-    cy.visit("/service_status");
+    cy.visit("/payments");
     cy.get('[data-cy="logo"]').click();
     cy.location("pathname", { timeout: 60000 }).should("include", "/accounts");
-  });
-
-  it("Navigates to service status - dropdown", () => {
-    ["iphone-6", "ipad-2"].forEach((port) => {
-      cy.viewport(port);
-      cy.get('[data-cy="popover"]').click();
-      cy.get('[data-cy="serviceStatusLink"]').click();
-      cy.location("pathname", { timeout: 60000 }).should(
-        "include",
-        "/service_status"
-      );
-    });
-  });
-
-  it("Navigates to service status - macbook", () => {
-    cy.viewport("macbook-16");
-    cy.get('[data-cy="serviceStatusDesktopLink"]').click();
-    cy.location("pathname", { timeout: 60000 }).should(
-      "include",
-      "/service_status"
-    );
   });
 });
