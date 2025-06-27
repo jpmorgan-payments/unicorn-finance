@@ -1,10 +1,10 @@
-import React from 'react';
+import React from "react";
 
-function Spinner({ text }: { text?:string }) {
+function Spinner({ text }: { text?: string }) {
   return (
     <div className="flex justify-center items-center flex-col">
       <div
-        className="spinner-border animate-spin-slow inline-block border-dotted w-12 h-12 border-4 rounded-full border-pink-500"
+        className="animate-spin inline-block border-dotted w-12 h-12 border-4 rounded-full border-pink-500"
         role="status"
       />
       <span className="text-xl mt-4">{text}</span>
@@ -12,7 +12,7 @@ function Spinner({ text }: { text?:string }) {
   );
 }
 Spinner.defaultProps = {
-  text: 'Retrieving data...',
+  text: "Retrieving data...",
 };
 
 export default Spinner;

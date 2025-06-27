@@ -109,37 +109,6 @@ async function createProxyConfigurationForDigital(
   return createProxyMiddleware(options);
 }
 
-async function createProxyConfigurationForSandbox(target, accessToken) {
-  const options = {
-    target,
-    changeOrigin: true,
-    selfHandleResponse: true,
-    pathRewrite: {
-      '^/api/sandbox/digitalSignature': '',
-      '^/api/sandbox': '',
-    },
-    on: {
-      proxyReq: async (proxyReq, req) => {
-        proxyReq.setHeader('Authorization', `bearer ${accessToken}`);
-        if (
-          req.body &&
-          req.method === 'POST' &&
-          req.path.includes('/tsapi/v1/payments')
-        ) {
-          const bodyData = JSON.stringify(req.body);
-          proxyReq.setHeader('Content-Type', 'application/json');
-          proxyReq.setHeader('Content-Length', Buffer.byteLength(bodyData));
-          // stream the content
-          proxyReq.write(bodyData);
-          proxyReq.end();
-        }
-      },
-      proxyRes: responseInterceptor(handleProxyResponse),
-    },
-  };
-  return createProxyMiddleware(options);
-}
-
 app.use('/api/digitalSignature/*splat', async (req, res, next) => {
   try {
     const httpsOpts = await gatherHttpsOptions();
@@ -152,24 +121,6 @@ app.use('/api/digitalSignature/*splat', async (req, res, next) => {
     func(req, res, next);
   } catch (error) {
     console.error('Error in digital signature route:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-app.use('/api/sandbox/{*splat}', async (req, res, next) => {
-  try {
-    const accessToken = await gatherAccessToken();
-    if (accessToken) {
-      const func = await createProxyConfigurationForSandbox(
-        'https://api-mock-akm-ptpoc.payments.jpmorgan.com',
-        accessToken
-      );
-      func(req, res, next);
-    } else {
-      res.status(401).json({ error: 'Unable to obtain access token' });
-    }
-  } catch (error) {
-    console.error('Error in sandbox route:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
