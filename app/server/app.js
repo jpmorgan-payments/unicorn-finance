@@ -10,7 +10,6 @@ const {
 require('dotenv').config();
 const { gatherHttpsOptionsAsync } = require('./grabSecret');
 const { generateJWTJose } = require('./digitalSignature');
-const { gatherAccessToken } = require('./oAuthHandler');
 
 const app = express();
 app.use(bodyParser.json());
