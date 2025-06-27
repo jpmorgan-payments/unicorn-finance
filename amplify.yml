@@ -25,7 +25,6 @@ test:
       commands:
         - cd app
         - cd client
-
         - npm install -g pm2
         - npm install -g wait-on
         - pm2 start yarn -- run serve
