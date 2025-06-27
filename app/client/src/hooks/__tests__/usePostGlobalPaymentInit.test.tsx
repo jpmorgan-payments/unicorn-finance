@@ -7,14 +7,7 @@ import { sendPostGlobalPaymentInit } from "../usePostGlobalPaymentInit";
 import { PaymentsResponse } from "../../types/globalPaymentApiTypes";
 
 const HOSTNAME = "http://localhost:80";
-const queryClient = new QueryClient({
-  logger: {
-    log: console.log,
-    warn: console.warn,
-    // ✅ no more errors on the console for tests
-    error: process.env.NODE_ENV === "test" ? () => {} : console.error,
-  },
-});
+const queryClient = new QueryClient();
 
 describe("Test responses from server for balances", () => {
   test("Successful response", async () => {

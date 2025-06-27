@@ -44,10 +44,15 @@ export default function usePostGlobalPaymentInit(
   body: string,
   displayingMockedData: boolean
 ) {
-  return useQuery([id], () => sendPostGlobalPaymentInit(path, body), {
+  const options = {
     refetchInterval: intervalMs,
     retry: 0,
     staleTime: intervalMs,
     enabled: !displayingMockedData,
+  };
+  return useQuery({
+    queryKey: [id],
+    queryFn: () => sendPostGlobalPaymentInit(path, body),
+    ...options,
   });
 }

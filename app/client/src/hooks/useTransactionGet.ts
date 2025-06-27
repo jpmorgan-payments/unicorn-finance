@@ -1,38 +1,53 @@
-import { useQuery } from '@tanstack/react-query';
-import { TransactionDataType } from '../types/transactionTypes';
-import { Environment } from '../context/AppContext';
+import { useQuery } from "@tanstack/react-query";
+import { TransactionDataType } from "../types/transactionTypes";
+import { Environment } from "../context/AppContext";
 
 const sendGet = async (path: string) => {
   const requestOptions: RequestInit = {
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
     },
-    method: 'GET',
+    method: "GET",
   };
 
   return fetch(path, requestOptions)
     .then((response) => {
       if (!response.ok) {
-        throw new Error('Error code: ' + response.status);
+        throw new Error("Error code: " + response.status);
       }
-      return response.json()
-    }).then((data: TransactionDataType) => {
+      return response.json();
+    })
+    .then((data: TransactionDataType) => {
       if (data.errors) {
-        const errors = data.errors.map((item) => `${item.errorCode} - ${item.errorMsg}`);
-        throw new Error(`There has been a problem with your fetch operation: ${JSON.stringify(errors)}`);
+        const errors = data.errors.map(
+          (item) => `${item.errorCode} - ${item.errorMsg}`,
+        );
+        throw new Error(
+          `There has been a problem with your fetch operation: ${JSON.stringify(errors)}`,
+        );
       }
       return data.data;
     })
-    .catch((error: Error) => { throw new Error(error.message); });
+    .catch((error: Error) => {
+      throw new Error(error.message);
+    });
 };
 
-export default function
-  useTransactionGet(path: string, id: string, intervalMs: number,   currentEnvironment: Environment
-    ) {
-  return useQuery([id + '-' + currentEnvironment], () => sendGet(path), {
+export default function useTransactionGet(
+  path: string,
+  id: string,
+  intervalMs: number,
+  currentEnvironment: Environment,
+) {
+  const options = {
     refetchInterval: intervalMs,
     retry: 0,
     staleTime: intervalMs,
     enabled: currentEnvironment !== Environment.MOCKED,
+  };
+  return useQuery({
+    queryKey: [id + "-" + currentEnvironment],
+    queryFn: () => sendGet(path),
+    ...options,
   });
 }
