@@ -25,8 +25,9 @@ test:
       commands:
         - cd app
         - cd client
-        - yarn global add pm2
-        - yarn global add wait-on
+        - npm ci
+        - npm install -g pm2
+        - npm install -g wait-on
         - pm2 start yarn -- run serve
         - wait-on http://localhost:3000
     test:
