@@ -104,16 +104,19 @@ function SendPaymentForm({
               environment: currentEnvironment,
             };
             setPaymentIdentifiers([...paymentIdentifiers, newPayment]);
-            await queryClient.prefetchQuery(
-              ["globalPaymentStatus-" + currentEnvironment, endToEndId],
-              () =>
+            await queryClient.prefetchQuery({
+              queryKey: [
+                "globalPaymentStatus-" + currentEnvironment,
+                endToEndId,
+              ],
+              queryFn: () =>
                 sendGet(
                   gatherPath(
                     currentEnvironment,
                     paymentConfig.apiDetails[1]
                   ).replace("<endToEndId>", endToEndId)
-                )
-            );
+                ),
+            });
           }
         },
         onError(error) {

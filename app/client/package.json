@@ -39,6 +39,7 @@
   "devDependencies": {
     "@babel/core": "^7.27.4",
     "@tanstack/react-query-devtools": "^5.81.2",
+    "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@types/jest": "^30.0.0",
