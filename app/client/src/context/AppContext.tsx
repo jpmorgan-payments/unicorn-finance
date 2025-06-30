@@ -8,7 +8,6 @@ type PaymentIdentifiers = {
 
 export enum Environment {
   MOCKED = 'MOCKED',
-  //SANDBOX = 'SANDBOX',
   CAT = 'CAT'
 }
 
