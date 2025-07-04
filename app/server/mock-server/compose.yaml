@@ -1,0 +1,15 @@
+---
+services:
+  proxy:
+    image: caddy
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+    ports:
+      - '8081:80'
+    depends_on:
+      - prism_1
+  prism_1:
+    image: stoplight/prism:latest
+    command: 'mock -h 0.0.0.0 /tmp/global_payments_2_0_22.yaml -p 4010'
+    volumes:
+      - ./global_payments_2_0_22.yaml:/tmp/global_payments_2_0_22.yaml:ro

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import InitPaymentForm from "../features/initPayment/initPaymentForm";
+import { Grid } from "@mantine/core";
 
 const SUPPORTED_PAYMENT_METHODS = ["US-RTP", "SEPA"];
 
@@ -16,8 +17,14 @@ const PaymentsPage2: React.FC = () => {
   return (
     <div>
       <h1>Payments Page 2</h1>
-      <p>Welcome to the Payments Page 2!</p>
-      <InitPaymentForm supportedPaymentMethods={SUPPORTED_PAYMENT_METHODS} />
+      <Grid grow gutter={5}>
+        <Grid.Col span={2}>
+          <InitPaymentForm
+            supportedPaymentMethods={SUPPORTED_PAYMENT_METHODS}
+          />
+        </Grid.Col>
+        <Grid.Col span="auto">2</Grid.Col>
+      </Grid>
     </div>
   );
 };

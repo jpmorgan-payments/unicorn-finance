@@ -221,7 +221,7 @@ app.use('/:slug', async (req, res, next) => {
       message:
         ENV === 'development' ? error.message : 'Proxy configuration failed',
     });
-  }
+  }s
 });
 
 // Global error handler

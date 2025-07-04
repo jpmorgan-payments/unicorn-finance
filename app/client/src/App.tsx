@@ -9,6 +9,8 @@ import PaymentsPage2 from "./pages/PaymentsPage2";
 import "@mantine/core/styles.css";
 import { MantineProvider } from "@mantine/core";
 
+export const fetcher = (url: string) => fetch(url).then((r) => r.json());
+
 function App() {
   return (
     <AppContextProvider>

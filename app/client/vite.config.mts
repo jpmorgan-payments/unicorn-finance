@@ -11,7 +11,10 @@ export default defineConfig({
   plugins: [react(), viteTsconfigPaths(), svgrPlugin(), tailwindcss()],
   server: {
     proxy: {
-      "/api": "http://localhost:8081",
+      "/api": {
+        target: "http://localhost:8081",
+        rewrite: (path) => path.replace(/^\/api/, ""),
+      },
     },
   },
   test: {

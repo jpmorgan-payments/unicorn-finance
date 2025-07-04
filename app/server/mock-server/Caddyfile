@@ -1,0 +1,6 @@
+http://localhost
+
+route /payment/v2/* {
+	uri strip_prefix /payment/v2
+	reverse_proxy prism_1:4010
+}
