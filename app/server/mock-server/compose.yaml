@@ -7,9 +7,15 @@ services:
     ports:
       - '8081:80'
     depends_on:
-      - prism_1
-  prism_1:
+      - global_payments_2_0_22
+      - validation_services_2_1_11
+  global_payments_2_0_22:
     image: stoplight/prism:latest
     command: 'mock -h 0.0.0.0 /tmp/global_payments_2_0_22.yaml -p 4010'
     volumes:
-      - ./global_payments_2_0_22.yaml:/tmp/global_payments_2_0_22.yaml:ro
+      - ./specs/global_payments_2_0_22.yaml:/tmp/global_payments_2_0_22.yaml:ro
+  validation_services_2_1_11:
+    image: stoplight/prism:latest
+    command: 'mock -h 0.0.0.0 /tmp/validation_services_2_1_11.yaml -p 4010'
+    volumes:
+      - ./specs/validation_services_2_1_11.yaml:/tmp/validation_services_2_1_11.yaml:ro
