@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Button, Group, useCombobox } from "@mantine/core";
+import { Button, Group, useCombobox, Box, LoadingOverlay } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import UnicornDropdown from "./formElements/unicornDropdown";
 import useSWRMutation from "swr/mutation";
@@ -21,7 +21,7 @@ async function validateAccountDetails(url: string, { arg }: { arg: string }) {
 const PaymentForm: React.FC<InitPaymentFormProps> = ({
   supportedPaymentMethods,
 }) => {
-  const { trigger, data, error } = useSWRMutation(
+  const { trigger, data, error, isMutating } = useSWRMutation(
     "/api/tsapi/v2/validation/accounts",
     validateAccountDetails,
   );
@@ -43,17 +43,24 @@ const PaymentForm: React.FC<InitPaymentFormProps> = ({
   };
 
   return (
-    <form onSubmit={form.onSubmit(onSubmit)}>
-      <UnicornDropdown
-        {...form.getInputProps("paymentType")}
-        options={supportedPaymentMethods}
-        key={form.key("paymentType")}
+    <Box pos="relative">
+      <LoadingOverlay
+        visible={isMutating}
+        zIndex={1000}
+        overlayProps={{ radius: "sm", blur: 2 }}
       />
+      <form onSubmit={form.onSubmit(onSubmit)}>
+        <UnicornDropdown
+          {...form.getInputProps("paymentType")}
+          options={supportedPaymentMethods}
+          key={form.key("paymentType")}
+        />
 
-      <Group justify="flex-end" mt="md">
-        <Button type="submit">Validate Account Details</Button>
-      </Group>
-    </form>
+        <Group justify="flex-end" mt="md">
+          <Button type="submit">Validate Account Details</Button>
+        </Group>
+      </form>
+    </Box>
   );
 };
 
