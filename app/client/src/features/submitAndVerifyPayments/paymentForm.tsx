@@ -11,17 +11,20 @@ interface InitPaymentFormProps {
   supportedPaymentMethods: string[];
 }
 
-async function initPayment(url: string, { arg }: { arg: string }) {
+async function validateAccountDetails(url: string, { arg }: { arg: string }) {
   await fetch(url, {
     method: "POST",
     body: arg,
   });
 }
 
-const InitPaymentForm: React.FC<InitPaymentFormProps> = ({
+const PaymentForm: React.FC<InitPaymentFormProps> = ({
   supportedPaymentMethods,
 }) => {
-  const { trigger } = useSWRMutation("/api/payment/v2/payments", initPayment);
+  const { trigger, data, error } = useSWRMutation(
+    "/api/tsapi/v2/validation/accounts",
+    validateAccountDetails,
+  );
 
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption(),
@@ -48,10 +51,10 @@ const InitPaymentForm: React.FC<InitPaymentFormProps> = ({
       />
 
       <Group justify="flex-end" mt="md">
-        <Button type="submit">Submit</Button>
+        <Button type="submit">Validate Account Details</Button>
       </Group>
     </form>
   );
 };
 
-export default InitPaymentForm;
+export default PaymentForm;
