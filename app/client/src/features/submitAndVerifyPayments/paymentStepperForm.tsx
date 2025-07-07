@@ -20,6 +20,11 @@ async function validateAccountDetails(url: string, { arg }: { arg: string }) {
   const res = await fetch(url, {
     method: "POST",
     body: arg,
+    headers: {
+      "x-client-id": import.meta.env.VITE_CLIENT_ID,
+      "x-program-id": import.meta.env.VITE_PROGRAM_ID,
+      "x-program-id-type": import.meta.env.VITE_PROGRAM_ID_TYPE,
+    },
   });
   if (!res.ok) {
     const error = new Error("An error occurred while fetching the data.");
