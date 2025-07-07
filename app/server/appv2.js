@@ -113,6 +113,7 @@ async function createProxyConfiguration(
     on: {
       proxyReq: async (proxyReq, req) => {
         if (req.body && digitalSignature) {
+          console.log(req.body);
           proxyReq.setHeader('Content-Type', 'text/xml');
           proxyReq.setHeader(
             'Content-Length',

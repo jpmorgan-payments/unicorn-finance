@@ -6,6 +6,6 @@ route /payment/v2/* {
 }
 
 route /tsapi/v2/validations/* {
-	uri strip_prefix /tsapi/v2/validations
+	uri strip_prefix /tsapi/v2
 	reverse_proxy validation_services_2_1_11:4010
 }
