@@ -3,7 +3,6 @@ import {
   Stepper,
   Button,
   Group,
-  TextInput,
   Code,
   Box,
   useCombobox,
@@ -29,14 +28,43 @@ async function validateAccountDetails(url: string, { arg }: { arg: string }) {
   return res.json();
 }
 
+async function submitPayment(url: string, { arg }: { arg: string }) {
+  const res = await fetch(url, {
+    method: "POST",
+    body: arg,
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+  if (!res.ok) {
+    const error = new Error("An error occurred while submitting the payment.");
+    throw error;
+  }
+  return res.json();
+}
+
 const PaymentForm: React.FC<InitPaymentFormProps> = ({
   supportedPaymentMethods,
 }) => {
   const [active, setActive] = useState(0);
-  const { trigger, data, error, isMutating, reset } = useSWRMutation(
+  const {
+    trigger: accountValidationTrigger,
+    data: accountValidationData,
+    error: accountValidationError,
+    isMutating: accountValidationIsMutating,
+    reset: accountValidationReset,
+  } = useSWRMutation(
     "/api/tsapi/v2/validations/accounts",
     validateAccountDetails,
   );
+  const {
+    trigger: initPaymentTrigger,
+    data: initPaymentData,
+    error: initPaymentError,
+    isMutating: initPaymentIsMutating,
+    reset: initPaymentReset,
+  } = useSWRMutation("/api/tsapi/v2/payments/submit", submitPayment);
+
   const form = useForm({
     mode: "uncontrolled",
     initialValues: {
@@ -50,8 +78,17 @@ const PaymentForm: React.FC<InitPaymentFormProps> = ({
   const onSubmitValidation = () => {
     const values = form.getValues();
     console.log("Form submitted with values:", values);
-    trigger(JSON.stringify(values));
-    if (!isMutating) {
+    accountValidationTrigger(JSON.stringify(values));
+    if (!accountValidationIsMutating) {
+      nextStep();
+    }
+  };
+
+  const onSubmitPayment = () => {
+    const values = form.getValues();
+    console.log("Form submitted with values:", values);
+    initPaymentTrigger(JSON.stringify(values));
+    if (!initPaymentIsMutating) {
       nextStep();
     }
   };
@@ -60,11 +97,12 @@ const PaymentForm: React.FC<InitPaymentFormProps> = ({
     form.reset();
     combobox.resetSelectedOption();
     setActive(0);
-    reset();
+    initPaymentReset();
+    accountValidationReset();
   };
 
   const onRetryValidation = () => {
-    trigger(JSON.stringify(form.values));
+    accountValidationTrigger(JSON.stringify(form.values));
   };
 
   const nextStep = () =>
@@ -72,13 +110,10 @@ const PaymentForm: React.FC<InitPaymentFormProps> = ({
       return current < 3 ? current + 1 : current;
     });
 
-  const prevStep = () =>
-    setActive((current) => (current > 0 ? current - 1 : current));
-
   return (
     <Box pos="relative" m="md">
       <LoadingOverlay
-        visible={isMutating}
+        visible={accountValidationIsMutating || initPaymentIsMutating}
         zIndex={1000}
         overlayProps={{ radius: "sm", blur: 2 }}
       />
@@ -98,9 +133,9 @@ const PaymentForm: React.FC<InitPaymentFormProps> = ({
         </Stepper.Step>
 
         <Stepper.Step label="Validation Results">
-          {error && !isMutating ? (
-            <Box m="md">
-              Error: {error.message}
+          {accountValidationError && !accountValidationIsMutating ? (
+            <>
+              Error: {accountValidationError.message}
               <Group justify="flex-end" mt="md">
                 <Button type="button" onClick={onRetryValidation}>
                   Try Again
@@ -109,32 +144,59 @@ const PaymentForm: React.FC<InitPaymentFormProps> = ({
                   Reset form
                 </Button>
               </Group>
-            </Box>
+            </>
           ) : (
-            <div></div>
+            <>
+              {accountValidationData && (
+                <Code block mt="md">
+                  Response: {JSON.stringify(accountValidationData, null, 2)}
+                </Code>
+              )}{" "}
+              <Group justify="flex-end" mt="md">
+                <Button type="button" onClick={nextStep}>
+                  Continue with Payment
+                </Button>
+                <Button type="button" onClick={onResetForm}>
+                  Reset form
+                </Button>
+              </Group>
+            </>
           )}
         </Stepper.Step>
 
-        <Stepper.Step label="Final step" description="Social media">
-          <TextInput
-            label="Website"
-            placeholder="Website"
-            key={form.key("website")}
-            {...form.getInputProps("website")}
+        <Stepper.Step label="Initialise Payment">
+          <UnicornDropdown
+            {...form.getInputProps("paymentType")}
+            options={supportedPaymentMethods}
+            key={form.key("paymentType")}
           />
-          <TextInput
-            mt="md"
-            label="GitHub"
-            placeholder="GitHub"
-            key={form.key("github")}
-            {...form.getInputProps("github")}
-          />
+
+          <Group justify="flex-end" mt="md">
+            <Button type="button" onClick={onSubmitPayment}>
+              Submit Payment
+            </Button>
+          </Group>
         </Stepper.Step>
         <Stepper.Completed>
-          Completed! Form values:
-          <Code block mt="xl">
-            {JSON.stringify(form.getValues(), null, 2)}
-          </Code>
+          {initPaymentError ? (
+            <>
+              Payment Error: {initPaymentError.message}
+              <Group justify="flex-end" mt="md">
+                <Button type="button" onClick={onSubmitPayment}>
+                  Try Again
+                </Button>
+              </Group>
+            </>
+          ) : (
+            <>
+              Payment Completed!
+              {initPaymentData && (
+                <Code block mt="md">
+                  Response: {JSON.stringify(initPaymentData, null, 2)}
+                </Code>
+              )}
+            </>
+          )}
         </Stepper.Completed>
       </Stepper>
     </Box>
