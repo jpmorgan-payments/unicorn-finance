@@ -1,5 +1,5 @@
 import React from "react";
-import PaymentForm from "../features/submitAndVerifyPayments/paymentForm";
+import PaymentForm from "../features/submitAndVerifyPayments/paymentStepperForm";
 import { Grid } from "@mantine/core";
 
 const SUPPORTED_PAYMENT_METHODS = ["US-RTP", "SEPA"];
