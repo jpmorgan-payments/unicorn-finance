@@ -1,0 +1,21 @@
+[
+    {
+        "requestId": "123e4567-e89b-12d3-a456-426614174000",
+        "account": {
+            "accountNumber": "12345",
+            "financialInstitutionId": {
+                "clearingSystemId": {
+                    "id": "122199983",
+                    "idType": "ABA"
+                }
+            }
+        },
+        "entity": {
+            "individual": {
+                "firstName": "Jane",
+                "lastName": "Abbot",
+                "fullName": "Jane Abbot"
+            }
+        }
+    }
+]

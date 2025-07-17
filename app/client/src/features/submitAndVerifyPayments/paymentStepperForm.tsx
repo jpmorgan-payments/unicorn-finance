@@ -11,16 +11,33 @@ import {
 import { useForm } from "@mantine/form";
 import UnicornDropdown from "./formElements/unicornDropdown";
 import useSWRMutation from "swr/mutation";
+import avsTemplate from "./jsonStubs/accountValidation.json";
 
-interface InitPaymentFormProps {
+interface PaymentFormProps {
   supportedPaymentMethods: string[];
+  toAccountDetails: {
+    accountNumber: string;
+    financialInstitutionId: {
+      clearingSystemId: {
+        id: string;
+        idType: string;
+      };
+    };
+  }[];
 }
 
 async function validateAccountDetails(url: string, { arg }: { arg: string }) {
+  // Parse the form values passed as arg
+  const formValues = JSON.parse(arg);
+  const requestBody = avsTemplate;
+  requestBody[0].requestId = "UF" + new Date().getTime();
+  requestBody[0].account = JSON.parse(formValues.accountDetails);
+
   const res = await fetch(url, {
     method: "POST",
-    body: arg,
+    body: JSON.stringify(requestBody),
     headers: {
+      "Content-Type": "application/json",
       "x-client-id": import.meta.env.VITE_CLIENT_ID,
       "x-program-id": import.meta.env.VITE_PROGRAM_ID,
       "x-program-id-type": import.meta.env.VITE_PROGRAM_ID_TYPE,
@@ -48,8 +65,9 @@ async function submitPayment(url: string, { arg }: { arg: string }) {
   return res.json();
 }
 
-const PaymentForm: React.FC<InitPaymentFormProps> = ({
+const PaymentForm: React.FC<PaymentFormProps> = ({
   supportedPaymentMethods,
+  toAccountDetails, //Account details to sent money to for AVS validation
 }) => {
   const [active, setActive] = useState(0);
   const {
@@ -125,9 +143,12 @@ const PaymentForm: React.FC<InitPaymentFormProps> = ({
       <Stepper active={active}>
         <Stepper.Step label="Account Validation">
           <UnicornDropdown
-            {...form.getInputProps("paymentType")}
-            options={supportedPaymentMethods}
-            key={form.key("paymentType")}
+            {...form.getInputProps("accountDetails")}
+            options={toAccountDetails.map((account) => ({
+              label: account.accountNumber,
+              value: JSON.stringify(account),
+            }))}
+            key={form.key("accountDetails")}
           />
 
           <Group justify="flex-end" mt="md">
@@ -172,7 +193,10 @@ const PaymentForm: React.FC<InitPaymentFormProps> = ({
         <Stepper.Step label="Initialise Payment">
           <UnicornDropdown
             {...form.getInputProps("paymentType")}
-            options={supportedPaymentMethods}
+            options={supportedPaymentMethods.map((method) => ({
+              label: method,
+              value: method,
+            }))}
             key={form.key("paymentType")}
           />
 

@@ -1,9 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { Combobox, InputBase, useCombobox, Input } from "@mantine/core";
 
 interface UnicornDropdownProps {
-  options: string[];
+  options: {
+    label: string;
+    value: string;
+  }[];
   value?: string;
   onChange?: (value: string) => void;
   defaultValue?: string;
@@ -20,15 +23,15 @@ const UnicornDropdown: React.FC<UnicornDropdownProps> = ({
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption(),
   });
-
-  const displayValue = value || defaultValue || "";
-
+  const [displayValue, setDisplayValue] = React.useState(value || defaultValue);
   return (
     <>
       <Combobox
         store={combobox}
         withinPortal={false}
         onOptionSubmit={(val) => {
+          const selectedOption = options.find((option) => option.value === val);
+          setDisplayValue(selectedOption ? selectedOption.label : defaultValue);
           onChange?.(val);
           combobox.closeDropdown();
         }}
@@ -50,8 +53,11 @@ const UnicornDropdown: React.FC<UnicornDropdownProps> = ({
         <Combobox.Dropdown>
           <Combobox.Options>
             {options.map((paymentType) => (
-              <Combobox.Option key={paymentType} value={paymentType}>
-                {paymentType}
+              <Combobox.Option
+                key={paymentType.label}
+                value={paymentType.value}
+              >
+                {paymentType.label}
               </Combobox.Option>
             ))}
           </Combobox.Options>

@@ -4,6 +4,18 @@ import { Grid } from "@mantine/core";
 
 const SUPPORTED_PAYMENT_METHODS = ["US-RTP", "SEPA"];
 
+const TO_ACCOUNT_DETAILS = [
+  {
+    accountNumber: "123425",
+    financialInstitutionId: {
+      clearingSystemId: {
+        id: "122199983",
+        idType: "ABA",
+      },
+    },
+  },
+];
+
 const PaymentsPage2: React.FC = () => {
   // This page will allow a user to:
   // 1. Select a to/from account from dropdown
@@ -19,7 +31,10 @@ const PaymentsPage2: React.FC = () => {
       <h1>Payments Page 2</h1>
       <Grid grow gutter={5}>
         <Grid.Col span={2}>
-          <PaymentForm supportedPaymentMethods={SUPPORTED_PAYMENT_METHODS} />
+          <PaymentForm
+            supportedPaymentMethods={SUPPORTED_PAYMENT_METHODS}
+            toAccountDetails={TO_ACCOUNT_DETAILS}
+          />
         </Grid.Col>
         <Grid.Col span="auto">2</Grid.Col>
       </Grid>
