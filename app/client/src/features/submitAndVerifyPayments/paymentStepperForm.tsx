@@ -26,16 +26,32 @@ interface PaymentFormProps {
   }[];
 }
 
+const AVS_REQUEST_BODY = avsTemplate;
+
+const getCurrentAVSRequestBody = (formValues: any) => {
+  const requestBody = JSON.parse(JSON.stringify(avsTemplate)); // Deep copy
+
+  requestBody[0].requestId = "UF" + new Date().getTime();
+
+  if (formValues.accountDetails) {
+    try {
+      requestBody[0].account = JSON.parse(formValues.accountDetails);
+    } catch (e) {
+      // If parsing fails, show the raw value
+      requestBody[0].account = formValues.accountDetails;
+    }
+  }
+
+  return requestBody;
+};
+
 async function validateAccountDetails(url: string, { arg }: { arg: string }) {
   // Parse the form values passed as arg
   const formValues = JSON.parse(arg);
-  const requestBody = avsTemplate;
-  requestBody[0].requestId = "UF" + new Date().getTime();
-  requestBody[0].account = JSON.parse(formValues.accountDetails);
 
   const res = await fetch(url, {
     method: "POST",
-    body: JSON.stringify(requestBody),
+    body: JSON.stringify(getCurrentAVSRequestBody(formValues)),
     headers: {
       "Content-Type": "application/json",
       "x-client-id": import.meta.env.VITE_CLIENT_ID,
@@ -70,6 +86,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   toAccountDetails, //Account details to sent money to for AVS validation
 }) => {
   const [active, setActive] = useState(0);
+  const [showAVSRequestBody, setShowAVSRequestBody] = useState(false);
   const {
     trigger: accountValidationTrigger,
     data: accountValidationData,
@@ -92,6 +109,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
     mode: "uncontrolled",
     initialValues: {
       paymentType: "US-RTP",
+      accountDetails: "",
     },
   });
   const combobox = useCombobox({
@@ -151,7 +169,24 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
             key={form.key("accountDetails")}
           />
 
+          {showAVSRequestBody && (
+            <Code block mt="md">
+              {JSON.stringify(
+                getCurrentAVSRequestBody(form.getValues()),
+                null,
+                2,
+              )}
+            </Code>
+          )}
+
           <Group justify="flex-end" mt="md">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowAVSRequestBody(!showAVSRequestBody)}
+            >
+              {showAVSRequestBody ? "Hide" : "Show"} AVS Request Body
+            </Button>
             <Button type="button" onClick={onSubmitValidation}>
               Validate Account Details
             </Button>
@@ -177,8 +212,25 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                 <Code block mt="md">
                   Response: {JSON.stringify(accountValidationData, null, 2)}
                 </Code>
-              )}{" "}
+              )}
+              {showAVSRequestBody && (
+                <Code block mt="md">
+                  Request:{" "}
+                  {JSON.stringify(
+                    getCurrentAVSRequestBody(form.getValues()),
+                    null,
+                    2,
+                  )}
+                </Code>
+              )}
               <Group justify="flex-end" mt="md">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowAVSRequestBody(!showAVSRequestBody)}
+                >
+                  {showAVSRequestBody ? "Hide" : "Show"} AVS Request Body
+                </Button>
                 <Button type="button" onClick={nextStep}>
                   Continue with Payment
                 </Button>
