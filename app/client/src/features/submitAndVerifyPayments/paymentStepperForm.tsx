@@ -7,11 +7,13 @@ import {
   Box,
   useCombobox,
   LoadingOverlay,
+  NumberInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import UnicornDropdown from "./formElements/unicornDropdown";
 import useSWRMutation from "swr/mutation";
 import avsTemplate from "./jsonStubs/accountValidation.json";
+import globalPaymentsTemplate from "./jsonStubs/globalPayments.json";
 
 interface PaymentFormProps {
   supportedPaymentMethods: string[];
@@ -26,8 +28,6 @@ interface PaymentFormProps {
   }[];
 }
 
-const AVS_REQUEST_BODY = avsTemplate;
-
 const getCurrentAVSRequestBody = (formValues: any) => {
   const requestBody = JSON.parse(JSON.stringify(avsTemplate)); // Deep copy
 
@@ -41,6 +41,7 @@ const getCurrentAVSRequestBody = (formValues: any) => {
       requestBody[0].account = formValues.accountDetails;
     }
   }
+  console.log("AVS Request Body:", requestBody);
 
   return requestBody;
 };
@@ -67,9 +68,11 @@ async function validateAccountDetails(url: string, { arg }: { arg: string }) {
 }
 
 async function submitPayment(url: string, { arg }: { arg: string }) {
+  const formValues = JSON.parse(arg);
+  console.log(url, formValues);
   const res = await fetch(url, {
     method: "POST",
-    body: arg,
+    body: JSON.stringify(formValues),
     headers: {
       "Content-Type": "application/json",
     },
@@ -103,7 +106,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
     error: initPaymentError,
     isMutating: initPaymentIsMutating,
     reset: initPaymentReset,
-  } = useSWRMutation("/api/tsapi/v2/payments/submit", submitPayment);
+  } = useSWRMutation("/api/payment/v2/payments", submitPayment);
 
   const form = useForm({
     mode: "uncontrolled",
@@ -119,6 +122,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   const onSubmitValidation = () => {
     const values = form.getValues();
     console.log("Form submitted with values:", values);
+    setShowAVSRequestBody(false);
     accountValidationTrigger(JSON.stringify(values));
     if (!accountValidationIsMutating) {
       nextStep();
@@ -250,6 +254,16 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
               value: method,
             }))}
             key={form.key("paymentType")}
+          />
+          <NumberInput
+            {...form.getInputProps("amount")}
+            key={form.key("amount")}
+            label="Amount"
+            decimalScale={2}
+            fixedDecimalScale
+            defaultValue={100}
+            step={100}
+            min={0.01}
           />
 
           <Group justify="flex-end" mt="md">

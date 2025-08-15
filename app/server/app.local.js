@@ -1,9 +1,12 @@
-const app = require('./appv2');
+const createApp = require('./appv3');
 
-app.listen(8081, () => {
-  console.log(`
+(async () => {
+  const app = await createApp();
+  app.listen(8081, () => {
+    console.log(`
 ################################################
 🛡️  Server listening on port: 8081 🛡️
 ################################################
 `);
-});
+  });
+})();
