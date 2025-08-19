@@ -1,6 +1,7 @@
 [
     {
         "requestId": "<requestId>",
+        "profileName": "authentication",
         "account": {
             "accountNumber": "<accountNumber>",
             "financialInstitutionId": {

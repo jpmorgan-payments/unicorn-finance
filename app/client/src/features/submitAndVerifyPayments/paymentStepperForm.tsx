@@ -13,7 +13,6 @@ import { useForm } from "@mantine/form";
 import UnicornDropdown from "./formElements/unicornDropdown";
 import useSWRMutation from "swr/mutation";
 import avsTemplate from "./jsonStubs/accountValidation.json";
-import globalPaymentsTemplate from "./jsonStubs/globalPayments.json";
 
 interface PaymentFormProps {
   supportedPaymentMethods: string[];
