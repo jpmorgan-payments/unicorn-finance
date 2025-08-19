@@ -12,8 +12,16 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "http://localhost:8081",
+        target: process.env.VITE_MOCKED_API_URL || "http://localhost:8081",
+        changeOrigin: true,
+        secure: false,
         rewrite: (path) => path.replace(/^\/api/, ""),
+      },
+      "/cat-api": {
+        target: process.env.VITE_CAT_API_URL || "http://localhost:8082",
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/cat-api\/api/, ""),
       },
     },
   },

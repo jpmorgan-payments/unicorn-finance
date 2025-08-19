@@ -6,8 +6,14 @@ export enum Environment {
   CAT = "CAT",
 }
 
+const ENVIRONMENT_URLS: Record<Environment, string> = {
+  [Environment.MOCKED]: "", // Use /api proxy for mocked environment (goes to localhost:8081)
+  [Environment.CAT]: "/cat-api", // Use /cat-api proxy for CAT environment (goes to localhost:8082)
+};
+
 interface EnvContextType {
   environment: Environment;
+  url: string;
   switchEnv: (newEnv: Environment) => void;
 }
 
@@ -42,8 +48,10 @@ export const EnvProvider = ({ children }: EnvProviderProps) => {
     }
   };
 
+  const url = ENVIRONMENT_URLS[environment];
+
   return (
-    <EnvContext.Provider value={{ environment, switchEnv }}>
+    <EnvContext.Provider value={{ environment, url, switchEnv }}>
       {children}
     </EnvContext.Provider>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Stepper,
   Button,
@@ -13,6 +13,7 @@ import { useForm } from "@mantine/form";
 import UnicornDropdown from "./formElements/unicornDropdown";
 import useSWRMutation from "swr/mutation";
 import avsTemplate from "./jsonStubs/accountValidation.json";
+import { useEnv } from "../../context/EnvContext";
 
 interface PaymentFormProps {
   supportedPaymentMethods: string[];
@@ -68,7 +69,6 @@ async function validateAccountDetails(url: string, { arg }: { arg: string }) {
 
 async function submitPayment(url: string, { arg }: { arg: string }) {
   const formValues = JSON.parse(arg);
-  console.log(url, formValues);
   const res = await fetch(url, {
     method: "POST",
     body: JSON.stringify(formValues),
@@ -87,6 +87,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   supportedPaymentMethods,
   toAccountDetails, //Account details to sent money to for AVS validation
 }) => {
+  const { url } = useEnv();
   const [active, setActive] = useState(0);
   const [showAVSRequestBody, setShowAVSRequestBody] = useState(false);
   const {
@@ -96,16 +97,17 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
     isMutating: accountValidationIsMutating,
     reset: accountValidationReset,
   } = useSWRMutation(
-    "/api/tsapi/v2/validations/accounts",
+    `${url}/api/tsapi/v2/validations/accounts`,
     validateAccountDetails,
   );
+
   const {
     trigger: initPaymentTrigger,
     data: initPaymentData,
     error: initPaymentError,
     isMutating: initPaymentIsMutating,
     reset: initPaymentReset,
-  } = useSWRMutation("/api/payment/v2/payments", submitPayment);
+  } = useSWRMutation(`${url}/api/payment/v2/payments`, submitPayment);
 
   const form = useForm({
     mode: "uncontrolled",
