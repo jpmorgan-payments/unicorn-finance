@@ -15,19 +15,12 @@ const activeClassName = "border-pink-500 text-gray-900";
 // Navigation configuration
 const links = [
   {
-    to: "accounts",
+    to: "/accounts",
     label: "Accounts",
-    dataCy: "accountsLink",
   },
   {
-    to: "payments",
+    to: "/payments",
     label: "Payments",
-    dataCy: "paymentsLink",
-  },
-  {
-    to: "payments2",
-    label: "Payments 2",
-    dataCy: "payments2Link",
   },
 ];
 function Sidebar() {
@@ -93,7 +86,7 @@ function Sidebar() {
               className="mt-2 w-4/5 lg:mt-0 lg:w-4/6"
             />
           </NavLink>
-          
+
           <ul className="-my-4 ml-0 flex flex-row text-sm text-gray-500 lg:-ml-8 lg:my-0 lg:flex-col">
             {links.map((link) => (
               <NavLink
@@ -101,7 +94,9 @@ function Sidebar() {
                 to={link.to}
                 data-cy={link.dataCy}
                 className={({ isActive }) =>
-                  isActive ? `${activeClassName} ${linkClassName}` : linkClassName
+                  isActive
+                    ? `${activeClassName} ${linkClassName}`
+                    : linkClassName
                 }
               >
                 <li>{link.label}</li>

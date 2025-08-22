@@ -18,7 +18,7 @@ const TO_ACCOUNT_DETAILS = [
   },
 ];
 
-const PaymentsPage2: React.FC = () => {
+const PaymentsPage: React.FC = () => {
   return (
     <Layout>
       <div>
@@ -41,4 +41,4 @@ const PaymentsPage2: React.FC = () => {
   );
 };
 
-export default PaymentsPage2;
+export default PaymentsPage;

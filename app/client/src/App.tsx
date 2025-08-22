@@ -5,7 +5,7 @@ import { EnvProvider } from "./context/EnvContext";
 
 import Layout from "./components/layout";
 import AccountPage from "./pages/AccountPage";
-import PaymentsPage2 from "./pages/PaymentsPage2";
+import PaymentsPage from "./pages/PaymentsPage";
 import "@mantine/core/styles.css";
 import { MantineProvider } from "@mantine/core";
 
@@ -21,7 +21,7 @@ function App() {
               <Route index element={<AccountPage />} />
               <Route path="accounts" element={<AccountPage />} />
             </Route>
-            <Route path="payments2" element={<PaymentsPage2 />} />
+            <Route path="payments" element={<PaymentsPage />} />
           </Routes>
         </MantineProvider>
       </AppContextProvider>
