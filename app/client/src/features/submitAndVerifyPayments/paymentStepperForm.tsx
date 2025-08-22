@@ -217,7 +217,11 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
             <Button variant="outline" size="sm" onClick={toggleAVSRequestBody}>
               {showAVSRequestBody ? "Hide" : "Show"} AVS Request Body
             </Button>
-            <Button type="button" onClick={handleValidationSubmit}>
+            <Button
+              type="button"
+              onClick={handleValidationSubmit}
+              disabled={!form.values.accountDetails}
+            >
               Validate Account Details
             </Button>
           </Group>
