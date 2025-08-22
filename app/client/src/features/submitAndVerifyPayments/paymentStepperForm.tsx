@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Stepper,
   Button,
@@ -10,49 +10,58 @@ import {
   NumberInput,
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import UnicornDropdown from "./formElements/unicornDropdown";
 import useSWRMutation from "swr/mutation";
+
+import UnicornDropdown from "./formElements/unicornDropdown";
 import avsTemplate from "./jsonStubs/accountValidation.json";
 import { useEnv } from "../../context/EnvContext";
 
 interface PaymentFormProps {
   supportedPaymentMethods: string[];
-  toAccountDetails: {
-    accountNumber: string;
-    financialInstitutionId: {
-      clearingSystemId: {
-        id: string;
-        idType: string;
-      };
-    };
-  }[];
+  toAccountDetails: AccountDetail[];
 }
 
-const getCurrentAVSRequestBody = (formValues: any) => {
-  const requestBody = JSON.parse(JSON.stringify(avsTemplate)); // Deep copy
+interface AccountDetail {
+  accountNumber: string;
+  financialInstitutionId: {
+    clearingSystemId: {
+      id: string;
+      idType: string;
+    };
+  };
+}
 
+interface FormValues {
+  paymentType: string;
+  accountDetails: string;
+  amount?: number;
+}
+
+// Utility function to generate AVS request body
+const generateAVSRequestBody = (formValues: FormValues) => {
+  const requestBody = JSON.parse(JSON.stringify(avsTemplate)); // Deep copy
   requestBody[0].requestId = "UF" + new Date().getTime();
 
   if (formValues.accountDetails) {
     try {
       requestBody[0].account = JSON.parse(formValues.accountDetails);
     } catch (e) {
-      // If parsing fails, show the raw value
+      // If parsing fails, use the raw value
       requestBody[0].account = formValues.accountDetails;
     }
   }
-  console.log("AVS Request Body:", requestBody);
 
+  console.log("AVS Request Body:", requestBody);
   return requestBody;
 };
 
+// API functions
 async function validateAccountDetails(url: string, { arg }: { arg: string }) {
-  // Parse the form values passed as arg
-  const formValues = JSON.parse(arg);
+  const formValues: FormValues = JSON.parse(arg);
 
   const res = await fetch(url, {
     method: "POST",
-    body: JSON.stringify(getCurrentAVSRequestBody(formValues)),
+    body: JSON.stringify(generateAVSRequestBody(formValues)),
     headers: {
       "Content-Type": "application/json",
       "x-client-id": import.meta.env.VITE_CLIENT_ID,
@@ -60,15 +69,17 @@ async function validateAccountDetails(url: string, { arg }: { arg: string }) {
       "x-program-id-type": import.meta.env.VITE_PROGRAM_ID_TYPE,
     },
   });
+
   if (!res.ok) {
-    const error = new Error("An error occurred while fetching the data.");
-    throw error;
+    throw new Error("An error occurred while fetching the data.");
   }
+
   return res.json();
 }
 
 async function submitPayment(url: string, { arg }: { arg: string }) {
-  const formValues = JSON.parse(arg);
+  const formValues: FormValues = JSON.parse(arg);
+
   const res = await fetch(url, {
     method: "POST",
     body: JSON.stringify(formValues),
@@ -76,20 +87,36 @@ async function submitPayment(url: string, { arg }: { arg: string }) {
       "Content-Type": "application/json",
     },
   });
+
   if (!res.ok) {
-    const error = new Error("An error occurred while submitting the payment.");
-    throw error;
+    throw new Error("An error occurred while submitting the payment.");
   }
+
   return res.json();
 }
 
 const PaymentForm: React.FC<PaymentFormProps> = ({
   supportedPaymentMethods,
-  toAccountDetails, //Account details to sent money to for AVS validation
+  toAccountDetails,
 }) => {
   const { url } = useEnv();
   const [active, setActive] = useState(0);
   const [showAVSRequestBody, setShowAVSRequestBody] = useState(false);
+
+  // Form setup
+  const form = useForm<FormValues>({
+    mode: "uncontrolled",
+    initialValues: {
+      paymentType: "US-RTP",
+      accountDetails: "",
+    },
+  });
+
+  const combobox = useCombobox({
+    onDropdownClose: () => combobox.resetSelectedOption(),
+  });
+
+  // API mutations
   const {
     trigger: accountValidationTrigger,
     data: accountValidationData,
@@ -109,18 +136,8 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
     reset: initPaymentReset,
   } = useSWRMutation(`${url}/api/payment/v2/payments`, submitPayment);
 
-  const form = useForm({
-    mode: "uncontrolled",
-    initialValues: {
-      paymentType: "US-RTP",
-      accountDetails: "",
-    },
-  });
-  const combobox = useCombobox({
-    onDropdownClose: () => combobox.resetSelectedOption(),
-  });
-
-  const onSubmitValidation = () => {
+  // Event handlers
+  const handleValidationSubmit = () => {
     const values = form.getValues();
     console.log("Form submitted with values:", values);
     setShowAVSRequestBody(false);
@@ -130,7 +147,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
     }
   };
 
-  const onSubmitPayment = () => {
+  const handlePaymentSubmit = () => {
     const values = form.getValues();
     console.log("Form submitted with values:", values);
     initPaymentTrigger(JSON.stringify(values));
@@ -139,7 +156,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
     }
   };
 
-  const onResetForm = () => {
+  const handleFormReset = () => {
     form.reset();
     combobox.resetSelectedOption();
     setActive(0);
@@ -147,37 +164,49 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
     accountValidationReset();
   };
 
-  const onRetryValidation = () => {
+  const handleValidationRetry = () => {
     accountValidationTrigger(JSON.stringify(form.values));
   };
 
-  const nextStep = () =>
-    setActive((current) => {
-      return current < 3 ? current + 1 : current;
-    });
+  const nextStep = () => {
+    setActive((current) => (current < 3 ? current + 1 : current));
+  };
+
+  const toggleAVSRequestBody = () => {
+    setShowAVSRequestBody(!showAVSRequestBody);
+  };
+
+  // Compute derived values
+  const isLoading = accountValidationIsMutating || initPaymentIsMutating;
+  const accountOptions = toAccountDetails.map((account) => ({
+    label: account.accountNumber,
+    value: JSON.stringify(account),
+  }));
+  const paymentMethodOptions = supportedPaymentMethods.map((method) => ({
+    label: method,
+    value: method,
+  }));
 
   return (
     <Box pos="relative" m="md">
       <LoadingOverlay
-        visible={accountValidationIsMutating || initPaymentIsMutating}
+        visible={isLoading}
         zIndex={1000}
         overlayProps={{ radius: "sm", blur: 2 }}
       />
       <Stepper active={active}>
+        {/* Account Validation Step */}
         <Stepper.Step label="Account Validation">
           <UnicornDropdown
             {...form.getInputProps("accountDetails")}
-            options={toAccountDetails.map((account) => ({
-              label: account.accountNumber,
-              value: JSON.stringify(account),
-            }))}
+            options={accountOptions}
             key={form.key("accountDetails")}
           />
 
           {showAVSRequestBody && (
             <Code block mt="md">
               {JSON.stringify(
-                getCurrentAVSRequestBody(form.getValues()),
+                generateAVSRequestBody(form.getValues()),
                 null,
                 2,
               )}
@@ -185,28 +214,25 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
           )}
 
           <Group justify="flex-end" mt="md">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setShowAVSRequestBody(!showAVSRequestBody)}
-            >
+            <Button variant="outline" size="sm" onClick={toggleAVSRequestBody}>
               {showAVSRequestBody ? "Hide" : "Show"} AVS Request Body
             </Button>
-            <Button type="button" onClick={onSubmitValidation}>
+            <Button type="button" onClick={handleValidationSubmit}>
               Validate Account Details
             </Button>
           </Group>
         </Stepper.Step>
 
+        {/* Validation Results Step */}
         <Stepper.Step label="Validation Results">
           {accountValidationError && !accountValidationIsMutating ? (
             <>
               Error: {accountValidationError.message}
               <Group justify="flex-end" mt="md">
-                <Button type="button" onClick={onRetryValidation}>
+                <Button type="button" onClick={handleValidationRetry}>
                   Try Again
                 </Button>
-                <Button type="button" onClick={onResetForm}>
+                <Button type="button" onClick={handleFormReset}>
                   Reset form
                 </Button>
               </Group>
@@ -222,7 +248,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                 <Code block mt="md">
                   Request:{" "}
                   {JSON.stringify(
-                    getCurrentAVSRequestBody(form.getValues()),
+                    generateAVSRequestBody(form.getValues()),
                     null,
                     2,
                   )}
@@ -232,14 +258,14 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setShowAVSRequestBody(!showAVSRequestBody)}
+                  onClick={toggleAVSRequestBody}
                 >
                   {showAVSRequestBody ? "Hide" : "Show"} AVS Request Body
                 </Button>
                 <Button type="button" onClick={nextStep}>
                   Continue with Payment
                 </Button>
-                <Button type="button" onClick={onResetForm}>
+                <Button type="button" onClick={handleFormReset}>
                   Reset form
                 </Button>
               </Group>
@@ -247,13 +273,11 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
           )}
         </Stepper.Step>
 
+        {/* Initialize Payment Step */}
         <Stepper.Step label="Initialise Payment">
           <UnicornDropdown
             {...form.getInputProps("paymentType")}
-            options={supportedPaymentMethods.map((method) => ({
-              label: method,
-              value: method,
-            }))}
+            options={paymentMethodOptions}
             key={form.key("paymentType")}
           />
           <NumberInput
@@ -268,18 +292,26 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
           />
 
           <Group justify="flex-end" mt="md">
-            <Button type="button" onClick={onSubmitPayment}>
+            <Button type="button" onClick={handleFormReset}>
+              Reset form
+            </Button>
+            <Button type="button" onClick={handlePaymentSubmit}>
               Submit Payment
             </Button>
           </Group>
         </Stepper.Step>
+
+        {/* Completion Step */}
         <Stepper.Completed>
           {initPaymentError ? (
             <>
               Payment Error: {initPaymentError.message}
               <Group justify="flex-end" mt="md">
-                <Button type="button" onClick={onSubmitPayment}>
+                <Button type="button" onClick={handlePaymentSubmit}>
                   Try Again
+                </Button>
+                <Button type="button" onClick={handleFormReset}>
+                  Reset form
                 </Button>
               </Group>
             </>
