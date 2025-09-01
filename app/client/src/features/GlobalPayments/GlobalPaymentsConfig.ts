@@ -1,13 +1,10 @@
 import { AccountDetails } from "./GlobalPaymentsTypes";
 
-export type PaymentType = "US-RTP" | "SEPA";
-
-export const PAYMENT_TYPE_OPTIONS = [
+export const paymentTypes = [
   { label: "US Real-Time Payments", value: "US-RTP" },
-  { label: "Single Euro Payments Area", value: "SEPA" },
 ];
 
-export const DEFAULT_ACCOUNT_OPTIONS: AccountDetails[] = [
+export const accountDetails: AccountDetails[] = [
   {
     accountNumber: "1234559",
     financialInstitutionId: {

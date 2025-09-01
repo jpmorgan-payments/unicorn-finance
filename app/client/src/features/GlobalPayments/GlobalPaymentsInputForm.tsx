@@ -3,25 +3,19 @@ import { Stack, Button, Group, Box, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import UnicornDropdown from "../../componentsV2/UnicornDropdown";
 import { AccountDetails } from "./GlobalPaymentsTypes";
-import {
-  PaymentType,
-  PAYMENT_TYPE_OPTIONS,
-  DEFAULT_ACCOUNT_OPTIONS,
-} from "./GlobalPaymentsConfig";
+import { paymentTypes, accountDetails } from "./GlobalPaymentsConfig";
 
 interface GlobalPaymentsFormValues {
-  paymentType: PaymentType | "";
+  paymentType: string;
   accountDetails: AccountDetails | null;
   amount: string;
 }
 
 interface GlobalPaymentsInputFormProps {
-  accountDetails?: AccountDetails[];
   onSubmit?: (values: GlobalPaymentsFormValues) => void;
 }
 
 const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
-  accountDetails = DEFAULT_ACCOUNT_OPTIONS,
   onSubmit,
 }) => {
   const form = useForm<GlobalPaymentsFormValues>({
@@ -69,10 +63,10 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
             Payment Type *
           </label>
           <UnicornDropdown
-            options={PAYMENT_TYPE_OPTIONS}
+            options={paymentTypes}
             value={form.values.paymentType}
             onChange={(value) =>
-              form.setFieldValue("paymentType", value as PaymentType)
+              form.setFieldValue("paymentType", value as string)
             }
             error={form.errors.paymentType}
           />

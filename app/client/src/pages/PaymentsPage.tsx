@@ -7,20 +7,6 @@ import { useRequestPreview } from "../context/RequestPreviewContext";
 import { UnicornTable } from "../componentsV2/UnicornTable";
 import { PaymentHistory } from "../features/GlobalPayments/GlobalPaymentsTypes";
 
-const SUPPORTED_PAYMENT_METHODS = ["US-RTP", "SEPA"];
-
-const TO_ACCOUNT_DETAILS = [
-  {
-    accountNumber: "123425",
-    financialInstitutionId: {
-      clearingSystemId: {
-        id: "122199983",
-        idType: "ABA",
-      },
-    },
-  },
-];
-
 const PaymentsPage: React.FC = () => {
   const [paymentHistory, setPaymentHistory] = useState<PaymentHistory[]>([]);
   const { openDrawer } = useRequestPreview();
@@ -66,10 +52,7 @@ const PaymentsPage: React.FC = () => {
       >
         <Stack align="stretch" justify="flex-start" flex={1}>
           <Title order={4}>Submit a Payment</Title>
-          <GlobalPaymentsInputForm
-            supportedPaymentMethods={SUPPORTED_PAYMENT_METHODS}
-            toAccountDetails={TO_ACCOUNT_DETAILS}
-          />
+          <GlobalPaymentsInputForm />
         </Stack>
 
         <Stack
