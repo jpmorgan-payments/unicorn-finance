@@ -12,7 +12,7 @@ import {
 import { useForm } from "@mantine/form";
 import useSWRMutation from "swr/mutation";
 
-import UnicornDropdown from "./formElements/unicornDropdown";
+import UnicornDropdown from "../../componentsV2/UnicornDropdown";
 import avsTemplate from "./jsonStubs/accountValidation.json";
 import { useEnv } from "../../context/EnvContext";
 

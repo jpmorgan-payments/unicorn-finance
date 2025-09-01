@@ -2,13 +2,13 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 import { AppContextProvider } from "./context/AppContext";
 import { EnvProvider } from "./context/EnvContext";
-import { RequestPreviewProvider } from "./componentsV2/RequestPreviewContext";
+import { RequestPreviewProvider } from "./context/RequestPreviewContext";
 
 import Layout from "./components/layout";
 import AccountPage from "./pages/AccountPage";
 import PaymentsPage from "./pages/PaymentsPage";
 import ValidationsPage from "./pages/ValidationsPage";
-import { RequestPreviewDrawer } from "./context/RequestPreviewDrawer";
+import { RequestPreviewDrawer } from "./componentsV2/RequestPreviewDrawer";
 import "@mantine/core/styles.css";
 import { MantineProvider } from "@mantine/core";
 

@@ -1,8 +1,11 @@
 import React from "react";
 import { Stack, Button, Group, Box, LoadingOverlay, Code } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import UnicornDropdown from "../submitAndVerifyPayments/formElements/unicornDropdown";
-import { AVSAccountDetails } from "./ValidationServicesTypes";
+import UnicornDropdown from "../../componentsV2/UnicornDropdown";
+import {
+  AVSAccountDetails,
+  ValidationHistory,
+} from "./ValidationServicesTypes";
 import {
   DEFAULT_ACCOUNT_NUMBERS,
   VALIDATION_TYPE_OPTIONS,
@@ -10,8 +13,9 @@ import {
 } from "./ValidationServicesConfig";
 import { submitValidationServicesRequest } from "./SubmitValidationServicesRequest";
 import { useEnv } from "../../context/EnvContext";
-import { useRequestPreview } from "../../componentsV2/RequestPreviewContext";
+import { useRequestPreview } from "../../context/RequestPreviewContext";
 import useSWRMutation from "swr/mutation";
+import { get } from "http";
 
 interface ValidationFormValues {
   validationType: ValidationType | "";
@@ -20,11 +24,12 @@ interface ValidationFormValues {
 
 interface ValidationServicesInputFormProps {
   accountDetails?: AVSAccountDetails[];
+  onValidationComplete?: (validationData: ValidationHistory) => void;
 }
 
 const ValidationServicesInputForm: React.FC<
   ValidationServicesInputFormProps
-> = ({ accountDetails = DEFAULT_ACCOUNT_NUMBERS }) => {
+> = ({ accountDetails = DEFAULT_ACCOUNT_NUMBERS, onValidationComplete }) => {
   const { url } = useEnv();
   const { openDrawer } = useRequestPreview();
 
@@ -46,7 +51,6 @@ const ValidationServicesInputForm: React.FC<
     },
   });
 
-  // Helper function to generate the request data for preview
   const getRequestData = () => {
     const requestBody =
       form.values.validationType && form.values.accountDetails
@@ -73,7 +77,7 @@ const ValidationServicesInputForm: React.FC<
   };
 
   const handlePreviewRequest = () => {
-    openDrawer(getRequestData());
+    openDrawer(getRequestData(), null);
   };
 
   const accountNumberOptions = accountDetails.map((account) => ({
@@ -81,12 +85,50 @@ const ValidationServicesInputForm: React.FC<
     value: JSON.stringify(account),
   }));
 
-  const handleSubmit = (values: ValidationFormValues) => {
+  const handleSubmit = async (values: ValidationFormValues) => {
     console.log("Form submitted with values:", values);
-    trigger({
-      profileName: values.validationType,
-      accountDetails: values.accountDetails as AVSAccountDetails,
-    });
+
+    const requestData = getRequestData();
+    const requestPayload = requestData.body;
+
+    if (!onValidationComplete || !requestPayload) {
+      // Just make the API call without saving if no callback
+      await trigger({
+        profileName: values.validationType,
+        accountDetails: values.accountDetails as AVSAccountDetails,
+      });
+      return;
+    }
+
+    // Base validation data
+    const baseValidationData = {
+      requestId: requestPayload[0].requestId,
+      validationType: values.validationType,
+      accountNumber: values.accountDetails?.accountNumber || "Unknown",
+      requestPayload: requestPayload,
+    };
+
+    try {
+      const response = await trigger({
+        profileName: values.validationType,
+        accountDetails: values.accountDetails as AVSAccountDetails,
+      });
+
+      onValidationComplete({
+        ...baseValidationData,
+        requestData: getRequestData(),
+        responseData: response,
+        status: "Success" as const,
+      });
+    } catch (error) {
+      onValidationComplete({
+        ...baseValidationData,
+        requestData: getRequestData(),
+        responseData: null,
+        status: "Error" as const,
+        errorMessage: error instanceof Error ? error.message : "Unknown error",
+      });
+    }
   };
 
   const PreviewRequestButton = () => (

@@ -1,9 +1,10 @@
 import React from "react";
 import { Drawer, Stack, Text, Code } from "@mantine/core";
-import { useRequestPreview } from "../componentsV2/RequestPreviewContext";
+import { useRequestPreview } from "../context/RequestPreviewContext";
 
 export const RequestPreviewDrawer: React.FC = () => {
-  const { isDrawerOpen, requestData, closeDrawer } = useRequestPreview();
+  const { isDrawerOpen, requestData, responseData, closeDrawer } =
+    useRequestPreview();
 
   return (
     <Drawer
@@ -49,6 +50,15 @@ export const RequestPreviewDrawer: React.FC = () => {
               </Text>
             )}
           </div>
+          {responseData && (
+            <div>
+              <Text size="sm" fw={500} mb="xs">
+                Response Body:
+              </Text>
+
+              <Code block>{JSON.stringify(responseData, null, 2)}</Code>
+            </div>
+          )}
         </Stack>
       )}
     </Drawer>

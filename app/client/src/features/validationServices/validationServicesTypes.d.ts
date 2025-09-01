@@ -7,3 +7,13 @@ export type AVSAccountDetails = {
     };
   };
 };
+
+export type ValidationHistory = {
+  requestId: string;
+  validationType: string;
+  accountNumber: string;
+  requestData: any;
+  responseData: any;
+  status: "Success" | "Error";
+  errorMessage?: string;
+};

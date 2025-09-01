@@ -10,7 +10,8 @@ interface RequestPreviewData {
 interface RequestPreviewContextType {
   isDrawerOpen: boolean;
   requestData: RequestPreviewData | null;
-  openDrawer: (data: RequestPreviewData) => void;
+  responseData: string | null;
+  openDrawer: (data: RequestPreviewData, response: string | null) => void;
   closeDrawer: () => void;
 }
 
@@ -30,13 +31,17 @@ export const RequestPreviewProvider: React.FC<RequestPreviewProviderProps> = ({
     null,
   );
 
-  const openDrawer = (data: RequestPreviewData) => {
+  const [responseData, setResponseData] = useState<string | null>(null);
+
+  const openDrawer = (data: RequestPreviewData, response: string | null) => {
     setRequestData(data);
+    setResponseData(response);
     setIsDrawerOpen(true);
   };
 
   const closeDrawer = () => {
     setIsDrawerOpen(false);
+    setResponseData(null);
     setRequestData(null);
   };
 
@@ -45,6 +50,7 @@ export const RequestPreviewProvider: React.FC<RequestPreviewProviderProps> = ({
       value={{
         isDrawerOpen,
         requestData,
+        responseData,
         openDrawer,
         closeDrawer,
       }}

@@ -1,10 +1,45 @@
-import React from "react";
+import React, { useState } from "react";
 import { Box, Flex, Group, Title } from "@mantine/core";
 import Layout from "../componentsV2/Layout";
 import EnvironmentSwitcher from "../componentsV2/EnvironmentSwitcher";
 import ValidationServicesInputForm from "../features/ValidationServices/ValidationServicesInputForm";
+import { UnicornTable } from "../componentsV2/UnicornTable";
+import { ValidationHistory } from "../features/ValidationServices/ValidationServicesTypes";
+import { useRequestPreview } from "../context/RequestPreviewContext";
 
 const ValidationsPage: React.FC = () => {
+  const [validationHistory, setValidationHistory] = useState<
+    ValidationHistory[]
+  >([]);
+  const { openDrawer } = useRequestPreview();
+
+  const handleValidationComplete = (validationData: ValidationHistory) => {
+    setValidationHistory((prev) => [validationData, ...prev]); // Add to beginning for newest first
+  };
+
+  const clearHistory = () => {
+    setValidationHistory([]);
+  };
+
+  const handleRowClick = (rowIndex: number) => {
+    const selectedValidation = validationHistory[rowIndex];
+    console.log("Selected Validation:", selectedValidation);
+    if (selectedValidation) {
+      openDrawer(
+        selectedValidation.requestData,
+        selectedValidation.responseData,
+      );
+    }
+  };
+
+  // Transform history data for table display
+  const tableData = validationHistory.map((item) => [
+    item.requestId,
+    item.accountNumber,
+    item.validationType,
+    item.status,
+  ]);
+
   return (
     <Layout>
       <Group gap="xl">
@@ -20,9 +55,44 @@ const ValidationsPage: React.FC = () => {
         align="center"
         direction={{ base: "column", sm: "row" }}
       >
-        <ValidationServicesInputForm />
-        <Box w="40%">
-          <Title order={4}>Validation Requests and Callbacks</Title>
+        <ValidationServicesInputForm
+          onValidationComplete={handleValidationComplete}
+        />
+        <Box className="lg:w-1/2 w-full">
+          <Group justify="space-between" mb="md">
+            <Title order={4}>Validation History</Title>
+            {validationHistory.length > 0 && (
+              <button
+                onClick={clearHistory}
+                className="text-sm text-gray-500 hover:text-gray-700"
+              >
+                Clear History
+              </button>
+            )}
+          </Group>
+
+          {validationHistory.length > 0 ? (
+            <UnicornTable
+              columns={[
+                "Request ID",
+                "Account Number",
+                "Validation Type",
+                "Status",
+              ]}
+              data={tableData}
+              onRowClick={handleRowClick}
+            />
+          ) : (
+            <Box
+              p="md"
+              style={{ backgroundColor: "#f8f9fa", borderRadius: "4px" }}
+            >
+              <p className="text-sm text-gray-500 text-center">
+                No validation requests yet. Submit a validation to see history
+                here.
+              </p>
+            </Box>
+          )}
         </Box>
       </Flex>
     </Layout>
