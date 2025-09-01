@@ -198,7 +198,11 @@ const ValidationServicesInputForm: React.FC<
               >
                 Reset
               </Button>
-              <Button type="submit" onClick={() => handleSubmit(form.values)}>
+              <Button
+                type="submit"
+                disabled={!form.isValid()}
+                onClick={() => handleSubmit(form.values)}
+              >
                 Submit
               </Button>
             </Group>
