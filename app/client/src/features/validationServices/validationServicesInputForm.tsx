@@ -11,11 +11,13 @@ import {
   VALIDATION_TYPE_OPTIONS,
   ValidationType,
 } from "./ValidationServicesConfig";
-import { submitValidationServicesRequest } from "./SubmitValidationServicesRequest";
+import {
+  submitValidationServicesRequest,
+  generateAVSRequestData,
+} from "../ValidationServices/SubmitValidationServicesRequest";
 import { useEnv } from "../../context/EnvContext";
 import { useRequestPreview } from "../../context/RequestPreviewContext";
 import useSWRMutation from "swr/mutation";
-import { get } from "http";
 
 interface ValidationFormValues {
   validationType: ValidationType | "";
@@ -52,28 +54,26 @@ const ValidationServicesInputForm: React.FC<
   });
 
   const getRequestData = () => {
-    const requestBody =
-      form.values.validationType && form.values.accountDetails
-        ? [
-            {
-              requestId: "UF" + new Date().getTime(),
-              profileName: form.values.validationType,
-              account: form.values.accountDetails,
-            },
-          ]
-        : null;
+    if (!form.values.validationType || !form.values.accountDetails) {
+      return {
+        endpoint: `${url}/api/tsapi/v2/validations/accounts`,
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-client-id": "***",
+          "x-program-id": "***",
+          "x-program-id-type": "***",
+        },
+        body: null,
+      };
+    }
 
-    return {
-      endpoint: `${url}/api/tsapi/v2/validations/accounts`,
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-client-id": "***",
-        "x-program-id": "***",
-        "x-program-id-type": "***",
-      },
-      body: requestBody,
-    };
+    return generateAVSRequestData(
+      url,
+      form.values.validationType,
+      form.values.accountDetails,
+      false, // Use masked headers for preview
+    );
   };
 
   const handlePreviewRequest = () => {
@@ -139,75 +139,85 @@ const ValidationServicesInputForm: React.FC<
 
   return (
     <Box component="form" flex={1}>
-      <LoadingOverlay
-        visible={isMutating}
-        zIndex={1000}
-        overlayProps={{ radius: "sm", blur: 2 }}
-      />
       {!data && !error && !isMutating && (
-        <Stack gap="md">
-          <Box>
-            <label
-              htmlFor="validationType"
-              style={{ fontWeight: 500, marginBottom: "8px", display: "block" }}
-            >
-              Validation Type *
-            </label>
-            <UnicornDropdown
-              options={VALIDATION_TYPE_OPTIONS}
-              value={form.values.validationType}
-              onChange={(value) =>
-                form.setFieldValue("validationType", value as ValidationType)
-              }
-              error={form.errors.validationType}
-            />
-          </Box>
-
-          <Box>
-            <label
-              htmlFor="accountNumber"
-              style={{ fontWeight: 500, marginBottom: "8px", display: "block" }}
-            >
-              Account Number *
-            </label>
-            <UnicornDropdown
-              options={accountNumberOptions}
-              value={
-                form.values.accountDetails
-                  ? JSON.stringify(form.values.accountDetails)
-                  : ""
-              }
-              onChange={(value) => {
-                const selectedAccount = value
-                  ? (JSON.parse(value) as AVSAccountDetails)
-                  : null;
-                form.setFieldValue("accountDetails", selectedAccount);
-              }}
-              error={form.errors.accountDetails}
-            />
-          </Box>
-
-          <Group justify="space-between" mt="md">
-            <PreviewRequestButton />
-
-            <Group>
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => form.reset()}
+        <Box style={{ position: "relative" }}>
+          <LoadingOverlay
+            visible={isMutating}
+            zIndex={1000}
+            overlayProps={{ radius: "sm", blur: 2 }}
+          />
+          <Stack gap="md">
+            <Box>
+              <label
+                htmlFor="validationType"
+                style={{
+                  fontWeight: 500,
+                  marginBottom: "8px",
+                  display: "block",
+                }}
               >
-                Reset
-              </Button>
-              <Button
-                type="submit"
-                disabled={!form.isValid()}
-                onClick={() => handleSubmit(form.values)}
+                Validation Type *
+              </label>
+              <UnicornDropdown
+                options={VALIDATION_TYPE_OPTIONS}
+                value={form.values.validationType}
+                onChange={(value) =>
+                  form.setFieldValue("validationType", value as ValidationType)
+                }
+                error={form.errors.validationType}
+              />
+            </Box>
+
+            <Box>
+              <label
+                htmlFor="accountNumber"
+                style={{
+                  fontWeight: 500,
+                  marginBottom: "8px",
+                  display: "block",
+                }}
               >
-                Submit
-              </Button>
+                Account Number *
+              </label>
+              <UnicornDropdown
+                options={accountNumberOptions}
+                value={
+                  form.values.accountDetails
+                    ? JSON.stringify(form.values.accountDetails)
+                    : ""
+                }
+                onChange={(value) => {
+                  const selectedAccount = value
+                    ? (JSON.parse(value) as AVSAccountDetails)
+                    : null;
+                  form.setFieldValue("accountDetails", selectedAccount);
+                }}
+                error={form.errors.accountDetails}
+              />
+            </Box>
+
+            <Group justify="space-between" mt="md">
+              <PreviewRequestButton />
+
+              <Group>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => form.reset()}
+                >
+                  Reset
+                </Button>
+                <Button
+                  type="submit"
+                  disabled={!form.isValid()}
+                  onClick={() => handleSubmit(form.values)}
+                >
+                  Submit
+                </Button>
+              </Group>
             </Group>
-          </Group>
-        </Stack>
+          </Stack>
+        </Box>
       )}
       {data && !isMutating && (
         <Box>
