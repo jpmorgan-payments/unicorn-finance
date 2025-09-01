@@ -1,16 +1,11 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { Popover, PopoverButton, PopoverPanel } from "@headlessui/react";
+import { Avatar, Image } from "@mantine/core";
 
 // Images
 import ufLogoLarge from "../images/uf-logo.svg";
 import avatar from "../images/avatar.png";
 import github from "../images/github.png";
-
-// Styling constants
-const linkClassName =
-  "border-t-2 border-transparent px-4 py-8 hover:text-gray-700 lg:border-l-2 lg:border-t-0 lg:px-8 lg:py-2";
-const activeClassName = "border-pink-500 text-gray-900";
 
 // Navigation configuration
 const links = [
@@ -24,97 +19,58 @@ const links = [
   },
   {
     to: "/validations",
-    label: "Validation Services",
+    label: "Validations",
   },
 ];
-function Sidebar() {
-  const renderMobilePopover = () => (
-    <Popover className="relative lg:hidden">
-      <PopoverButton className="inline-flex items-center justify-center rounded-md bg-white p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-inset">
-        <span className="absolute -top-1 left-10 block rounded-xl bg-red-500 p-1" />
-        <img className="h-10 w-10 rounded-xl" src={avatar} alt="Avatar" />
-      </PopoverButton>
 
-      <PopoverPanel className="absolute left-1/2 z-10 mt-3 w-max max-w-sm -translate-x-3/4 transform px-4">
-        <div className="overflow-hidden rounded-lg shadow-lg ring-1 ring-black ring-opacity-5">
-          <div className="relative grid grid-cols-1 gap-3 bg-white p-7">
-            <a
-              href="https://github.com/jpmorgan-payments/unicorn-finance"
-              target="_blank"
-              rel="noreferrer"
-              className="flex gap-1"
+export const Sidebar = () => {
+  return (
+    <div className="flex w-full flex-row items-center justify-between p-4 lg:flex-col lg:p-6">
+      <NavLink to="/accounts" className="block">
+        <Image
+          src={ufLogoLarge}
+          alt="Unicorn Finance Logo"
+          className="w-20 lg:w-16"
+        />
+      </NavLink>
+
+      {/* Navigation Links */}
+      <ul className="flex flex-row gap-4 lg:flex-col lg:gap-2 lg:mt-8">
+        {links.map((link) => (
+          <li key={link.to}>
+            <NavLink
+              to={link.to}
+              className={({ isActive }) =>
+                `px-3 py-2 text-sm transition-colors hover:text-gray-900 lg:px-4 lg:py-3 lg:border-l-2 lg:border-transparent ${
+                  isActive
+                    ? "text-gray-900 lg:border-pink-500"
+                    : "text-gray-600"
+                }`
+              }
             >
-              <img className="w-6 rounded-xl" src={github} alt="Github" />
-              Github
-            </a>
-          </div>
-          <div className="relative grid grid-cols-1 gap-2 bg-gray-50 p-4">
-            <p className="w-auto font-medium">Business Unicorn</p>
-          </div>
-        </div>
-      </PopoverPanel>
-    </Popover>
-  );
-
-  const renderDesktopProfile = () => (
-    <div className="hidden lg:block">
-      <ul className="-ml-4 mb-4 text-xs text-gray-500">
-        <a
-          target="_blank"
-          className="flex items-center gap-1"
-          href="https://github.com/jpmorgan-payments/unicorn-finance"
-          rel="noreferrer"
-        >
-          <li className="text-center">Github</li>
-          <img className="w-6 rounded-xl" src={github} alt="Github" />
-        </a>
+              {link.label}
+            </NavLink>
+          </li>
+        ))}
       </ul>
-      <div className="relative -ml-4 flex text-sm">
-        <span className="absolute -top-1 left-10 block rounded-xl bg-red-500 p-1" />
-        <img className="h-10 w-10 rounded-xl" src={avatar} alt="Avatar" />
-        <div className="flex flex-col pl-4">
-          <p className="w-8/12 font-medium">Business Unicorn</p>
+
+      {/* Profile Section - Desktop Only */}
+      <div className="hidden lg:block lg:mt-auto lg:mb-4  bottom-0 absolute">
+        <a
+          href="https://github.com/jpmorgan-payments/unicorn-finance"
+          target="_blank"
+          rel="noreferrer"
+          className="flex items-center gap-2 text-xs text-gray-500 hover:text-gray-700 mb-4"
+        >
+          <span>Github</span>
+          <img className="w-5 h-5" src={github} alt="Github" />
+        </a>
+
+        <div className="flex items-center gap-3">
+          <Avatar src={avatar} alt="Unicorn avatar" size="md" />
+          <p className="text-sm font-medium text-gray-900">Business Unicorn</p>
         </div>
       </div>
     </div>
   );
-
-  return (
-    <div className="flex w-full border-b border-gray-200 lg:w-1/12 lg:flex-none lg:border-r">
-      <nav className="flex w-full flex-row items-center justify-between px-4 py-4 lg:flex-col lg:p-8 lg:pr-0">
-        <div className="flex flex-row lg:flex-col">
-          <NavLink to="accounts" className="mb-0 block lg:mb-12" data-cy="logo">
-            <img
-              src={ufLogoLarge}
-              alt="Unicorn Finance Logo"
-              className="mt-2 w-4/5 lg:mt-0 lg:w-4/6"
-            />
-          </NavLink>
-
-          <ul className="-my-4 ml-0 flex flex-row text-sm text-gray-500 lg:-ml-8 lg:my-0 lg:flex-col">
-            {links.map((link) => (
-              <NavLink
-                key={link.to}
-                to={link.to}
-                className={({ isActive }) =>
-                  isActive
-                    ? `${activeClassName} ${linkClassName}`
-                    : linkClassName
-                }
-              >
-                <li>{link.label}</li>
-              </NavLink>
-            ))}
-          </ul>
-        </div>
-
-        <div className="mb-2 lg:fixed lg:bottom-0 lg:w-auto" data-cy="popover">
-          {renderMobilePopover()}
-          {renderDesktopProfile()}
-        </div>
-      </nav>
-    </div>
-  );
-}
-
-export default Sidebar;
+};

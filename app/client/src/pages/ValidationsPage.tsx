@@ -7,21 +7,19 @@ import ValidationServicesInputForm from "../features/validationServices/validati
 const ValidationsPage: React.FC = () => {
   return (
     <Layout>
-      <div>
-        <Group gap="xl">
-          <Title order={1}>Validation Services</Title>
-          <EnvironmentSwitcher />
-        </Group>
+      <Group gap="xl">
+        <Title order={1}>Validation Services</Title>
+        <EnvironmentSwitcher />
+      </Group>
 
-        <Grid grow gutter={5}>
-          <Grid.Col span={2}>
-            <ValidationServicesInputForm />
-          </Grid.Col>
-          <Grid.Col span="auto">
-            <Title order={4}>Validation Requests and Callbacks</Title>
-          </Grid.Col>
-        </Grid>
-      </div>
+      <Grid grow gutter={5}>
+        <Grid.Col span={2}>
+          <ValidationServicesInputForm />
+        </Grid.Col>
+        <Grid.Col span="auto">
+          <Title order={4}>Validation Requests and Callbacks</Title>
+        </Grid.Col>
+      </Grid>
     </Layout>
   );
 };

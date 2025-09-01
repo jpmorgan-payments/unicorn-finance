@@ -1,23 +1,41 @@
 import React, { ReactNode } from "react";
 import { Outlet } from "react-router-dom";
 import { ErrorBoundary } from "react-error-boundary";
-import Sidebar from "../components/sidebar";
+import { Sidebar } from "../components/sidebar";
 import ErrorFallback from "../components/error_fallback";
+import { AppShell } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 
 interface LayoutProps {
   children?: ReactNode;
 }
 
 function Layout({ children }: LayoutProps) {
+  const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
+  const [desktopOpened] = useDisclosure(true);
   return (
-    <div className="flex flex-col lg:flex-row h-full text-gray-900 min-h-screen w-full max-w-screen">
-      <Sidebar />
-      <main className="h-auto lg:h-full lg:min-h-screen lg:w-11/12 w-full">
+    <AppShell
+      padding="md"
+      layout="alt"
+      navbar={{
+        width: 200,
+        breakpoint: "sm",
+        collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
+      }}
+    >
+      <AppShell.Header p="xs" hiddenFrom="sm">
+        <Sidebar />
+      </AppShell.Header>
+
+      <AppShell.Navbar p="xs">
+        <Sidebar />
+      </AppShell.Navbar>
+      <AppShell.Main>
         <ErrorBoundary FallbackComponent={ErrorFallback}>
           {children ? children : <Outlet />}
         </ErrorBoundary>
-      </main>
-    </div>
+      </AppShell.Main>
+    </AppShell>
   );
 }
 
