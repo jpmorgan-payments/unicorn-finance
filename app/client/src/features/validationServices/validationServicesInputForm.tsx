@@ -54,24 +54,10 @@ const ValidationServicesInputForm: React.FC<
   });
 
   const getRequestData = () => {
-    if (!form.values.validationType || !form.values.accountDetails) {
-      return {
-        endpoint: `${url}/api/tsapi/v2/validations/accounts`,
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-client-id": "***",
-          "x-program-id": "***",
-          "x-program-id-type": "***",
-        },
-        body: null,
-      };
-    }
-
     return generateAVSRequestData(
       url,
       form.values.validationType,
-      form.values.accountDetails,
+      form.values.accountDetails as AVSAccountDetails,
       false, // Use masked headers for preview
     );
   };
@@ -132,7 +118,12 @@ const ValidationServicesInputForm: React.FC<
   };
 
   const PreviewRequestButton = () => (
-    <Button variant="light" size="md" onClick={handlePreviewRequest}>
+    <Button
+      variant="light"
+      size="md"
+      onClick={handlePreviewRequest}
+      disabled={!form.isValid()}
+    >
       Preview Request
     </Button>
   );

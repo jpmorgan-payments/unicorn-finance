@@ -1,211 +1,152 @@
 import React from "react";
-import {
-  Button,
-  Group,
-  Code,
-  Box,
-  useCombobox,
-  LoadingOverlay,
-  NumberInput,
-  Stack,
-} from "@mantine/core";
+import { Stack, Button, Group, Box, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
-import useSWRMutation from "swr/mutation";
-
 import UnicornDropdown from "../../componentsV2/UnicornDropdown";
-import { useEnv } from "../../context/EnvContext";
-import { AccountDetail } from "./GlobalPaymentsTypes";
+import { AccountDetails } from "./GlobalPaymentsTypes";
+import {
+  PaymentType,
+  PAYMENT_TYPE_OPTIONS,
+  DEFAULT_ACCOUNT_OPTIONS,
+} from "./GlobalPaymentsConfig";
 
-interface PaymentFormProps {
-  supportedPaymentMethods: string[];
-  toAccountDetails: AccountDetail[];
+interface GlobalPaymentsFormValues {
+  paymentType: PaymentType | "";
+  accountDetails: AccountDetails | null;
+  amount: string;
 }
 
-interface FormValues {
-  paymentType: string;
-  accountDetails: string;
-  amount?: number;
+interface GlobalPaymentsInputFormProps {
+  accountDetails?: AccountDetails[];
+  onSubmit?: (values: GlobalPaymentsFormValues) => void;
 }
 
-async function submitPayment(url: string, { arg }: { arg: string }) {
-  const formValues: FormValues = JSON.parse(arg);
-
-  const res = await fetch(url, {
-    method: "POST",
-    body: JSON.stringify(formValues),
-    headers: {
-      "Content-Type": "application/json",
-    },
-  });
-
-  if (!res.ok) {
-    throw new Error("An error occurred while submitting the payment.");
-  }
-
-  return res.json();
-}
-
-const GlobalPaymentsInputForm: React.FC<PaymentFormProps> = ({
-  supportedPaymentMethods,
-  toAccountDetails,
+const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
+  accountDetails = DEFAULT_ACCOUNT_OPTIONS,
+  onSubmit,
 }) => {
-  const { url } = useEnv();
-
-  // Form setup
-  const form = useForm<FormValues>({
-    mode: "uncontrolled",
+  const form = useForm<GlobalPaymentsFormValues>({
     initialValues: {
-      paymentType: "US-RTP",
-      accountDetails: "",
+      paymentType: "",
+      accountDetails: null,
+      amount: "",
+    },
+    validate: {
+      paymentType: (value) => (value ? null : "Please select a payment type"),
+      accountDetails: (value) => (value ? null : "Please select an account"),
+      amount: (value) => {
+        if (!value) return "Please enter an amount";
+        const numericValue = parseFloat(value);
+        if (isNaN(numericValue) || numericValue <= 0) {
+          return "Please enter a valid amount greater than 0";
+        }
+        return null;
+      },
     },
   });
 
-  const combobox = useCombobox({
-    onDropdownClose: () => combobox.resetSelectedOption(),
-  });
-
-  const { trigger, data, error, isMutating, reset } = useSWRMutation(
-    `${url}/api/payment/v2/payments`,
-    submitPayment,
-  );
-
-  const handleSubmit = () => {
-    const values = form.getValues();
-    console.log("Form submitted with values:", values);
-    trigger(JSON.stringify(values));
-  };
-  const handlePreviewRequest = () => {
-    // Implement preview logic if needed
-    console.log("Preview Request clicked");
-  };
-  const paymentMethodOptions = supportedPaymentMethods.map((method) => ({
-    label: method,
-    value: method,
+  const accountNumberOptions = accountDetails.map((account) => ({
+    label: account.accountNumber,
+    value: JSON.stringify(account),
   }));
 
-  const PreviewRequestButton = () => (
-    <Button variant="light" size="md" onClick={handlePreviewRequest}>
-      Preview Request
-    </Button>
-  );
+  const handleSubmit = (values: GlobalPaymentsFormValues) => {
+    console.log("Form submitted with values:", values);
+    onSubmit?.(values);
+  };
 
   return (
     <Box component="form" flex={1}>
-      {!data && !error && !isMutating && (
-        <Box style={{ position: "relative" }}>
-          <LoadingOverlay
-            visible={isMutating}
-            zIndex={1000}
-            overlayProps={{ radius: "sm", blur: 2 }}
+      <Stack gap="md">
+        <Box>
+          <label
+            htmlFor="paymentType"
+            style={{
+              fontWeight: 500,
+              marginBottom: "8px",
+              display: "block",
+            }}
+          >
+            Payment Type *
+          </label>
+          <UnicornDropdown
+            options={PAYMENT_TYPE_OPTIONS}
+            value={form.values.paymentType}
+            onChange={(value) =>
+              form.setFieldValue("paymentType", value as PaymentType)
+            }
+            error={form.errors.paymentType}
           />
-          <Stack gap="md">
-            <Box>
-              <label
-                htmlFor="paymentType"
-                style={{
-                  fontWeight: 500,
-                  marginBottom: "8px",
-                  display: "block",
-                }}
-              >
-                Payment Type *
-              </label>
-              <UnicornDropdown
-                {...form.getInputProps("paymentType")}
-                options={paymentMethodOptions}
-                key={form.key("paymentType")}
-              />
-            </Box>
-            <Box>
-              <label
-                htmlFor="amount"
-                style={{
-                  fontWeight: 500,
-                  marginBottom: "8px",
-                  display: "block",
-                }}
-              >
-                Amount *
-              </label>
-              <NumberInput
-                {...form.getInputProps("amount")}
-                key={form.key("amount")}
-                label="Amount"
-                decimalScale={2}
-                fixedDecimalScale
-                defaultValue={100}
-                step={100}
-                min={0.01}
-              />
-            </Box>
-
-            <Group justify="space-between" mt="md">
-              <PreviewRequestButton />
-
-              <Group>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => form.reset()}
-                >
-                  Reset
-                </Button>
-                <Button
-                  type="submit"
-                  disabled={!form.isValid()}
-                  onClick={handleSubmit}
-                >
-                  Submit
-                </Button>
-              </Group>
-            </Group>
-          </Stack>
         </Box>
-      )}
 
-      {data && !isMutating && (
         <Box>
-          <Code block>{JSON.stringify(data, null, 2)}</Code>
-          <Group justify="space-between" mt="md">
-            <PreviewRequestButton />
-
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                reset();
-                form.reset();
-              }}
-            >
-              Validate Another
-            </Button>
-          </Group>
+          <label
+            htmlFor="accountNumber"
+            style={{
+              fontWeight: 500,
+              marginBottom: "8px",
+              display: "block",
+            }}
+          >
+            Account Number *
+          </label>
+          <UnicornDropdown
+            options={accountNumberOptions}
+            value={
+              form.values.accountDetails
+                ? JSON.stringify(form.values.accountDetails)
+                : ""
+            }
+            onChange={(value) => {
+              const selectedAccount = value
+                ? (JSON.parse(value) as AccountDetails)
+                : null;
+              form.setFieldValue("accountDetails", selectedAccount);
+            }}
+            error={form.errors.accountDetails}
+          />
         </Box>
-      )}
-      {error && !isMutating && (
+
         <Box>
-          <Code block>
-            {`Error: ${
-              (error as Error).message || "An unknown error occurred"
-            }`}
-          </Code>
-          <Group justify="space-between" mt="md">
-            <PreviewRequestButton />
-
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                reset();
-                form.reset();
-              }}
-            >
-              Try Again
-            </Button>
-          </Group>
+          <label
+            htmlFor="amount"
+            style={{
+              fontWeight: 500,
+              marginBottom: "8px",
+              display: "block",
+            }}
+          >
+            Amount *
+          </label>
+          <TextInput
+            id="amount"
+            placeholder="0.00"
+            value={form.values.amount}
+            onChange={(event) =>
+              form.setFieldValue("amount", event.currentTarget.value)
+            }
+            error={form.errors.amount}
+            leftSection="$"
+            type="number"
+            step="0.01"
+            min="0"
+          />
         </Box>
-      )}
+
+        <Group justify="space-between" mt="md">
+          <Button type="button" variant="outline" onClick={() => form.reset()}>
+            Reset
+          </Button>
+          <Button
+            type="submit"
+            disabled={!form.isValid()}
+            onClick={() => handleSubmit(form.values)}
+          >
+            Submit
+          </Button>
+        </Group>
+      </Stack>
     </Box>
   );
 };
+
 export default GlobalPaymentsInputForm;

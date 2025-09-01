@@ -8,7 +8,7 @@ export type PaymentHistory = {
   errorMessage?: string;
 };
 
-export type AccountDetail = {
+export type AccountDetails = {
   accountNumber: string;
   financialInstitutionId: {
     clearingSystemId: {
