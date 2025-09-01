@@ -2,14 +2,13 @@ import React from "react";
 import { Stack, Button, Group, Box, LoadingOverlay, Code } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import UnicornDropdown from "../submitAndVerifyPayments/formElements/unicornDropdown";
-import { PreviewRequestButton } from "../../components/PreviewRequestButton";
-import { AVSAccountDetails } from "./validationServicesTypes";
+import { AVSAccountDetails } from "./ValidationServicesTypes";
 import {
   DEFAULT_ACCOUNT_NUMBERS,
   VALIDATION_TYPE_OPTIONS,
   ValidationType,
-} from "./validationServicesConfig";
-import { submitValidationServicesRequest } from "./submitValidationServicesRequest";
+} from "./ValidationServicesConfig";
+import { submitValidationServicesRequest } from "./SubmitValidationServicesRequest";
 import { useEnv } from "../../context/EnvContext";
 import { useRequestPreview } from "../../componentsV2/RequestPreviewContext";
 import useSWRMutation from "swr/mutation";
@@ -97,7 +96,7 @@ const ValidationServicesInputForm: React.FC<
   );
 
   return (
-    <Box component="form">
+    <Box component="form" flex={1}>
       <LoadingOverlay
         visible={isMutating}
         zIndex={1000}

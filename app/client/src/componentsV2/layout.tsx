@@ -1,8 +1,8 @@
 import React, { ReactNode } from "react";
 import { Outlet } from "react-router-dom";
 import { ErrorBoundary } from "react-error-boundary";
-import { Sidebar } from "../components/sidebar";
-import ErrorFallback from "../components/error_fallback";
+import { Sidebar } from "./Sidebar";
+import ErrorFallback from "./ErrorFallback";
 import { AppShell } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 
@@ -11,7 +11,7 @@ interface LayoutProps {
 }
 
 function Layout({ children }: LayoutProps) {
-  const [mobileOpened, { toggle: toggleMobile }] = useDisclosure();
+  const [mobileOpened] = useDisclosure();
   const [desktopOpened] = useDisclosure(true);
   return (
     <AppShell

@@ -1,4 +1,4 @@
-import { AVSAccountDetails } from "./validationServicesTypes";
+import { AVSAccountDetails } from "./ValidationServicesTypes";
 
 export const DEFAULT_ACCOUNT_NUMBERS: AVSAccountDetails[] = [
   {

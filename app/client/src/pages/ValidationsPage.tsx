@@ -1,8 +1,8 @@
 import React from "react";
-import { Grid, Group, Title } from "@mantine/core";
-import Layout from "../componentsV2/layout";
-import EnvironmentSwitcher from "../componentsV2/environmentSwitcher";
-import ValidationServicesInputForm from "../features/validationServices/validationServicesInputForm";
+import { Box, Flex, Group, Title } from "@mantine/core";
+import Layout from "../componentsV2/Layout";
+import EnvironmentSwitcher from "../componentsV2/EnvironmentSwitcher";
+import ValidationServicesInputForm from "../features/ValidationServices/ValidationServicesInputForm";
 
 const ValidationsPage: React.FC = () => {
   return (
@@ -12,14 +12,19 @@ const ValidationsPage: React.FC = () => {
         <EnvironmentSwitcher />
       </Group>
 
-      <Grid grow gutter={5}>
-        <Grid.Col span={2}>
-          <ValidationServicesInputForm />
-        </Grid.Col>
-        <Grid.Col span="auto">
+      <Flex
+        m="md"
+        w={"100%"}
+        gap="md"
+        justify="space-between"
+        align="center"
+        direction={{ base: "column", sm: "row" }}
+      >
+        <ValidationServicesInputForm />
+        <Box w="40%">
           <Title order={4}>Validation Requests and Callbacks</Title>
-        </Grid.Col>
-      </Grid>
+        </Box>
+      </Flex>
     </Layout>
   );
 };

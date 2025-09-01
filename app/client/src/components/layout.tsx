@@ -2,9 +2,9 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import { ErrorBoundary } from "react-error-boundary";
 import JsonDialog from "./json_dialog";
-import { Sidebar } from "./sidebar";
+import { Sidebar } from "../componentsV2/Sidebar";
 import WhatAPI from "./what_api";
-import ErrorFallback from "./error_fallback";
+import ErrorFallback from "../componentsV2/ErrorFallback";
 
 function Layout() {
   return (

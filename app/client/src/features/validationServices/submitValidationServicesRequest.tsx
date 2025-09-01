@@ -1,4 +1,4 @@
-import { AVSAccountDetails } from "./validationServicesTypes";
+import { AVSAccountDetails } from "./ValidationServicesTypes";
 
 export async function submitValidationServicesRequest(
   url: string,
