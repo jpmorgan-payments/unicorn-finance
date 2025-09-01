@@ -2,13 +2,15 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 import { AppContextProvider } from "./context/AppContext";
 import { EnvProvider } from "./context/EnvContext";
+import { RequestPreviewProvider } from "./componentsV2/RequestPreviewContext";
 
 import Layout from "./components/layout";
 import AccountPage from "./pages/AccountPage";
 import PaymentsPage from "./pages/PaymentsPage";
+import ValidationsPage from "./pages/ValidationsPage";
+import { RequestPreviewDrawer } from "./context/RequestPreviewDrawer";
 import "@mantine/core/styles.css";
 import { MantineProvider } from "@mantine/core";
-import ValidationsPage from "./pages/ValidationsPage";
 
 export const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -16,16 +18,19 @@ function App() {
   return (
     <EnvProvider>
       <AppContextProvider>
-        <MantineProvider>
-          <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<AccountPage />} />
-              <Route path="accounts" element={<AccountPage />} />
-            </Route>
-            <Route path="payments" element={<PaymentsPage />} />
-            <Route path="validations" element={<ValidationsPage />} />
-          </Routes>
-        </MantineProvider>
+        <RequestPreviewProvider>
+          <MantineProvider>
+            <Routes>
+              <Route path="/" element={<Layout />}>
+                <Route index element={<AccountPage />} />
+                <Route path="accounts" element={<AccountPage />} />
+              </Route>
+              <Route path="payments" element={<PaymentsPage />} />
+              <Route path="validations" element={<ValidationsPage />} />
+            </Routes>
+            <RequestPreviewDrawer />
+          </MantineProvider>
+        </RequestPreviewProvider>
       </AppContextProvider>
     </EnvProvider>
   );

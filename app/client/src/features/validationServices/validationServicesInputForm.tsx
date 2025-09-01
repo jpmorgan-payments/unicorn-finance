@@ -2,6 +2,7 @@ import React from "react";
 import { Stack, Button, Group, Box, LoadingOverlay, Code } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import UnicornDropdown from "../submitAndVerifyPayments/formElements/unicornDropdown";
+import { PreviewRequestButton } from "../../components/PreviewRequestButton";
 import { AVSAccountDetails } from "./validationServicesTypes";
 import {
   DEFAULT_ACCOUNT_NUMBERS,
@@ -10,6 +11,7 @@ import {
 } from "./validationServicesConfig";
 import { submitValidationServicesRequest } from "./submitValidationServicesRequest";
 import { useEnv } from "../../context/EnvContext";
+import { useRequestPreview } from "../../componentsV2/RequestPreviewContext";
 import useSWRMutation from "swr/mutation";
 
 interface ValidationFormValues {
@@ -25,11 +27,13 @@ const ValidationServicesInputForm: React.FC<
   ValidationServicesInputFormProps
 > = ({ accountDetails = DEFAULT_ACCOUNT_NUMBERS }) => {
   const { url } = useEnv();
+  const { openDrawer } = useRequestPreview();
 
   const { trigger, data, error, isMutating, reset } = useSWRMutation(
     `${url}/api/tsapi/v2/validations/accounts`,
     submitValidationServicesRequest,
   );
+
   const form = useForm<ValidationFormValues>({
     initialValues: {
       validationType: "",
@@ -43,6 +47,36 @@ const ValidationServicesInputForm: React.FC<
     },
   });
 
+  // Helper function to generate the request data for preview
+  const getRequestData = () => {
+    const requestBody =
+      form.values.validationType && form.values.accountDetails
+        ? [
+            {
+              requestId: "UF" + new Date().getTime(),
+              profileName: form.values.validationType,
+              account: form.values.accountDetails,
+            },
+          ]
+        : null;
+
+    return {
+      endpoint: `${url}/api/tsapi/v2/validations/accounts`,
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-client-id": "***",
+        "x-program-id": "***",
+        "x-program-id-type": "***",
+      },
+      body: requestBody,
+    };
+  };
+
+  const handlePreviewRequest = () => {
+    openDrawer(getRequestData());
+  };
+
   const accountNumberOptions = accountDetails.map((account) => ({
     label: account.accountNumber,
     value: JSON.stringify(account),
@@ -55,6 +89,12 @@ const ValidationServicesInputForm: React.FC<
       accountDetails: values.accountDetails as AVSAccountDetails,
     });
   };
+
+  const PreviewRequestButton = () => (
+    <Button variant="light" size="md" onClick={handlePreviewRequest}>
+      Preview Request
+    </Button>
+  );
 
   return (
     <Box component="form">
@@ -106,24 +146,30 @@ const ValidationServicesInputForm: React.FC<
             />
           </Box>
 
-          <Group justify="flex-end" mt="md">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => form.reset()}
-            >
-              Reset
-            </Button>
-            <Button type="submit" onClick={() => handleSubmit(form.values)}>
-              Submit
-            </Button>
+          <Group justify="space-between" mt="md">
+            <PreviewRequestButton />
+
+            <Group>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => form.reset()}
+              >
+                Reset
+              </Button>
+              <Button type="submit" onClick={() => handleSubmit(form.values)}>
+                Submit
+              </Button>
+            </Group>
           </Group>
         </Stack>
       )}
       {data && !isMutating && (
         <Box>
           <Code block>{JSON.stringify(data, null, 2)}</Code>
-          <Group justify="flex-end" mt="md">
+          <Group justify="space-between" mt="md">
+            <PreviewRequestButton />
+
             <Button
               type="button"
               variant="outline"
@@ -144,7 +190,9 @@ const ValidationServicesInputForm: React.FC<
               (error as Error).message || "An unknown error occurred"
             }`}
           </Code>
-          <Group justify="flex-end" mt="md">
+          <Group justify="space-between" mt="md">
+            <PreviewRequestButton />
+
             <Button
               type="button"
               variant="outline"
