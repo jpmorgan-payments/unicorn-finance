@@ -62,7 +62,12 @@ const ValidationsPage: React.FC = () => {
           />
         </Stack>
 
-        <Stack w={"50%"} justify="flex-start" flex={1} align="stretch">
+        <Stack
+          className="lg:w-1/2"
+          justify="flex-start"
+          flex={1}
+          align="stretch"
+        >
           <Group justify="space-between" mb="md">
             <Title order={4}>Validation History</Title>
             {validationHistory.length > 0 && (
