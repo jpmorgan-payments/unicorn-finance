@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Box, Flex, Group, Title } from "@mantine/core";
+import { Box, Flex, Group, Title, Stack } from "@mantine/core";
 import Layout from "../componentsV2/Layout";
 import EnvironmentSwitcher from "../componentsV2/EnvironmentSwitcher";
 import ValidationServicesInputForm from "../features/ValidationServices/ValidationServicesInputForm";
@@ -52,13 +52,17 @@ const ValidationsPage: React.FC = () => {
         w={"100%"}
         gap="md"
         justify="space-between"
-        align="center"
+        align="flex-start"
         direction={{ base: "column", sm: "row" }}
       >
-        <ValidationServicesInputForm
-          onValidationComplete={handleValidationComplete}
-        />
-        <Box className="lg:w-1/2 w-full">
+        <Stack align="stretch" justify="flex-start" flex={1}>
+          <Title order={4}>Verify account details</Title>
+          <ValidationServicesInputForm
+            onValidationComplete={handleValidationComplete}
+          />
+        </Stack>
+
+        <Stack w={"50%"} justify="flex-start" flex={1} align="stretch">
           <Group justify="space-between" mb="md">
             <Title order={4}>Validation History</Title>
             {validationHistory.length > 0 && (
@@ -70,7 +74,6 @@ const ValidationsPage: React.FC = () => {
               </button>
             )}
           </Group>
-
           {validationHistory.length > 0 ? (
             <UnicornTable
               columns={[
@@ -93,7 +96,7 @@ const ValidationsPage: React.FC = () => {
               </p>
             </Box>
           )}
-        </Box>
+        </Stack>
       </Flex>
     </Layout>
   );
