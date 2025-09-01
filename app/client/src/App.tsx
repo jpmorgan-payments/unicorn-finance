@@ -8,6 +8,7 @@ import AccountPage from "./pages/AccountPage";
 import PaymentsPage from "./pages/PaymentsPage";
 import "@mantine/core/styles.css";
 import { MantineProvider } from "@mantine/core";
+import ValidationsPage from "./pages/ValidationsPage";
 
 export const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -22,6 +23,7 @@ function App() {
               <Route path="accounts" element={<AccountPage />} />
             </Route>
             <Route path="payments" element={<PaymentsPage />} />
+            <Route path="validations" element={<ValidationsPage />} />
           </Routes>
         </MantineProvider>
       </AppContextProvider>

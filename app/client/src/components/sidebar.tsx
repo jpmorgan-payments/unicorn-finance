@@ -22,6 +22,10 @@ const links = [
     to: "/payments",
     label: "Payments",
   },
+  {
+    to: "/validations",
+    label: "Validation Services",
+  },
 ];
 function Sidebar() {
   const renderMobilePopover = () => (
@@ -92,7 +96,6 @@ function Sidebar() {
               <NavLink
                 key={link.to}
                 to={link.to}
-                data-cy={link.dataCy}
                 className={({ isActive }) =>
                   isActive
                     ? `${activeClassName} ${linkClassName}`
