@@ -5,7 +5,7 @@ import Layout from "../componentsV2/Layout";
 import EnvironmentSwitcher from "../componentsV2/EnvironmentSwitcher";
 import { useRequestPreview } from "../context/RequestPreviewContext";
 import { UnicornTable } from "../componentsV2/UnicornTable";
-import { PaymentHistory } from "../features/GlobalPayments/GlobalPaymentsTypes";
+import { PaymentHistory } from "../features/GlobalPayments/GlobalPaymentTypes";
 
 const PaymentsPage: React.FC = () => {
   const [paymentHistory, setPaymentHistory] = useState<PaymentHistory[]>([]);
