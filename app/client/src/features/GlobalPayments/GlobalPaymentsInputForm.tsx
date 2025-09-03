@@ -14,7 +14,7 @@ import {
   AccountDetails,
   PartyDetails,
   PaymentHistory,
-} from "./GlobalPaymentTypes";
+} from "./GlobalPaymentTypes.d";
 import {
   PaymentType,
   paymentTypes,

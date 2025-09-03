@@ -5,7 +5,7 @@ import UnicornDropdown from "../../componentsV2/UnicornDropdown";
 import {
   AVSAccountDetails,
   ValidationHistory,
-} from "./ValidationServicesTypes";
+} from "./ValidationServicesTypes.d";
 import {
   DEFAULT_ACCOUNT_NUMBERS,
   VALIDATION_TYPE_OPTIONS,
