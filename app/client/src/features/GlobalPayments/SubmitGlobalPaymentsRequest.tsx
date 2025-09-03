@@ -21,7 +21,6 @@ function generateGlobalPaymentsRequestBody(
     debtorAgent: debtorDetails.agent,
     creditor: creditorDetails,
   };
-  console.log("Global Payments Request Body:", requestBody);
   return requestBody;
 }
 

@@ -102,8 +102,6 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
   }));
 
   const handleSubmit = async (values: GlobalPaymentsFormValues) => {
-    console.log("Form submitted with values:", values);
-
     const requestData = getRequestData();
     const requestPayload = requestData.body;
     if (!onPaymentComplete) {
@@ -322,7 +320,7 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
                 form.reset();
               }}
             >
-              Validate Another
+              Make another payment
             </Button>
           </Group>
         </Box>

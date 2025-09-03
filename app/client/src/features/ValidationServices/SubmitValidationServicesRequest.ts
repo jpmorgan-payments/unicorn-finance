@@ -11,7 +11,6 @@ export const generateAVSRequestBody = (
       account: accountDetails,
     },
   ];
-  console.log("AVS Request Body:", requestBody);
   return requestBody;
 };
 

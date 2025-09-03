@@ -72,8 +72,6 @@ const ValidationServicesInputForm: React.FC<
   }));
 
   const handleSubmit = async (values: ValidationFormValues) => {
-    console.log("Form submitted with values:", values);
-
     const requestData = getRequestData();
     const requestPayload = requestData.body;
 
@@ -94,18 +92,17 @@ const ValidationServicesInputForm: React.FC<
       requestPayload: requestPayload,
     };
 
-      const response = await trigger({
-        profileName: values.validationType,
-        accountDetails: values.accountDetails as AVSAccountDetails,
-      });
+    const response = await trigger({
+      profileName: values.validationType,
+      accountDetails: values.accountDetails as AVSAccountDetails,
+    });
 
-      onValidationComplete({
-        ...baseValidationData,
-        requestData: getRequestData(),
-        responseData: response,
-        status: "Success" as const,
-      });
-
+    onValidationComplete({
+      ...baseValidationData,
+      requestData: getRequestData(),
+      responseData: response,
+      status: "Success" as const,
+    });
   };
 
   const PreviewRequestButton = () => (

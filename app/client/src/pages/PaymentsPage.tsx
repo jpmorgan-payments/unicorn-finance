@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import GlobalPaymentsInputForm from "../features/GlobalPayments/GlobalPaymentsInputForm";
 import { Box, Flex, Group, Stack, Title } from "@mantine/core";
 import Layout from "../componentsV2/Layout";
@@ -7,9 +7,29 @@ import { useRequestPreview } from "../context/RequestPreviewContext";
 import { UnicornTable } from "../componentsV2/UnicornTable";
 import { PaymentHistory } from "../features/GlobalPayments/GlobalPaymentTypes";
 
+const PAYMENT_HISTORY_KEY = "unicorn-payment-history";
+
 const PaymentsPage: React.FC = () => {
-  const [paymentHistory, setPaymentHistory] = useState<PaymentHistory[]>([]);
+  const [paymentHistory, setPaymentHistory] = useState<PaymentHistory[]>(() => {
+    // Initialize from localStorage if available
+    try {
+      const stored = localStorage.getItem(PAYMENT_HISTORY_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch (error) {
+      console.error("Error loading payment history from localStorage:", error);
+      return [];
+    }
+  });
   const { openDrawer } = useRequestPreview();
+
+  // Save to localStorage whenever paymentHistory changes
+  useEffect(() => {
+    try {
+      localStorage.setItem(PAYMENT_HISTORY_KEY, JSON.stringify(paymentHistory));
+    } catch (error) {
+      console.error("Error saving payment history to localStorage:", error);
+    }
+  }, [paymentHistory]);
 
   const handlePaymentComplete = (paymentData: PaymentHistory) => {
     setPaymentHistory((prev) => [paymentData, ...prev]); // Add to beginning for newest first
@@ -17,11 +37,11 @@ const PaymentsPage: React.FC = () => {
 
   const clearHistory = () => {
     setPaymentHistory([]);
+    localStorage.removeItem(PAYMENT_HISTORY_KEY);
   };
 
   const handleRowClick = (rowIndex: number) => {
     const selectedPayment = paymentHistory[rowIndex];
-    console.log("Selected Payment:", selectedPayment);
     if (selectedPayment) {
       openDrawer(selectedPayment.requestData, selectedPayment.responseData);
     }
