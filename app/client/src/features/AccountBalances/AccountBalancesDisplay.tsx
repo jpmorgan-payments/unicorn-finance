@@ -9,7 +9,7 @@ import {
   Box,
   LoadingOverlay,
 } from "@mantine/core";
-import type { Account, AccountBalances } from "./AccountBalancesTypes.d";
+import type { Account, AccountBalances } from "./AccountBalancesTypes";
 import { submitAccountBalancesRequest } from "./SubmitAccountBalancesRequest";
 import { useRequestPreview } from "../../context/RequestPreviewContext";
 import { useEnv } from "../../context/EnvContext";

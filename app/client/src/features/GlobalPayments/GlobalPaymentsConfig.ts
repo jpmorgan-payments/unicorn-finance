@@ -1,4 +1,4 @@
-import type { AccountDetails } from "./GlobalPaymentTypes.d";
+import type { AccountDetails } from "./GlobalPaymentTypes";
 
 export type PaymentType = "RTP" | "ACH";
 

@@ -3,7 +3,7 @@ import { Box, Flex, Group, Title, Stack } from "@mantine/core";
 import EnvironmentSwitcher from "../componentsV2/EnvironmentSwitcher";
 import ValidationServicesInputForm from "../features/ValidationServices/ValidationServicesInputForm";
 import { UnicornTable } from "../componentsV2/UnicornTable";
-import { ValidationHistory } from "../features/ValidationServices/ValidationServicesTypes";
+import type { ValidationHistory } from "../features/ValidationServices/ValidationServiceTypes";
 import { useRequestPreview } from "../context/RequestPreviewContext";
 const PAYMENT_HISTORY_KEY = "unicorn-validation-history";
 

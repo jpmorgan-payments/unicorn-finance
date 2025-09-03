@@ -1,4 +1,4 @@
-import type { PartyDetails, AccountDetails } from "./GlobalPaymentTypes.d";
+import type { PartyDetails, AccountDetails } from "./GlobalPaymentTypes";
 
 function generateGlobalPaymentsRequestBody(
   amount: string,
