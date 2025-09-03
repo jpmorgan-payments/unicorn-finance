@@ -6,7 +6,7 @@
         "types": ["vite/client", "vite-plugin-svgr/client"],
         "allowJs": true,
         "checkJs": false,
-        "jsx": "react",
+        "jsx": "react-jsx",
         "outDir": "./build",
         "rootDir": "./src",
         "noEmit": true,
@@ -15,12 +15,18 @@
         "strict": true,
         "moduleResolution": "node",
         "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
         "resolveJsonModule": true,
+        "forceConsistentCasingInFileNames": true,
+        "isolatedModules": true
     },
     "include": [
         "src"
     ],
     "exclude": [
-        "node_modules", "**/cypress", "cypress.config.js", "**/build"
+        "node_modules", 
+        "**/cypress", 
+        "cypress.config.js", 
+        "**/build"
     ]
 }
