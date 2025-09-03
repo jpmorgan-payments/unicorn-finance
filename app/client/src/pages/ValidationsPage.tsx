@@ -6,11 +6,21 @@ import ValidationServicesInputForm from "../features/ValidationServices/Validati
 import { UnicornTable } from "../componentsV2/UnicornTable";
 import { ValidationHistory } from "../features/ValidationServices/ValidationServicesTypes";
 import { useRequestPreview } from "../context/RequestPreviewContext";
+const PAYMENT_HISTORY_KEY = "unicorn-validation-history";
 
 const ValidationsPage: React.FC = () => {
   const [validationHistory, setValidationHistory] = useState<
     ValidationHistory[]
-  >([]);
+  >(() => {
+    // Initialize from localStorage if available
+    try {
+      const stored = localStorage.getItem(PAYMENT_HISTORY_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch (error) {
+      console.error("Error loading payment history from localStorage:", error);
+      return [];
+    }
+  });
   const { openDrawer } = useRequestPreview();
 
   const handleValidationComplete = (validationData: ValidationHistory) => {
@@ -23,7 +33,6 @@ const ValidationsPage: React.FC = () => {
 
   const handleRowClick = (rowIndex: number) => {
     const selectedValidation = validationHistory[rowIndex];
-    console.log("Selected Validation:", selectedValidation);
     if (selectedValidation) {
       openDrawer(
         selectedValidation.requestData,
