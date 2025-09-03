@@ -6,11 +6,7 @@ import ErrorFallback from "./ErrorFallback";
 import { AppShell } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 
-interface LayoutProps {
-  children?: ReactNode;
-}
-
-function Layout({ children }: LayoutProps) {
+function Layout() {
   const [mobileOpened] = useDisclosure();
   const [desktopOpened] = useDisclosure(true);
   return (
@@ -32,7 +28,7 @@ function Layout({ children }: LayoutProps) {
       </AppShell.Navbar>
       <AppShell.Main>
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-          {children ? children : <Outlet />}
+          <Outlet />
         </ErrorBoundary>
       </AppShell.Main>
     </AppShell>

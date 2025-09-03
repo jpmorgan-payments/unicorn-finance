@@ -10,7 +10,7 @@ import github from "../images/github.png";
 // Navigation configuration
 const links = [
   {
-    to: "/accounts",
+    to: "/accounts2",
     label: "Accounts",
   },
   {

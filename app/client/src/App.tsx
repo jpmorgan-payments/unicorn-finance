@@ -4,13 +4,13 @@ import { AppContextProvider } from "./context/AppContext";
 import { EnvProvider } from "./context/EnvContext";
 import { RequestPreviewProvider } from "./context/RequestPreviewContext";
 
-import Layout from "./components/layout";
-import AccountPage from "./pages/AccountPage";
+import Layout from "./componentsV2/Layout";
 import PaymentsPage from "./pages/PaymentsPage";
 import ValidationsPage from "./pages/ValidationsPage";
 import { RequestPreviewDrawer } from "./componentsV2/RequestPreviewDrawer";
 import "@mantine/core/styles.css";
 import { MantineProvider } from "@mantine/core";
+import AccountsPage from "./pages/AccountPagev2";
 
 export const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -22,11 +22,10 @@ function App() {
           <MantineProvider>
             <Routes>
               <Route path="/" element={<Layout />}>
-                <Route index element={<AccountPage />} />
-                <Route path="accounts" element={<AccountPage />} />
+                <Route path="payments" element={<PaymentsPage />} />
+                <Route path="validations" element={<ValidationsPage />} />
+                <Route path="accounts2" element={<AccountsPage />} />
               </Route>
-              <Route path="payments" element={<PaymentsPage />} />
-              <Route path="validations" element={<ValidationsPage />} />
             </Routes>
             <RequestPreviewDrawer />
           </MantineProvider>

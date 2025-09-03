@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import GlobalPaymentsInputForm from "../features/GlobalPayments/GlobalPaymentsInputForm";
 import { Box, Flex, Group, Stack, Title } from "@mantine/core";
-import Layout from "../componentsV2/Layout";
 import EnvironmentSwitcher from "../componentsV2/EnvironmentSwitcher";
 import { useRequestPreview } from "../context/RequestPreviewContext";
 import { UnicornTable } from "../componentsV2/UnicornTable";
@@ -56,12 +55,12 @@ const PaymentsPage: React.FC = () => {
   ]);
 
   return (
-    <Layout>
+    <>
+      {" "}
       <Group gap="xl">
         <Title order={1}>Global Payments</Title>
         <EnvironmentSwitcher />
       </Group>
-
       <Flex
         m="md"
         w={"100%"}
@@ -115,7 +114,7 @@ const PaymentsPage: React.FC = () => {
           )}
         </Stack>
       </Flex>
-    </Layout>
+    </>
   );
 };
 

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import { Box, Flex, Group, Title, Stack } from "@mantine/core";
-import Layout from "../componentsV2/Layout";
 import EnvironmentSwitcher from "../componentsV2/EnvironmentSwitcher";
 import ValidationServicesInputForm from "../features/ValidationServices/ValidationServicesInputForm";
 import { UnicornTable } from "../componentsV2/UnicornTable";
@@ -50,7 +49,7 @@ const ValidationsPage: React.FC = () => {
   ]);
 
   return (
-    <Layout>
+    <>
       <Group gap="xl">
         <Title order={1}>Validation Services</Title>
         <EnvironmentSwitcher />
@@ -112,7 +111,7 @@ const ValidationsPage: React.FC = () => {
           )}
         </Stack>
       </Flex>
-    </Layout>
+    </>
   );
 };
 
