@@ -1,11 +1,7 @@
 const express = require('express');
 const fs = require('fs');
 const https = require('https');
-
-const {
-  createProxyMiddleware,
-  responseInterceptor,
-} = require('http-proxy-middleware');
+const { createProxyMiddleware } = require('http-proxy-middleware');
 require('dotenv').config();
 const { gatherHttpsOptionsAsync } = require('./grabSecret');
 const { generateJWTJose } = require('./digitalSignature');
@@ -23,9 +19,7 @@ const CERT_PATHS = {
 };
 
 const app = express();
-
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+const jsonParser = express.json();
 
 /**
  * Gathers HTTPS options for certificate-based authentication
@@ -58,160 +52,84 @@ const gatherHttpsOptions = async () => {
   }
 };
 
-/**
- * Handles proxy response logging and processing
- * @param {Buffer} responseBuffer - The response buffer
- * @param {Object} proxyRes - The proxy response object
- * @param {Object} req - The request object
- * @returns {string|Buffer} Processed response
- */
-const handleProxyResponse = async (responseBuffer, proxyRes, req) => {
-  const { protocol, host, path: reqPath } = proxyRes.req;
-  const exchange = `[${req.method}] [${proxyRes.statusCode}] ${req.path} -> ${protocol}//${host}${reqPath}`;
-  console.log(exchange);
-
-  try {
-    // Check if response is JSON and parse it safely
-    if (proxyRes.headers['content-type']?.includes('application/json')) {
-      const data = JSON.parse(responseBuffer.toString('utf8'));
-      return JSON.stringify(data);
-    }
-  } catch (error) {
-    console.error('Error parsing JSON response:', error);
-  }
-
-  return responseBuffer;
-};
-
-/**
- * Creates a standard proxy configuration
- * @param {string} target - The target URL
- * @param {Object} httpsOpts - HTTPS options for the agent
- * @param {Object} pathRewrite - Path rewrite rules
- * @returns {Function} Proxy middleware
- */
-async function createProxyConfiguration(target, httpsOpts, pathRewrite) {
+function createProxyConfigurationDigital(target, httpsOpts, digitalSignature) {
   console.log('Creating proxy configuration for:', target);
-  console.log('PathRewrite:', pathRewrite);
 
   const options = {
     target,
     changeOrigin: true,
-    selfHandleResponse: true,
     agent: new https.Agent({
       ...httpsOpts,
       timeout: 30000,
       keepAlive: true,
     }),
-    pathRewrite,
     on: {
-      proxyRes: responseInterceptor(handleProxyResponse),
-      error: (err, req, res) => {
-        console.error('Proxy error:', err);
-        if (!res.headersSent) {
-          res.status(500).json({
-            error: 'Proxy error',
-            message:
-              ENV === 'development' ? err.message : 'Internal server error',
-          });
-        }
-      },
-    },
-  };
-
-  return createProxyMiddleware(options);
-}
-
-/**
- * Creates a proxy configuration for digital signature requests
- * @param {string} target - The target URL
- * @param {Object} httpsOpts - HTTPS options for the agent
- * @param {string} digitalSignature - The digital signature to send
- * @returns {Function} Proxy middleware
- */
-async function createProxyConfigurationForDigital(
-  target,
-  httpsOpts,
-  digitalSignature
-) {
-  const options = {
-    target,
-    changeOrigin: true,
-    selfHandleResponse: true,
-    agent: new https.Agent({
-      ...httpsOpts,
-      timeout: 30000,
-      keepAlive: true,
-    }),
-    pathRewrite(requestPath, req) {
-      const splat = req.params.splat || '';
-      if (splat && Array.isArray(splat)) {
-        return `${requestPath}/${splat.join('/')}`;
-      }
-      return requestPath;
-    },
-    on: {
-      proxyReq: async (proxyReq, req) => {
+      proxyReq: (proxyReq, req) => {
         console.log('Digital proxy proxyReq called');
+        console.log('Setting headers for digital signature request');
+        console.log('Request body:', req.body);
+        console.log('Digital Signature:', digitalSignature);
         if (req.body && digitalSignature) {
+          // Clear any existing headers that might interfere
+          proxyReq.removeHeader('content-length');
+          proxyReq.removeHeader('content-type');
+
+          // Set the correct headers
           proxyReq.setHeader('Content-Type', 'text/xml');
           proxyReq.setHeader(
             'Content-Length',
             Buffer.byteLength(digitalSignature)
           );
+
+          // Write the body and end the request
           proxyReq.write(digitalSignature);
-        }
-      },
-      proxyRes: responseInterceptor(handleProxyResponse),
-      error: (err, req, res) => {
-        console.error('Digital proxy error:', err);
-        if (!res.headersSent) {
-          res.status(500).json({
-            error: 'Digital proxy error',
-            message:
-              ENV === 'development' ? err.message : 'Internal server error',
-          });
+          proxyReq.end();
         }
       },
     },
   };
-
   return createProxyMiddleware(options);
 }
 
-// Digital signature route handler
-app.use('/api/digitalSignature/*splat', async (req, res, next) => {
+function createProxyConfiguration(target, httpsOpts) {
+  console.log('Creating proxy configuration for:', target);
+
+  const options = {
+    target,
+    changeOrigin: true,
+    agent: new https.Agent({
+      ...httpsOpts,
+      timeout: 30000,
+      keepAlive: true,
+    }),
+  };
+  return createProxyMiddleware(options);
+}
+
+const routeRequest = (splat) => {
+  if (splat.includes('payment')) {
+    return API_ENDPOINTS.JPMORGAN_SANDBOX;
+  }
+
+  if (splat.includes('tsapi')) {
+    return API_ENDPOINTS.JPMORGAN_GATEWAY;
+  }
+
+  return API_ENDPOINTS.JPMORGAN_GATEWAY; // default
+};
+
+app.use('/digitalSignature/:splat', jsonParser, async (req, res, next) => {
   try {
     const httpsOpts = await gatherHttpsOptions();
-    const digitalSignature = await generateJWTJose(req.body, httpsOpts.digital);
-    const proxyMiddleware = await createProxyConfigurationForDigital(
-      API_ENDPOINTS.JPMORGAN_SANDBOX,
+    let digitalSignature;
+    const target = routeRequest(req.params.splat) + '/' + req.params.splat;
+
+    digitalSignature = await generateJWTJose(req.body, httpsOpts.digital);
+
+    const proxyMiddleware = createProxyConfigurationDigital(
+      target,
       httpsOpts,
       digitalSignature
-    );
-    proxyMiddleware(req, res, next);
-  } catch (error) {
-    console.error('Error in digital signature route:', error);
-    res.status(500).json({
-      error: 'Internal server error',
-      message:
-        ENV === 'development'
-          ? error.message
-          : 'Digital signature processing failed',
-    });
-  }
-});
-
-// Catch-all route handler
-app.use('/:slug', async (req, res, next) => {
-  try {
-    const httpsOpts = await gatherHttpsOptions();
-    const proxyMiddleware = await createProxyConfiguration(
-      API_ENDPOINTS.JPMORGAN_GATEWAY,
-      httpsOpts,
-      {
-        '^/api': '',
-      }
     );
     proxyMiddleware(req, res, next);
   } catch (error) {
@@ -221,7 +139,24 @@ app.use('/:slug', async (req, res, next) => {
       message:
         ENV === 'development' ? error.message : 'Proxy configuration failed',
     });
-  }s
+  }
+});
+
+// Catch-all route handler
+app.use('/:splat', async (req, res, next) => {
+  try {
+    const httpsOpts = await gatherHttpsOptions();
+    const target = routeRequest(req.params.splat) + '/' + req.params.splat;
+    const proxyMiddleware = createProxyConfiguration(target, httpsOpts);
+    proxyMiddleware(req, res, next);
+  } catch (error) {
+    console.error('Error in catch-all route:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      message:
+        ENV === 'development' ? error.message : 'Proxy configuration failed',
+    });
+  }
 });
 
 // Global error handler

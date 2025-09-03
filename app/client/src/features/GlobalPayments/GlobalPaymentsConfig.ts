@@ -1,14 +1,14 @@
 import { AccountDetails, PartyDetails } from "./GlobalPaymentTypes";
 
-export type PaymentType = "US-RTP" | "ACH";
+export type PaymentType = "RTP" | "ACH";
 
 export const paymentTypes = [
-  { label: "US Real-Time Payments", value: "US-RTP" },
+  { label: "US Real-Time Payments", value: "RTP" },
   { label: "ACH Payment", value: "ACH" },
 ];
 
 // US-RTP specific accounts
-export const usRtpAccountDetails: AccountDetails[] = [
+export const rtpAccountDetails: AccountDetails[] = [
   {
     account: {
       name: "RAPID AUDIO LLC",
@@ -116,7 +116,7 @@ export const accountDetailsByPaymentType: Record<
   PaymentType,
   AccountDetails[]
 > = {
-  "US-RTP": usRtpAccountDetails,
+  RTP: rtpAccountDetails,
   ACH: achAccountDetails,
 };
 

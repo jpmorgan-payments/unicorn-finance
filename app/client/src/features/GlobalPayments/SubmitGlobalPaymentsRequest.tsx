@@ -37,7 +37,7 @@ export const generateGlobalPaymentsRequestData = (
   };
 
   return {
-    endpoint: `${url}/api/tsapi/v2/validations/accounts`,
+    endpoint: `${url}/api/digitalSignature/payment/v2/payments`,
     method: "POST",
     headers,
     body: generateGlobalPaymentsRequestBody(
@@ -49,6 +49,7 @@ export const generateGlobalPaymentsRequestData = (
   };
 };
 
+// We send this to our backend which forwards it to Global Payments after generating a digital signature
 export async function submitGlobalPaymentsRequest(
   url: string,
   {

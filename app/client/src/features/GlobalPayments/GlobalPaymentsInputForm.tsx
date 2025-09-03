@@ -36,7 +36,7 @@ const GlobalPaymentsInputForm: React.FC = () => {
   const { openDrawer } = useRequestPreview();
 
   const { trigger, data, error, isMutating, reset } = useSWRMutation(
-    `${url}/api/payment/v2/payments`,
+    `${url}/api/digitalSignature/payment/v2/payments`,
     submitGlobalPaymentsRequest,
   );
 
@@ -303,10 +303,7 @@ const GlobalPaymentsInputForm: React.FC = () => {
             <Button
               type="button"
               variant="outline"
-              onClick={() => {
-                reset();
-                form.reset();
-              }}
+              onClick={() => handleSubmit(form.values)}
             >
               Try Again
             </Button>
