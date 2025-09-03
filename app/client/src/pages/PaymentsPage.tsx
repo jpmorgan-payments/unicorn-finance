@@ -52,7 +52,7 @@ const PaymentsPage: React.FC = () => {
       >
         <Stack align="stretch" justify="flex-start" flex={1}>
           <Title order={4}>Submit a Payment</Title>
-          <GlobalPaymentsInputForm />
+          <GlobalPaymentsInputForm onPaymentComplete={handlePaymentComplete} />
         </Stack>
 
         <Stack

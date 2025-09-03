@@ -94,7 +94,6 @@ const ValidationServicesInputForm: React.FC<
       requestPayload: requestPayload,
     };
 
-    try {
       const response = await trigger({
         profileName: values.validationType,
         accountDetails: values.accountDetails as AVSAccountDetails,
@@ -106,15 +105,7 @@ const ValidationServicesInputForm: React.FC<
         responseData: response,
         status: "Success" as const,
       });
-    } catch (error) {
-      onValidationComplete({
-        ...baseValidationData,
-        requestData: getRequestData(),
-        responseData: null,
-        status: "Error" as const,
-        errorMessage: error instanceof Error ? error.message : "Unknown error",
-      });
-    }
+
   };
 
   const PreviewRequestButton = () => (

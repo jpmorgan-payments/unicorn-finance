@@ -66,10 +66,5 @@ export async function submitValidationServicesRequest(
       "x-program-id-type": import.meta.env.VITE_PROGRAM_ID_TYPE,
     },
   });
-
-  if (!res.ok) {
-    throw new Error("An error occurred while fetching the data.");
-  }
-
   return res.json();
 }

@@ -10,7 +10,11 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import UnicornDropdown from "../../componentsV2/UnicornDropdown";
-import { AccountDetails, PartyDetails } from "./GlobalPaymentTypes";
+import {
+  AccountDetails,
+  PartyDetails,
+  PaymentHistory,
+} from "./GlobalPaymentTypes";
 import {
   PaymentType,
   paymentTypes,
@@ -23,6 +27,7 @@ import {
 import useSWRMutation from "swr/mutation";
 import { useEnv } from "../../context/EnvContext";
 import { useRequestPreview } from "../../context/RequestPreviewContext";
+import { on } from "events";
 
 interface GlobalPaymentsFormValues {
   paymentType: PaymentType;
@@ -31,7 +36,13 @@ interface GlobalPaymentsFormValues {
   amount: string;
 }
 
-const GlobalPaymentsInputForm: React.FC = () => {
+interface GlobalPaymentsInputFormProps {
+  onPaymentComplete?: (paymentData: PaymentHistory) => void;
+}
+
+const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
+  onPaymentComplete,
+}) => {
   const { url } = useEnv();
   const { openDrawer } = useRequestPreview();
 
@@ -90,13 +101,41 @@ const GlobalPaymentsInputForm: React.FC = () => {
     value: JSON.stringify(account),
   }));
 
-  const handleSubmit = (values: GlobalPaymentsFormValues) => {
+  const handleSubmit = async (values: GlobalPaymentsFormValues) => {
     console.log("Form submitted with values:", values);
-    trigger({
+
+    const requestData = getRequestData();
+    const requestPayload = requestData.body;
+    if (!onPaymentComplete) {
+      // Just make the API call without saving if no callback
+      await trigger({
+        amount: values.amount,
+        paymentType: values.paymentType,
+        debtorDetails: values.debtorAccountDetails as AccountDetails,
+        creditorDetails: values.creditorAccountDetails as PartyDetails,
+      });
+      return;
+    }
+    // Base payment data
+    const basePaymentData = {
+      requestId: requestPayload.paymentIdentifiers.endToEndId,
+      paymentType: values.paymentType,
+      accountNumber:
+        values.debtorAccountDetails?.account.account.accountNumber || "Unknown",
+      requestPayload: requestPayload,
+    };
+    const response = await trigger({
       amount: values.amount,
       paymentType: values.paymentType,
       debtorDetails: values.debtorAccountDetails as AccountDetails,
       creditorDetails: values.creditorAccountDetails as PartyDetails,
+    });
+
+    onPaymentComplete({
+      ...basePaymentData,
+      requestData: getRequestData(),
+      responseData: response,
+      status: response.title || "",
     });
   };
 
@@ -120,8 +159,6 @@ const GlobalPaymentsInputForm: React.FC = () => {
     // Clear account selections when payment type changes
     form.setFieldValue("debtorAccountDetails", null);
     form.setFieldValue("creditorAccountDetails", null);
-
-    console.log(form.getValues());
   };
 
   const PreviewRequestButton = () => (
