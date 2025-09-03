@@ -7,10 +7,10 @@ frontend:
         - nvm use 22
         - cd app
         - cd client
-        - yarn install
+        - pnpm install
     build:
       commands:
-        - yarn run build
+        - pnpm run build
 
   artifacts:
     baseDirectory: /app/client/dist
