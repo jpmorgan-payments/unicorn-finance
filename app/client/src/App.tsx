@@ -1,16 +1,21 @@
 import React from "react";
 import { Route, Routes } from "react-router-dom";
-import { AppContextProvider } from "./context/AppContext";
 import { EnvProvider } from "./context/EnvContext";
 import { RequestPreviewProvider } from "./context/RequestPreviewContext";
-import { MantineProvider, Button, Group, createTheme } from "@mantine/core";
+import {
+  MantineProvider,
+  Button,
+  Table,
+  createTheme,
+  Card,
+} from "@mantine/core";
 
 import Layout from "./componentsV2/Layout";
 import PaymentsPage from "./pages/PaymentsPage";
 import ValidationsPage from "./pages/ValidationsPage";
 import { RequestPreviewDrawer } from "./componentsV2/RequestPreviewDrawer";
 import "@mantine/core/styles.css";
-import AccountsPage from "./pages/AccountPagev2";
+import AccountsPage from "./pages/AccountPage";
 
 export const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -29,26 +34,34 @@ const theme = createTheme({
         variant: "outline",
       },
     }),
+    Table: Table.extend({
+      classNames: (theme) => ({
+        tr: "hover:!bg-pink-50",
+      }),
+    }),
+    Card: Card.extend({
+      classNames: (theme) => ({
+        root: "hover:!shadow-lg transition-shadow duration-300 hover:!bg-pink-50",
+      }),
+    }),
   },
 });
 
 function App() {
   return (
-    <EnvProvider>
-      <AppContextProvider>
+      <EnvProvider>
         <RequestPreviewProvider>
           <MantineProvider theme={theme}>
             <Routes>
               <Route path="/" element={<Layout />}>
                 <Route path="payments" element={<PaymentsPage />} />
                 <Route path="validations" element={<ValidationsPage />} />
-                <Route path="accounts2" element={<AccountsPage />} />
+                <Route path="accounts" element={<AccountsPage />} />
               </Route>
             </Routes>
             <RequestPreviewDrawer />
           </MantineProvider>
         </RequestPreviewProvider>
-      </AppContextProvider>
     </EnvProvider>
   );
 }

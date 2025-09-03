@@ -75,6 +75,7 @@ const ValidationsPage: React.FC = () => {
           justify="flex-start"
           flex={1}
           align="stretch"
+          mr={"md"}
         >
           <Group justify="space-between" mb="md">
             <Title order={4}>Validation History</Title>
