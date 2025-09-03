@@ -27,7 +27,6 @@ import {
 import useSWRMutation from "swr/mutation";
 import { useEnv } from "../../context/EnvContext";
 import { useRequestPreview } from "../../context/RequestPreviewContext";
-import { on } from "events";
 
 interface GlobalPaymentsFormValues {
   paymentType: PaymentType;
