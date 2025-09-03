@@ -10,7 +10,7 @@ import {
 } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import UnicornDropdown from "../../componentsV2/UnicornDropdown";
-import {
+import type {
   AccountDetails,
   PartyDetails,
   PaymentHistory,

@@ -2,7 +2,7 @@ import React from "react";
 import { Stack, Button, Group, Box, LoadingOverlay, Code } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import UnicornDropdown from "../../componentsV2/UnicornDropdown";
-import {
+import type {
   AVSAccountDetails,
   ValidationHistory,
 } from "./ValidationServicesTypes.d";
