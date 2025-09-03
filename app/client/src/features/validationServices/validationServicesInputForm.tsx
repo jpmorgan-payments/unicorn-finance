@@ -117,14 +117,29 @@ const ValidationServicesInputForm: React.FC<
   );
 
   return (
-    <Box component="form" flex={1}>
+    <Box component="form" flex={1} style={{ position: "relative" }}>
+      <LoadingOverlay
+        visible={isMutating}
+        zIndex={1000}
+        overlayProps={{ radius: "sm", blur: 2 }}
+        loaderProps={{ color: "pink", type: "bars" }}
+      />
+
+      {isMutating && (
+        <Box
+          style={{
+            minHeight: "200px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <div>Loading...</div>
+        </Box>
+      )}
+
       {!data && !error && !isMutating && (
-        <Box style={{ position: "relative" }}>
-          <LoadingOverlay
-            visible={isMutating}
-            zIndex={1000}
-            overlayProps={{ radius: "sm", blur: 2 }}
-          />
+        <Box>
           <Stack gap="md">
             <Box>
               <label
@@ -188,6 +203,7 @@ const ValidationServicesInputForm: React.FC<
                 </Button>
                 <Button
                   type="submit"
+                  variant="filled"
                   disabled={!form.isValid()}
                   onClick={() => handleSubmit(form.values)}
                 >
@@ -206,7 +222,7 @@ const ValidationServicesInputForm: React.FC<
 
             <Button
               type="button"
-              variant="outline"
+              variant="filled"
               onClick={() => {
                 reset();
                 form.reset();

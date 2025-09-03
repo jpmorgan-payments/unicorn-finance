@@ -171,14 +171,29 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
   );
 
   return (
-    <Box component="form" flex={1}>
+    <Box component="form" flex={1} pos={"relative"}>
+      <LoadingOverlay
+        visible={isMutating}
+        zIndex={1000}
+        overlayProps={{ radius: "sm", blur: 2 }}
+        loaderProps={{ color: "pink", type: "bars" }}
+      />
+
+      {isMutating && (
+        <Box
+          style={{
+            minHeight: "200px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <div>Loading...</div>
+        </Box>
+      )}
+
       {!data && !error && !isMutating && (
         <Box style={{ position: "relative" }}>
-          <LoadingOverlay
-            visible={isMutating}
-            zIndex={1000}
-            overlayProps={{ radius: "sm", blur: 2 }}
-          />
           <Stack gap="md">
             <Box>
               <label
@@ -296,6 +311,7 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
                 </Button>
                 <Button
                   type="submit"
+                  variant="filled"
                   disabled={!form.isValid()}
                   onClick={() => handleSubmit(form.values)}
                 >
@@ -314,7 +330,7 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
 
             <Button
               type="button"
-              variant="outline"
+              variant="filled"
               onClick={() => {
                 reset();
                 form.reset();

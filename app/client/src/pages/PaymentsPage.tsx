@@ -56,7 +56,6 @@ const PaymentsPage: React.FC = () => {
 
   return (
     <>
-      {" "}
       <Group gap="xl">
         <Title order={1}>Global Payments</Title>
         <EnvironmentSwitcher />

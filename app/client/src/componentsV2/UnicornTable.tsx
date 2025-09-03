@@ -25,7 +25,7 @@ export const UnicornTable: React.FC<UnicornTableProps> = ({
   if (onRowClick) {
     return (
       <Table.ScrollContainer minWidth={500}>
-        <Table>
+        <Table highlightOnHover>
           <Table.Thead>
             <Table.Tr>
               {columns.map((column, index) => (
