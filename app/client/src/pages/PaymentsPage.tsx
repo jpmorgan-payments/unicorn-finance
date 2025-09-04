@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import GlobalPaymentsInputForm from "../features/GlobalPayments/GlobalPaymentsInputForm";
 import { Box, Flex, Group, Stack, Title } from "@mantine/core";
-import EnvironmentSwitcher from "../componentsV2/EnvironmentSwitcher";
+import EnvironmentSwitcher from "../components/EnvironmentSwitcher";
 import { useRequestPreview } from "../context/RequestPreviewContext";
-import { UnicornTable } from "../componentsV2/UnicornTable";
+import { UnicornTable } from "../components/UnicornTable";
 import { PaymentHistory } from "../features/GlobalPayments/GlobalPaymentTypes";
 
 const PAYMENT_HISTORY_KEY = "unicorn-payment-history";

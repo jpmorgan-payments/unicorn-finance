@@ -1,6 +1,6 @@
 import React from "react";
 import { Flex, Group, Title, Stack, Text, Card, Badge } from "@mantine/core";
-import EnvironmentSwitcher from "../componentsV2/EnvironmentSwitcher";
+import EnvironmentSwitcher from "../components/EnvironmentSwitcher";
 import AccountBalancesDisplay from "../features/AccountBalances/AccountBalancesDisplay";
 
 const AccountsPage: React.FC = () => {

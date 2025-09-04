@@ -10,10 +10,10 @@ import {
   Card,
 } from "@mantine/core";
 
-import Layout from "./componentsV2/Layout";
+import Layout from "./components/Layout";
 import PaymentsPage from "./pages/PaymentsPage";
 import ValidationsPage from "./pages/ValidationsPage";
-import { RequestPreviewDrawer } from "./componentsV2/RequestPreviewDrawer";
+import { RequestPreviewDrawer } from "./components/RequestPreviewDrawer";
 import "@mantine/core/styles.css";
 import AccountsPage from "./pages/AccountPage";
 
@@ -49,19 +49,19 @@ const theme = createTheme({
 
 function App() {
   return (
-      <EnvProvider>
-        <RequestPreviewProvider>
-          <MantineProvider theme={theme}>
-            <Routes>
-              <Route path="/" element={<Layout />}>
-                <Route path="payments" element={<PaymentsPage />} />
-                <Route path="validations" element={<ValidationsPage />} />
-                <Route path="accounts" element={<AccountsPage />} />
-              </Route>
-            </Routes>
-            <RequestPreviewDrawer />
-          </MantineProvider>
-        </RequestPreviewProvider>
+    <EnvProvider>
+      <RequestPreviewProvider>
+        <MantineProvider theme={theme}>
+          <Routes>
+            <Route path="/" element={<Layout />}>
+              <Route path="payments" element={<PaymentsPage />} />
+              <Route path="validations" element={<ValidationsPage />} />
+              <Route path="accounts" element={<AccountsPage />} />
+            </Route>
+          </Routes>
+          <RequestPreviewDrawer />
+        </MantineProvider>
+      </RequestPreviewProvider>
     </EnvProvider>
   );
 }
