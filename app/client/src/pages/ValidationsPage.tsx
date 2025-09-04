@@ -5,7 +5,7 @@ import EnvironmentSwitcher from "../components/EnvironmentSwitcher";
 import { UnicornTable } from "../components/UnicornTable";
 import type { ValidationHistory } from "../features/ValidationServices/ValidationServicesTypes";
 import { useRequestPreview } from "../context/RequestPreviewContext";
-import ValidationServicesInputForm from "../features/ValidationServices/validationServicesInputForm";
+import ValidationServicesInputForm from "../features/ValidationServices/ValidationServiceInputForm";
 const PAYMENT_HISTORY_KEY = "unicorn-validation-history";
 
 const ValidationsPage: React.FC = () => {
