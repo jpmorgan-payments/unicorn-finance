@@ -14,7 +14,7 @@ import {
 import {
   submitValidationServicesRequest,
   generateAVSRequestData,
-} from "../ValidationServices/SubmitValidationServicesRequest";
+} from "./SubmitValidationServicesRequest";
 import { useEnv } from "../../context/EnvContext";
 import { useRequestPreview } from "../../context/RequestPreviewContext";
 import useSWRMutation from "swr/mutation";
