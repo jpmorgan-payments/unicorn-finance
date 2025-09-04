@@ -2,12 +2,15 @@ import React from "react";
 import { Stack, Button, Group, Box, LoadingOverlay, Code } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import UnicornDropdown from "../../components/UnicornDropdown";
-import type { AVSAccountDetails, ValidationHistory } from "./TYPEHELLO";
+import type {
+  AVSAccountDetails,
+  ValidationHistory,
+} from "./ValidationServicesTypes";
 import {
   DEFAULT_ACCOUNT_NUMBERS,
   VALIDATION_TYPE_OPTIONS,
   ValidationType,
-} from "./CONFIGHELLO";
+} from "./ValidationServiceConfig";
 import {
   submitValidationServicesRequest,
   generateAVSRequestData,

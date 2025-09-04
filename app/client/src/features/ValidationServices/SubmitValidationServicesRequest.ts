@@ -1,4 +1,4 @@
-import type { AVSAccountDetails } from "./TYPEHELLO";
+import type { AVSAccountDetails } from "./ValidationServicesTypes";
 
 export const generateAVSRequestBody = (
   profileName: string,
