@@ -30,3 +30,6 @@ build
 certs
 archive.zip
 body.js
+*.zip
+lambda-function
+lambda-layer

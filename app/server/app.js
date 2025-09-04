@@ -1,7 +1,10 @@
 const express = require('express');
 const fs = require('fs');
 const https = require('https');
-const { createProxyMiddleware } = require('http-proxy-middleware');
+const {
+  createProxyMiddleware,
+  responseInterceptor,
+} = require('http-proxy-middleware');
 require('dotenv').config();
 const { gatherHttpsOptionsAsync } = require('./grabSecret');
 const { generateJWTJose } = require('./digitalSignature');
@@ -20,6 +23,31 @@ const CERT_PATHS = {
 
 const app = express();
 const jsonParser = express.json();
+
+/**
+ * Handles proxy response logging and processing
+ * @param {Buffer} responseBuffer - The response buffer
+ * @param {Object} proxyRes - The proxy response object
+ * @param {Object} req - The request object
+ * @returns {string|Buffer} Processed response
+ */
+const handleProxyResponse = async (responseBuffer, proxyRes, req) => {
+  const { protocol, host, path: reqPath } = proxyRes.req;
+  const exchange = `[${req.method}] [${proxyRes.statusCode}] ${req.path} -> ${protocol}//${host}${reqPath}`;
+  console.log(exchange);
+
+  try {
+    // Check if response is JSON and parse it safely
+    if (proxyRes.headers['content-type']?.includes('application/json')) {
+      const data = JSON.parse(responseBuffer.toString('utf8'));
+      return JSON.stringify(data);
+    }
+  } catch (error) {
+    console.error('Error parsing JSON response:', error);
+  }
+
+  return responseBuffer;
+};
 
 /**
  * Gathers HTTPS options for certificate-based authentication
@@ -58,12 +86,15 @@ function createProxyConfigurationDigital(target, httpsOpts, digitalSignature) {
   const options = {
     target,
     changeOrigin: true,
+    selfHandleResponse: true,
+
     agent: new https.Agent({
       ...httpsOpts,
       timeout: 30000,
       keepAlive: true,
     }),
     on: {
+      proxyRes: responseInterceptor(handleProxyResponse),
       proxyReq: (proxyReq, req) => {
         console.log('Digital proxy proxyReq called');
         console.log('Setting headers for digital signature request');
@@ -97,11 +128,20 @@ function createProxyConfiguration(target, httpsOpts) {
   const options = {
     target,
     changeOrigin: true,
+    selfHandleResponse: true,
     agent: new https.Agent({
       ...httpsOpts,
       timeout: 30000,
       keepAlive: true,
     }),
+    on: {
+      proxyRes: responseInterceptor(
+        async (responseBuffer, proxyRes, req, res) => {
+          const response = responseBuffer.toString('utf8'); // convert buffer to string
+          return response; // manipulate response and return the result
+        }
+      ),
+    },
   };
   return createProxyMiddleware(options);
 }
