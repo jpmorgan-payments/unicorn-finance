@@ -26,7 +26,7 @@ const links = [
 export const Sidebar = () => {
   return (
     <div className="flex w-full flex-row items-center justify-between p-4 lg:flex-col lg:p-6">
-      <NavLink to="/accounts" className="block">
+      <NavLink to="/" className="block">
         <Image
           src={ufLogoLarge}
           alt="Unicorn Finance Logo"

@@ -54,6 +54,7 @@ function App() {
         <MantineProvider theme={theme}>
           <Routes>
             <Route path="/" element={<Layout />}>
+              <Route index element={<ValidationsPage />} />
               <Route path="payments" element={<PaymentsPage />} />
               <Route path="validations" element={<ValidationsPage />} />
               <Route path="accounts" element={<AccountsPage />} />
