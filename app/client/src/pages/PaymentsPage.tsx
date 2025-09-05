@@ -3,28 +3,40 @@ import GlobalPaymentsInputForm from "../features/GlobalPayments/GlobalPaymentsIn
 import { Box, Flex, Group, Stack, Title } from "@mantine/core";
 import EnvironmentSwitcher from "../components/EnvironmentSwitcher";
 import { useRequestPreview } from "../context/RequestPreviewContext";
+import { useEnv } from "../context/EnvContext";
 import { UnicornTable } from "../components/UnicornTable";
 import { PaymentHistory } from "../features/GlobalPayments/GlobalPaymentTypes";
 
-const PAYMENT_HISTORY_KEY = "unicorn-payment-history";
+const PAYMENT_HISTORY_BASE_KEY = "unicorn-payment-history";
 
 const PaymentsPage: React.FC = () => {
-  const [paymentHistory, setPaymentHistory] = useState<PaymentHistory[]>(() => {
-    // Initialize from localStorage if available
-    try {
-      const stored = localStorage.getItem(PAYMENT_HISTORY_KEY);
-      return stored ? JSON.parse(stored) : [];
-    } catch (error) {
-      console.error("Error loading payment history from localStorage:", error);
-      return [];
-    }
-  });
+  const { environment } = useEnv();
   const { openDrawer } = useRequestPreview();
 
-  // Save to localStorage whenever paymentHistory changes
+  // Create environment-specific localStorage key
+  const getPaymentHistoryKey = () =>
+    `${PAYMENT_HISTORY_BASE_KEY}-${environment}`;
+
+  const [paymentHistory, setPaymentHistory] = useState<PaymentHistory[]>([]);
+
+  // Load payment history when component mounts or environment changes
   useEffect(() => {
     try {
-      localStorage.setItem(PAYMENT_HISTORY_KEY, JSON.stringify(paymentHistory));
+      const stored = localStorage.getItem(getPaymentHistoryKey());
+      setPaymentHistory(stored ? JSON.parse(stored) : []);
+    } catch (error) {
+      console.error("Error loading payment history from localStorage:", error);
+      setPaymentHistory([]);
+    }
+  }, [environment]);
+
+  // Save to localStorage whenever paymentHistory changes (but not during environment changes)
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        getPaymentHistoryKey(),
+        JSON.stringify(paymentHistory),
+      );
     } catch (error) {
       console.error("Error saving payment history to localStorage:", error);
     }
@@ -36,7 +48,7 @@ const PaymentsPage: React.FC = () => {
 
   const clearHistory = () => {
     setPaymentHistory([]);
-    localStorage.removeItem(PAYMENT_HISTORY_KEY);
+    localStorage.removeItem(getPaymentHistoryKey());
   };
 
   const handleRowClick = (rowIndex: number) => {

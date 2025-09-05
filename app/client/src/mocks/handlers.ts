@@ -37,10 +37,11 @@ export const handlers = [
       // Parse request body to get requestId
       let endToEndId = "default-endToEnd-id";
       let response: { endToEndId?: string; paymentId?: string } | null = {};
-      const requestBody = (await request.json()) as any[];
+      const requestBody = (await request.json()) as any;
       console.log("Request Body:", requestBody);
-      if (requestBody && requestBody.length > 0) {
-        endToEndId = requestBody[0].endToEndId || "id";
+
+      if (requestBody) {
+        endToEndId = requestBody.paymentIdentifiers.endToEndId || "id";
       }
 
       if (response) {

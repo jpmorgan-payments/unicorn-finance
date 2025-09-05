@@ -1,27 +1,51 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Flex, Group, Title, Stack } from "@mantine/core";
 import EnvironmentSwitcher from "../components/EnvironmentSwitcher";
-
+import { useEnv } from "../context/EnvContext";
 import { UnicornTable } from "../components/UnicornTable";
 import type { ValidationHistory } from "../features/ValidationServices/ValidationServicesTypes";
 import { useRequestPreview } from "../context/RequestPreviewContext";
 import ValidationServicesInputForm from "../features/ValidationServices/ValidationServiceInputForm";
-const PAYMENT_HISTORY_KEY = "unicorn-validation-history";
+
+const VALIDATION_HISTORY_BASE_KEY = "unicorn-validation-history";
 
 const ValidationsPage: React.FC = () => {
+  const { environment } = useEnv();
+  const { openDrawer } = useRequestPreview();
+
+  // Create environment-specific localStorage key
+  const getValidationHistoryKey = () =>
+    `${VALIDATION_HISTORY_BASE_KEY}-${environment}`;
+
   const [validationHistory, setValidationHistory] = useState<
     ValidationHistory[]
-  >(() => {
-    // Initialize from localStorage if available
+  >([]);
+
+  // Load validation history when component mounts or environment changes
+  useEffect(() => {
     try {
-      const stored = localStorage.getItem(PAYMENT_HISTORY_KEY);
-      return stored ? JSON.parse(stored) : [];
+      const stored = localStorage.getItem(getValidationHistoryKey());
+      setValidationHistory(stored ? JSON.parse(stored) : []);
     } catch (error) {
-      console.error("Error loading payment history from localStorage:", error);
-      return [];
+      console.error(
+        "Error loading validation history from localStorage:",
+        error,
+      );
+      setValidationHistory([]);
     }
-  });
-  const { openDrawer } = useRequestPreview();
+  }, [environment]);
+
+  // Save to localStorage whenever validationHistory changes
+  useEffect(() => {
+    try {
+      localStorage.setItem(
+        getValidationHistoryKey(),
+        JSON.stringify(validationHistory),
+      );
+    } catch (error) {
+      console.error("Error saving validation history to localStorage:", error);
+    }
+  }, [validationHistory]);
 
   const handleValidationComplete = (validationData: ValidationHistory) => {
     setValidationHistory((prev) => [validationData, ...prev]); // Add to beginning for newest first
@@ -29,6 +53,7 @@ const ValidationsPage: React.FC = () => {
 
   const clearHistory = () => {
     setValidationHistory([]);
+    localStorage.removeItem(getValidationHistoryKey());
   };
 
   const handleRowClick = (rowIndex: number) => {

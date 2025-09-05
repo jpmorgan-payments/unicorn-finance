@@ -353,7 +353,10 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
             <Button
               type="button"
               variant="outline"
-              onClick={() => handleSubmit(form.values)}
+              onClick={() => {
+                reset();
+                form.reset();
+              }}
             >
               Try Again
             </Button>
