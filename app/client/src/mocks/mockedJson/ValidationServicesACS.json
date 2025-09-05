@@ -1,0 +1,46 @@
+[
+    {
+        "requestId": "123e4567-e89b-12d3-a456-426614174000",
+        "responses": [
+            {
+                "codes": {
+                    "accountScore": {
+                        "code": 1109,
+                        "message": "Information Found"
+                    }
+                },
+                "provider": "JPMC_BENE",
+                "details": {
+                    "providerResponse": {
+                        "score": 658,
+                        "rag": "GREEN",
+                        "description": "The account is in a high-confidence score range."
+                    }
+                }
+            }
+        ]
+    },
+    [
+        {
+            "requestId": "123e4567-e89b-12d3-a456-426614174000",
+            "responses": [
+                {
+                    "codes": {
+                        "accountScore": {
+                            "code": 1109,
+                            "message": "Information Found"
+                        }
+                    },
+                    "provider": "JPMC_BENE",
+                    "details": {
+                        "providerResponse": {
+                            "score": 628,
+                            "rag": "GREEN",
+                            "description": "The account is in a high-confidence score range."
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+]

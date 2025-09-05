@@ -9,10 +9,10 @@ import github from "../images/github.png";
 
 // Navigation configuration
 const links = [
-  {
-    to: "/accounts",
-    label: "Accounts",
-  },
+  // {
+  //   to: "/accounts",
+  //   label: "Accounts",
+  // },
   {
     to: "/payments",
     label: "Payments",

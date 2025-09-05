@@ -43,7 +43,7 @@
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
     "jsdom": "^26.1.0",
-    "msw": "^2.10.2",
+    "msw": "^2.10.5",
     "prettier": "^3.6.1",
     "tailwindcss": "^4.1.11",
     "vite": "^7.0.0",

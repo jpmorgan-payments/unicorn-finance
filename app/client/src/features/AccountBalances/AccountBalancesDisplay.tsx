@@ -110,12 +110,13 @@ const AccountBalancesDisplay: React.FC = () => {
             <div>Loading...</div>
           </Box>
         )}
-        {error && (
+        {error && !accountBalanceData && (
           <Container size="xl" py="md">
             <Text c="red">Error fetching account balances</Text>
           </Container>
         )}
-        {accountBalanceData &&
+        {!error &&
+          accountBalanceData &&
           accountBalanceData.accountList.map((account) => (
             <AccountBalanceCard
               key={account.accountId}
