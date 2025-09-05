@@ -1,10 +1,9 @@
 const app = require('./app');
 
-app
-  .listen(8081, () => {
-    console.log(`
+app.listen(8082, () => {
+  console.log(`
 ################################################
-🛡️  Server listening on port: 8081 🛡️
+🛡️  Server listening on port: 8082 🛡️
 ################################################
 `);
-  });
+});

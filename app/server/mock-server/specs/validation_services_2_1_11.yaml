@@ -1,0 +1,1496 @@
+openapi: 3.0.1
+info:
+  title: Validation Services
+  version: 2.1.11
+  description: Validation services API enables account and identity verification of different parties.
+  contact:
+    name: JPMC Technical Services Support
+servers:
+  - url: https://apigateway.jpmorgan.com/tsapi/v2
+    description: PROD
+    x-jpmc-server-url-type: proxy
+    x-jpmc-deployment-type: prod
+  - url: https://apigatewaycat.jpmorgan.com/tsapi/v2
+    description: CAT
+    x-jpmc-server-url-type: proxy
+    x-jpmc-deployment-type: prod
+  - url: https://api-mock.payments.jpmorgan.com/tsapi/v2
+    description: JPM-PROD Validation Services API Sandbox
+    x-jpmc-server-url-type: mock
+    x-jpmc-deployment-type: prod
+  - url: https://api-mock-payments.uat.aws.jpmchase.net/tsapi/v2
+    description: JPM-UAT Validation Services API Sandbox
+    x-jpmc-server-url-type: mock
+    x-jpmc-deployment-type: uat
+  - url: https://api-mock-payments.dev.aws.jpmchase.net/tsapi/v2
+    description: JPM-DEV Validation Services API Sandbox
+    x-jpmc-server-url-type: mock
+    x-jpmc-deployment-type: dev
+tags:
+  - name: Account Validation
+    description: API to validate accounts
+  - name: Entity Validation
+    description: API to validate entities
+paths:
+  /validations/entities:
+    post:
+      tags:
+        - Entity Validation
+      operationId: entityValidation
+      summary: Entity validation
+      description: Validate an entity
+      parameters:
+        - name: x-client-id
+          in: header
+          required: true
+          description: A unique identifier assigned to a client during the onboarding process.
+          schema:
+            type: string
+          examples:
+            IndividualRequest:
+              value: CLIENTID
+            OrganizationRequest:
+              value: CLIENTID
+            IndividualScreenITRequest:
+              value: CLIENTID
+            OrganizationScreenITRequest:
+              value: CLIENTID
+        - name: x-program-id
+          in: header
+          required: true
+          description: A unique identifier assigned to a Validation Services product during onboarding.
+          schema:
+            type: string
+          examples:
+            IndividualRequest:
+              value: COMPANYINDIVIDUAL
+            OrganizationRequest:
+              value: COMPANYORGANIZATION
+            IndividualScreenITRequest:
+              value: SCREENITINDIVIDUAL
+            OrganizationScreenITRequest:
+              value: SCREENITORGANIZATION
+        - name: x-program-id-type
+          in: header
+          required: false
+          description: A unique identifier assigned to a specific Validation Services product selection. The default value is “AVS” program-id-type. It indicates the processing settings selected for the product and is provided during onboarding.  This is an optional parameter.
+          schema:
+            type: string
+          examples:
+            IndividualRequest:
+              value: AVS
+            OrganizationRequest:
+              value: AVS
+            IndividualScreenITRequest:
+              value: AVS
+            OrganizationScreenITRequest:
+              value: AVS
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              minItems: 0
+              items:
+                $ref: '#/components/schemas/EntityDetails'
+            examples:
+              IndividualRequest:
+                value:
+                  - requestId: 123e4567-e89b-12d3-a456-426614174123
+                    entity:
+                      individual:
+                        firstName: JOHN
+                        lastName: SMITH
+                        middleName: KAY
+                        additionalLastName: MARTINEZ
+                        namePrefix: MR
+                        nameSuffix: JR
+                        fullName: MR JOHN KAY SMITH MARTINEZ JR
+                        postalAddress:
+                          addressLine:
+                            - 123 MAIN ST
+                            - APT 1A
+                          unitNumber: '4'
+                          buildingNumber: '120'
+                          buildingName: CAPITAL TOWER
+                          streetName: CLEMENT TOWN
+                          streetType: AVENUE
+                          suburb: CITRUS PARK
+                          townName: TAMPA
+                          countrySubDvsn: FL
+                          country: US
+                          postalCode: '33607'
+                          county: HILLSBOROUGH
+                          residentialStatus: Rent
+                        contactDetails:
+                          phoneNumbers:
+                            - phoneNumber: '2137685675'
+                              phoneNumberType: home
+                            - phoneNumber: '2137685676'
+                              phoneNumberType: work
+                            - phoneNumber: '2137685677'
+                              phoneNumberType: mobile
+                          email: jsmith@fakemail.com
+                        identification:
+                          - idType: SSN
+                            id: '111223333'
+                          - idType: DRIVERS_LICENSE_USA
+                            id: F123-1234-1234
+                            issuer: FL
+                            expirationDate: 20240131
+                          - idType: NATIONAL_ID
+                            id: '440861896421345987'
+                            issuer: FL
+                            expirationDate: 20240130
+                          - idType: VOTER_ID
+                            id: SIQ3830379
+                          - idType: DRIVERS_LICENSE
+                            id: DL6971548E
+                            issueDate: 20140131
+                            expirationDate: 20240130
+                        gender: M
+                        dateOfBirth: 19850131
+              OrganizationRequest:
+                value:
+                  - requestId: 123e4567-e89b-12d3-a456-426614174557
+                    entity:
+                      organization:
+                        name: NATIONAL TITLE AND ESCROW OF HAWAII INC
+                        alternateName: NATIONAL HAWAII
+                        postalAddress:
+                          addressLine:
+                            - 201 MERCHANT ST
+                            - STE 2100
+                          townName: HONOLULU
+                          countrySubDvsn: HI
+                          country: US
+                          postalCode: '96813'
+                          county: HONOLULU COUNTY
+                        contactDetails:
+                          phoneNumbers:
+                            - phoneNumber: '8085550422'
+                              phoneNumberType: work
+                          email: titleEscrowHawaii@nationaltitle.com
+                        authorizedIndividuals:
+                          - firstName: JOHN
+                            lastName: SMITH
+                            middleName: KAY
+                            additionalLastName: MARTINEZ
+                            namePrefix: MR
+                            nameSuffix: JR
+                            fullName: MR JOHN KAY SMITH MARTINEZ JR
+                            postalAddress:
+                              addressLine:
+                                - 123 MAIN ST
+                                - APT 1A
+                              unitNumber: '4'
+                              buildingNumber: '120'
+                              buildingName: CAPITAL TOWER
+                              streetName: CLEMENT TOWN
+                              streetType: AVENUE
+                              suburb: CITRUS PARK
+                              townName: TAMPA
+                              countrySubDvsn: FL
+                              country: US
+                              postalCode: '33607'
+                              county: HILLSBOROUGH
+                              residentialStatus: Rent
+                            contactDetails:
+                              phoneNumbers:
+                                - phoneNumber: '2137685675'
+                                  phoneNumberType: home
+                                - phoneNumber: '2137685676'
+                                  phoneNumberType: work
+                                - phoneNumber: '2137685677'
+                                  phoneNumberType: mobile
+                              email: jsmith@fakemail.com
+                            identification:
+                              - idType: SSN
+                                id: '111223333'
+                              - idType: DRIVERS_LICENSE_USA
+                                id: F123-1234-1234
+                                issuer: FL
+                                issueDate: 20140131
+                                expirationDate: 20240130
+                              - idType: BUSINESS_REGISTRATION_NUMBER
+                                id: '1234567'
+                              - idType: TAX_ID
+                                id: '123456789'
+                            gender: M
+                            dateOfBirth: 19850131
+              IndividualScreenITRequest:
+                value:
+                  - requestId: 123e4567-e89b-12d3-a456-426614174123
+                    entity:
+                      individual:
+                        firstName: Jose
+                        lastName: Ramirez
+                        fullName: Jose Ramirez
+                        postalAddress:
+                          addressLine:
+                            - 123 MAIN ST
+                            - APT 1A
+                          townName: TAMPA
+                          countrySubDvsn: FL
+                          country: US
+                          postalCode: '33607'
+                          county: HILLSBOROUGH
+                          residentialStatus: Rent
+                        associatedCountries:
+                          - US
+              OrganizationScreenITRequest:
+                value:
+                  - requestId: 123e4567-e89b-12d3-a456-426614174557
+                    entity:
+                      organization:
+                        name: GADDAFI INTERNATIONAL CHARITY AND DEVELOPMENT FOUNDATION
+                        postalAddress:
+                          country: US
+                        identification:
+                          - idType: FEIN
+                            id: '09222022'
+                        associatedCountries:
+                          - US
+                          - GB
+        required: true
+      callbacks:
+        validationStatus:
+          '{client-url}/status':
+            post:
+              summary: Entity Validation status callbacks
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/Payload'
+                required: true
+              responses:
+                '200':
+                  description: OK
+      responses:
+        '200':
+          description: |
+            Error codes which could be returned with a 200 http response.
+            * 9001 - Data Provider Error
+            * 9002 - Processing Error
+            * 9003 - Timeout Error
+            * 9004 - Client Configuration Error
+            * 9005 - Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                minItems: 0
+                items:
+                  $ref: '#/components/schemas/ResponseCollection'
+              examples:
+                IndividualRequest:
+                  value:
+                    - requestId: 123e4567-e89b-12d3-a456-426614174123
+                      responses:
+                        - codes:
+                            individualID:
+                              code: 1101
+                              message: Pass
+                          provider: LEXISNEXIS
+                OrganizationRequest:
+                  value:
+                    - requestId: 123e4567-e89b-12d3-a456-426614174123
+                      responses:
+                        - provider: LEXISNEXIS_BUSINESS_V2
+                          codes:
+                            businessID:
+                              code: 2101
+                              message: Pass
+                IndividualScreenITRequest:
+                  value:
+                    - requestId: 123e4567-e89b-12d3-a456-426614174123
+                      responses:
+                        - codes:
+                            individualScreening:
+                              code: 4609
+                              message: Potential Hit
+                          provider: JPMC_SCREENING
+                          details:
+                            providerResponse:
+                              realTimeResponseSchemas:
+                                - searchResponse:
+                                    - searchConfigId: EVS-SANCTIONS
+                                      result:
+                                        recordState:
+                                          state: POTENTIAL_MATCH
+                                      listName:
+                                        United States of America (the):
+                                          BXA: USA - BXA - Bureau Ind and Sec Denied Persons List
+                                          BISN: BUREAU OF INTERNATIONAL SECURITY & NONPROLIFERATION SANCTIONS
+                                      matches:
+                                        match:
+                                          - comments: Companies | CARTEL DEL NORTE DEL VALLE, 47230
+                                            matchingItems:
+                                              matchingItem:
+                                                - itemMatchType: NAME
+                                                  inputValue: Jose Ramirez
+                                                  listValue: José Aldemar RENDÓN RAMÍREZ
+                                                - itemMatchType: ADDRESS
+                                                  inputValue: 123 MAIN ST,APT 1A,TAMPA,FL,US,33607
+                                                  listValue: New York City,New York,USA
+                                            entityMatch:
+                                              additionalInfos:
+                                                additionalInfo:
+                                                  - type: OTHER
+                                                    value: External Sources
+                                                    comments: http://190.24.134.75/sentencias/penal/2006/dr.julio%20enrique%20socha%20salamanca/agosto/24279(22-08-06).doc
+                                    - searchConfigId: EVS-PEP
+                                      result:
+                                        recordState:
+                                          state: POTENTIAL_MATCH
+                                      matches:
+                                        match:
+                                          - comments: Category INDIVIDUAL || Sub-Category PEP Sub-National Government
+                                            matchingItems:
+                                              matchingItem:
+                                                - itemMatchType: NAME
+                                                  inputValue: Jose Ramirez
+                                                  listValue: RAMIREZ,Jose
+                                                - itemMatchType: ADDRESS
+                                                  inputValue: 123 MAIN ST,APT 1A,TAMPA,FL,US,33607
+                                                  listValue: USA
+                                            entityMatch:
+                                              additionalInfos:
+                                                additionalInfo:
+                                                  - type: OTHER
+                                                    value: External Sources
+                                                    comments: http://www.primerahora.com/noticias/policia-tribunales/nota/arrancanlostrasladosenellideratodelnegociadodelapolicia-1253705/
+                OrganizationScreenITRequest:
+                  value:
+                    - requestId: 123e4567-e89b-12d3-a456-426614174123
+                      responses:
+                        - codes:
+                            businessScreening:
+                              code: 5609
+                              message: Potential Hit
+                          provider: JPMC_SCREENING
+                          details:
+                            providerResponse:
+                              realTimeResponseSchemas:
+                                - searchResponse:
+                                    - searchConfigId: EVS-SANCTIONS
+                                      result:
+                                        recordState:
+                                          state: CLEAR
+                                      listName:
+                                        United States of America (the):
+                                          BXA: USA - BXA - Bureau Ind and Sec Denied Persons List
+                                          BISN: BUREAU OF INTERNATIONAL SECURITY & NONPROLIFERATION SANCTIONS
+                                    - searchConfigId: EVS-PEP
+                                      result:
+                                        recordState:
+                                          state: POTENTIAL_MATCH
+                                      matches:
+                                        match:
+                                          - comments: Category ORGANISATION || Sub-Category PEP National Government - Associate Entity
+                                            matchingItems:
+                                              matchingItem:
+                                                - itemMatchType: NAME
+                                                  inputValue: gaddafi international charity and development foundation
+                                                  listValue: GADDAFI INTERNATIONAL CHARITY AND DEVELOPMENT FOUNDATION
+                                            entityMatch:
+                                              additionalInfos:
+                                                additionalInfo:
+                                                  - type: OTHER
+                                                    value: External Sources
+                                                    comments: http://cloud.gouv.mc/DataWeb/jourmon.nsf/9bf97b0da6308cfdc12568c40037f873/6a3ffd92eb68d059c1257888002520fa!OpenDocument
+        '400':
+          description: |
+            Bad Request.
+            * GCA-023 - Please re-send request in valid format.
+            * GCA-129 - ProgramId is required.
+          headers:
+            x-program-id:
+              description: A unique identifier assigned to a client during the onboarding process.
+              style: simple
+              schema:
+                type: string
+            x-program-id-type:
+              description: A unique identifier assigned to a specific Validation Services product selection. The default value is “AVS” program-id-type. It indicates the processing settings selected for the product and is provided during onboarding.  This is an optional parameter.
+              style: simple
+              schema:
+                type: string
+            x-client-id:
+              schema:
+                type: string
+              style: simple
+              description: A unique identifier assigned to a client during the onboarding process.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '403':
+          description: |
+            Forbidden.
+            * GCA-001 - Unauthorized Access.
+            * GCA-003 - Unauthorized Access.
+            * GCA-103 - The programId was not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+              examples:
+                TooManyRequests:
+                  summary: Too many requests
+                  description: |-
+                    The pre-defined API request rate limit breached due to 
+                    too many requests within a specific time window.
+                  value:
+                    errors:
+                      - errorCode: '9005'
+                        errorMsg: The agreed rate limit has been exceeded, try again later.
+        '500':
+          description: |
+            Internal Error.
+            * GCA-099 - System is Unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+  /validations/accounts:
+    post:
+      tags:
+        - Account Validation
+      operationId: accountValidation
+      summary: Account validation
+      description: Validate an account
+      parameters:
+        - name: x-client-id
+          in: header
+          required: true
+          description: A unique identifier assigned to a client during the onboarding process.
+          examples:
+            Account Validation Request (US):
+              value: CLIENTID
+            Account Validation Request Multi (US):
+              value: CLIENTID
+            Micro-deposit Initial ACH Request (US):
+              value: CLIENTID
+            Micro-deposit Challenge ACH Request (US):
+              value: CLIENTID
+            Micro-deposit Initial RTP Request (US):
+              value: CLIENTID
+            Micro-deposit Challenge RTP Request (US):
+              value: CLIENTID
+            Account Validation Request (Non US):
+              value: CLIENTID
+            Account Confidence Request (US):
+              value: CLIENTID
+          schema:
+            type: string
+        - name: x-program-id
+          in: header
+          required: true
+          description: A unique identifier assigned to a client during the onboarding process.
+          schema:
+            type: string
+          examples:
+            Account Validation Request (US):
+              value: VERIAUTH
+            Account Validation Request Multi (US):
+              value: VERIAUTHMULTI
+            Micro-deposit Initial ACH Request (US):
+              value: PROGRAMID
+            Micro-deposit Challenge ACH Request (US):
+              value: PROGRAMID
+            Micro-deposit Initial RTP Request (US):
+              value: PROGRAMID
+            Micro-deposit Challenge RTP Request (US):
+              value: PROGRAMID
+            Account Validation Request (Non US):
+              value: VERIAUTHNONUS
+            Account Confidence Request (US):
+              value: VERIAUTHUS
+        - name: x-program-id-type
+          in: header
+          required: false
+          description: A unique identifier assigned to a specific Validation Services product selection. The defaults values is “AVS” program-id-type. It indicates the processing settings selected for the product and will be provided during onboarding. This is an optional parameter.
+          schema:
+            type: string
+          examples:
+            Account Validation Request (US):
+              value: AVS
+            Account Validation Request Multi (US):
+              value: AVS
+            Micro-deposit Initial ACH Request (US):
+              value: AVS
+            Micro-deposit Challenge ACH Request (US):
+              value: AVS
+            Micro-deposit Initial RTP Request (US):
+              value: AVS
+            Micro-deposit Challenge RTP Request (US):
+              value: AVS
+            Account Validation Request (Non US):
+              value: AVS
+            Account Confidence Request (US):
+              value: AVS
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: array
+              minItems: 0
+              items:
+                $ref: '#/components/schemas/AccountDetails'
+            examples:
+              Account Validation Request (US):
+                value:
+                  - requestId: 123e4567-e89b-12d3-a456-426614174000
+                    account:
+                      accountNumber: '12345'
+                      financialInstitutionId:
+                        clearingSystemId:
+                          id: '122199983'
+                          idType: ABA
+                    entity:
+                      individual:
+                        firstName: Jane
+                        lastName: Abbot
+                        fullName: Jane Abbot
+              Account Validation Request Multi (US):
+                value:
+                  - requestId: 123e4567-e89b-12d3-a456-426614174000
+                    account:
+                      accountNumber: '12345'
+                      financialInstitutionId:
+                        clearingSystemId:
+                          id: '122199983'
+                          idType: ABA
+                    entity:
+                      individual:
+                        firstName: Jane
+                        lastName: Abbot
+                        fullName: Jane Abbot
+                    transactions: []
+              Micro-deposit Initial ACH Request (US):
+                value:
+                  - requestId: 223e4567-e89b-12d3-a456-426614174000
+                    profileName: verificationauth
+                    account:
+                      accountNumber: '12345'
+                      financialInstitutionId:
+                        clearingSystemId:
+                          id: '122199983'
+                          idType: ABA
+                    entity:
+                      individual:
+                        firstName: Jane
+                        lastName: Abbot
+                        fullName: Jane Abbot
+                    transactions: []
+              Micro-deposit Challenge ACH Request (US):
+                value:
+                  - requestId: 223e4567-e89b-12d3-a456-426614174000
+                    profileName: verificationauth
+                    account:
+                      accountNumber: '12345'
+                      financialInstitutionId:
+                        clearingSystemId:
+                          id: '122199983'
+                          idType: ABA
+                    entity:
+                      individual:
+                        firstName: Jane
+                        lastName: Abbot
+                        fullName: Jane Abbot
+                    transactions:
+                      - context: ACCOUNT_VALIDATION
+                        amount:
+                          amount: 0.03
+                          currency: USD
+                      - context: ACCOUNT_VALIDATION
+                        amount:
+                          amount: 0.14
+                          currency: USD
+              Micro-deposit Initial RTP Request (US):
+                value:
+                  - requestId: 1231e001-e89b-12d3-a456-129414174000213
+                    profileName: verificationauth
+                    account:
+                      accountNumber: '12345'
+                      financialInstitutionId:
+                        clearingSystemId:
+                          id: '122199983'
+                          idType: RTPABA
+                    entity:
+                      individual:
+                        firstName: Jane
+                        lastName: Abbot
+                        fullName: Jane Abbot
+                    transactions: []
+              Micro-deposit Challenge RTP Request (US):
+                value:
+                  - requestId: 1231e001-e89b-12d3-a456-129414174000213
+                    profileName: verificationauth
+                    account:
+                      accountNumber: '12345'
+                      financialInstitutionId:
+                        clearingSystemId:
+                          id: '122199983'
+                          idType: RTPABA
+                    entity:
+                      individual:
+                        firstName: Jane
+                        lastName: Abbot
+                        fullName: Jane Abbot
+                    transactions:
+                      - context: ACCOUNT_VALIDATION
+                        amount:
+                          amount: 0.03
+                          currency: USD
+                      - context: ACCOUNT_VALIDATION
+                        amount:
+                          amount: 0.14
+                          currency: USD
+              Account Validation Request (Non US):
+                value:
+                  - requestId: 123e4567-e89b-12d3-a456-426614174000
+                    account:
+                      accountNumber: '12345'
+                      financialInstitutionId:
+                        clearingSystemId:
+                          id: PARBDEFFZZZ
+                          idType: SWIFT
+                        postalAddress:
+                          country: AT
+                      accountNumberType: IBAN
+                    entity:
+                      individual:
+                        firstName: Jane
+                        lastName: Abbot
+                        fullName: Jane Abbot
+                        identification:
+                          - idType: TAX_ID
+                            id: '111223333'
+                    transactions: []
+              Account Confidence Request (US):
+                value:
+                  - requestId: 123e4567-e89b-12d3-a456-426614174000
+                    account:
+                      accountNumber: '12345'
+                      financialInstitutionId:
+                        clearingSystemId:
+                          id: '122199983'
+                          idType: ABA
+                    entity:
+                      individual:
+                        firstName: Jane
+                        lastName: Abbot
+                        fullName: Jane Abbot
+                    transactions: []
+        required: true
+      callbacks:
+        validationStatus:
+          '{client-url}/status':
+            post:
+              summary: Validation Status Callback
+              requestBody:
+                content:
+                  application/json:
+                    schema:
+                      $ref: '#/components/schemas/Payload'
+                required: true
+              responses:
+                '200':
+                  description: OK
+      responses:
+        '200':
+          description: |
+            OK
+            Error codes which could be returned with a 200 http response.
+            * 9001 - Data Provider Error
+            * 9002 - Processing Error
+            * 9003 - Timeout Error
+            * 9004 - Client Configuration Error
+            * 9005 - Bad Request
+          content:
+            application/json:
+              schema:
+                type: array
+                minItems: 0
+                items:
+                  $ref: '#/components/schemas/ResponseCollection'
+              examples:
+                AccountValidationRequest:
+                  value:
+                    - requestId: 123e4567-e89b-12d3-a456-426614174000
+                      responses:
+                        - codes:
+                            verification:
+                              code: 1002
+                              message: Open Valid
+                            authentication:
+                              code: 5002
+                              message: Ownership Match
+                          provider: JPMC_ACH
+                          details:
+                            paymentCheckContributingStatus: Contributed
+                            accountNumber: XXXX5
+                            financialInstitutionId:
+                              clearingSystemId:
+                                id: '122199983'
+                                idType: ABA
+        '400':
+          description: |
+            Bad Request.
+            * GCA-023 - Please re-send request in valid format.
+            * GCA-129 - ProgramId is required.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '403':
+          description: |
+            Forbidden.
+            * GCA-001 - Unauthorized Access.
+            * GCA-003 - Unauthorized Access.
+            * GCA-103 - The programId was not found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+        '429':
+          description: Too Many Requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+              examples:
+                TooManyRequests:
+                  summary: Too many requests
+                  description: The pre-defined API request rate limit breached due to too many requests within a specific time window.
+                  value:
+                    errors:
+                      - errorCode: '9005'
+                        errorMsg: The agreed rate limit has been exceeded, try again later.
+        '500':
+          description: |
+            Internal Error.
+            * GCA-099 - System is Unavailable.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Errors'
+components:
+  schemas:
+    Payload:
+      $ref: '#/components/schemas/ResponseCollection'
+    PostalAddress:
+      title: PostalAddress
+      required:
+        - country
+      type: object
+      description: Required for Entity Validation
+      properties:
+        addressLine:
+          type: array
+          minItems: 0
+          items:
+            type: string
+            maxLength: 60
+            minLength: 1
+            example: 123 Main St
+          description: The street address.
+          example:
+            - 123 Main St
+            - Apartment 2a
+        townName:
+          maxLength: 25
+          minLength: 1
+          type: string
+          description: The town or city name.
+          example: Tampa
+        countrySubDvsn:
+          type: string
+          minLength: 1
+          maxLength: 25
+          example: FL
+          description: The country sub division's name.<b> If used for a US state then should be 2 character code.
+        country:
+          maxLength: 2
+          minLength: 2
+          pattern: ^[A-Z]{2}$
+          type: string
+          description: |-
+            2 character ISO 3166_1 Country Code. <br>
+             Required for individual and business validation.
+          example: US
+        postalCode:
+          maxLength: 10
+          minLength: 5
+          pattern: ^([0-9]{5}|[0-9]{9}|[0-9]{5}-[0-9]{4})$
+          type: string
+          example: '52255'
+        county:
+          maxLength: 60
+          minLength: 1
+          type: string
+          description: The county name.
+          example: Hillsborough
+        residentialStatus:
+          type: string
+          description: 'Subject''s owner or renter status. Possible values: * Own * Rent'
+        unitNumber:
+          maxLength: 10
+          minLength: 1
+          type: string
+          description: The suite or the unit number.
+          example: '1'
+        buildingNumber:
+          maxLength: 10
+          minLength: 1
+          type: string
+          description: The building number.
+          example: '101'
+        buildingName:
+          maxLength: 60
+          minLength: 1
+          type: string
+          description: The building name.
+          example: Tampa
+        streetType:
+          maxLength: 60
+          minLength: 1
+          type: string
+          description: The street type.
+          example: Avenue
+        streetName:
+          maxLength: 60
+          minLength: 1
+          type: string
+          description: The street name.
+          example: Clement Town
+        suburb:
+          maxLength: 60
+          minLength: 1
+          type: string
+          description: The suburb or district within a town or a city.
+          example: Citrus Park
+    EntityId:
+      required:
+        - id
+        - idType
+      type: object
+      properties:
+        idType:
+          type: string
+          description: |-
+            Entity Identification type required for entity and financial validation:
+
+            - Individual entity possible values: 
+              - *SSN* (Optional for US), 
+              - *ITIN* (Optional for US), 
+              - *DRIVERS_LICENSE_USA* (Optional for US), 
+              - *PAN_CARD_INDIA* (Optional for IN), 
+              - *NATIONAL_ID_CHINA*(Mandatory for CN), 
+              - *DRIVERS_LICENSE* (Optional for IN), 
+              - *VOTER_ID* (Optional for IN),
+              - TAX_ID (Mandatory for GR), 
+              - *SOCIAL_SERVICE* (Optional for CA, IT, MX, PH), 
+              - *NATIONAL_ID* (Mandatory for HK, SG, AE, VN, CR, DN, ID, MY, MT, KR, SE TW, TH. Optional for MX, AR, BR, CL, RO, ES)
+
+            ---
+
+            - Business possible values: 
+              - *FEIN* (Optional for US) ), 
+              - *PAN_CARD_INDIA* (Optional for IN), 
+              - *ORGANIZATION_ID_CHINA* (Optional for CN), 
+              - *BUSINESS_REGISTRATION_NUMBER* (Mandatory for Brazil, Optional for all other countries), 
+              - *TAX_ID* (Mandatory for FR, DE, LU, NL, GB, AT, BE, CZ, DK, FL, GR, ID, IE, IT, MT, PL, PT, RO, SK, ES, SE, CH, BG, HR, CY, EE, HU, LY, LT)
+          enum:
+            - SSN
+            - DRIVERS_LICENSE_USA
+            - PAN_CARD_INDIA
+            - ITIN
+            - FEIN
+            - NATIONAL_ID_CHINA
+            - ORGANIZATION_ID_CHINA
+            - NATIONAL_ID
+            - DRIVERS_LICENSE
+            - VOTER_ID
+            - SOCIAL_SERVICE
+            - BUSINESS_REGISTRATION_NUMBER
+            - TAX_ID
+        id:
+          maxLength: 28
+          minLength: 1
+          type: string
+          description: |-
+            The first identification ID of the individual.<br>In case of SSN, must contain either full SSN/ITIN or last four digits of SSN.
+            i.e. Only four digits or nine digits will be accepted for SSN. <br>
+            In case of PAN ID, must be 10 characters: first five characters as letters, followed by four digits and then a letter.
+            Required for financial validation.
+        issuer:
+          maxLength: 6
+          minLength: 2
+          type: string
+          description: The state or place that issued the first identification ID.
+        issueDate:
+          maxLength: 8
+          minLength: 8
+          type: integer
+          description: Structure that contains passport issue date elements, format = YYYYMMDD.
+          format: int32
+        expirationDate:
+          maxLength: 8
+          minLength: 8
+          type: integer
+          description: Structure that contains passport expiration date elements, format = YYYYMMDD.
+          format: int32
+    Response:
+      type: object
+      properties:
+        codes:
+          $ref: '#/components/schemas/ResultCollection'
+        provider:
+          type: string
+          description: |-
+            - For Entity validation the following providers are applicable:
+                - **JPMC**, 
+                - **JPMC_SCREENING**,
+                - **LEXISNEXIS** 
+                - **LEXISNEXIS_INSTANT_ID**,
+                - **LEXISNEXIS_BUSINESS_V2, 
+                - **GIACT_BUSINESS**, 
+                - **GIACT_INDIVIDUAL**,
+                - **TRULIOO_INDIVIDUAL**,
+                - **TRULIOO_BUSINESS**
+            - For Account validation the following providers are applicable:
+                - **JPMC**, 
+                - **JPMC_BENE**, 
+                - **JPMC_ACH**, 
+                - **GIACT**, 
+                - **MICRODEPOSITS**, 
+                - **EWS**, 
+                - **EWS_VA**,
+                - **PATTERN_MATCH**
+        details:
+          type: object
+    ResponseCollection:
+      title: Validation Response Collection
+      description: A collection of validation responses
+      type: object
+      properties:
+        requestId:
+          maxLength: 72
+          pattern: ^[a-zA-Z0-9\\-]*$
+          type: string
+          example: ad020818-aecb-4427-a4d8-a9912f0742e4
+        profileName:
+          type: string
+        responses:
+          type: array
+          minItems: 0
+          items:
+            $ref: '#/components/schemas/Response'
+    ResponseDetails:
+      type: object
+      properties:
+        paymentCheckContributingStatus:
+          type: string
+        accountNumber:
+          type: string
+        financialInstitutionId:
+          $ref: '#/components/schemas/FinancialInstitutionId'
+        providerResponse:
+          type: object
+          additionalProperties:
+            type: object
+            description: The structure that contains provider-specific response details.
+          description: The structure that contains provider-specific response details.
+    Result:
+      type: object
+      properties:
+        code:
+          type: integer
+          description: |
+            Error codes have first digit of 9,
+            for example:
+            * 9001 : Data Provider Error
+            * 9002 : Processing Error
+            * 9003 : Timeout Error
+            * 9004 : Client Configuration Error
+            * 9005 : Bad Request
+          format: int32
+          example: 1002
+        message:
+          type: string
+          description: |
+            Message is based on the code:
+            * 1 = Open Valid
+            * 2 = Closed Invalid
+            * 3 = No Information Found
+            * 4 = Debit Return Likely
+            * 5 = Ownership Match
+            * 6 = Ownership No Match
+            * 7 = No Information Found
+          example: Open Valid
+        sequence:
+          type: integer
+          format: int32
+        authorizedRepIDs:
+          type: object
+          properties:
+            code:
+              type: integer
+              description: |
+                Refer to the API and Technical Specifications Doc  based on your product for provider response details
+
+                Error codes have first digit of 9,
+                for example:
+                * 9001 : Data Provider Error
+                * 9002 : Processing Error
+                * 9003 : Timeout Error
+                * 9004 : Client Configuration Error
+                * 9005 : Bad Request
+              format: int32
+              example: 1002
+            message:
+              type: string
+              description: |
+                Message is based on the code.<b>
+                * 1 = Open Valid
+                * 2 = Closed Invalid
+                * 3 = No Information Found
+                * 4 = Debit Return Likely
+                * 5 = Ownership Match
+                * 6 = Ownership No Match
+                * 7 = No Information Found
+              example: Open Valid
+            sequence:
+              type: integer
+              format: int32
+          description: An array that contains the results for the authorized representative for a given business. The authorizedRepIds can be returned when using provider 'LEXISNEXIS_BUSINESS_V2'.
+    AccountScore:
+      type: object
+      title: Account Score
+      description: |-
+        Account score information in coded message format being:
+
+        | code  | message              |
+        |-------|----------------------|
+        | 1109  | Information Found    |
+        | 1209  | No Information Found |
+      properties:
+        code:
+          type: integer
+          example: 1109
+        message:
+          type: string
+          example: Information Found
+      example:
+        code: 1209
+        message: No Information Found
+    ResultCollection:
+      type: object
+      properties:
+        error:
+          $ref: '#/components/schemas/Result'
+        verification:
+          $ref: '#/components/schemas/Result'
+        authentication:
+          $ref: '#/components/schemas/Result'
+        individualID:
+          $ref: '#/components/schemas/Result'
+        businessID:
+          $ref: '#/components/schemas/Result'
+        limitAmount:
+          $ref: '#/components/schemas/Result'
+        individualScreening:
+          $ref: '#/components/schemas/Result'
+        businessScreening:
+          $ref: '#/components/schemas/Result'
+        verificationMicrodeposit:
+          $ref: '#/components/schemas/Result'
+        authenticationMicrodeposit:
+          $ref: '#/components/schemas/Result'
+        accountScore:
+          $ref: '#/components/schemas/AccountScore'
+    EntityDetails:
+      required:
+        - requestId
+      type: object
+      properties:
+        profileName:
+          type: string
+        requestId:
+          maxLength: 72
+          minLength: 1
+          pattern: ^[a-zA-Z0-9\-]+$
+          type: string
+          description: Unique Identifier for a request.<br>Preferably a Universally Unique Identifier (UUID).
+          example: ad020818-aecb-4427-a4d8-a9912f0742e4
+        entity:
+          oneOf:
+            - $ref: '#/components/schemas/Individual'
+            - $ref: '#/components/schemas/Organization'
+    Individual:
+      title: Individual
+      required:
+        - individual
+      type: object
+      properties:
+        individual:
+          $ref: '#/components/schemas/IndividualEntity'
+    IndividualEntity:
+      title: Individual Entity
+      description: An individual entity
+      required:
+        - firstName
+        - fullName
+        - lastName
+      type: object
+      properties:
+        firstName:
+          maxLength: 40
+          minLength: 1
+          pattern: ^[A-Za-z0-9\s.\-?&:()`@,+/'%#!^>=]+$
+          type: string
+          description: |-
+            Indicates the individual’s first name. <br>
+            This is a required field when authenticating an individual.
+          example: Jane
+        lastName:
+          maxLength: 40
+          minLength: 1
+          pattern: ^[A-Za-z0-9\s.\-?&:()`@,+/'%#!^>=]+$
+          type: string
+          description: |-
+            Indicates the individual’s last name. <br>
+            This is a required field when authenticating an individual.
+          example: Smith
+        middleName:
+          maxLength: 40
+          minLength: 1
+          pattern: ^[A-Za-z0-9\s.\-?&:()`@,+/'%#!^>=]+$
+          type: string
+          description: |-
+            The individual’s middle name or initial. <br>
+            If middle initial is included, it should be a single letter without a period.
+        additionalLastName:
+          type: string
+          maxLength: 40
+          minLength: 1
+          description: The individual’s additional last name.
+        issueDate:
+          type: string
+          format: date
+        namePrefix:
+          maxLength: 4
+          minLength: 1
+          pattern: ^[A-Za-z0-9\s.\-?&:()`+/'%#!^>=]+$
+          type: string
+          description: A prefix or a title that precedes an account holder's name.
+        nameSuffix:
+          maxLength: 5
+          minLength: 1
+          pattern: ^[A-Za-z0-9\s.\-?&:()`+/'%#!^>=]+$
+          type: string
+          description: A suffix or a title that follows an account holder's name.
+        fullName:
+          maxLength: 150
+          minLength: 1
+          type: string
+          description: |-
+            The individual’s full name. <br>
+            First and Last Name or Full Name is required for individual validation.<br>
+            The Full Name should be used when validating Individuals using a Chinese data provider.
+          example: Jane Smith
+        postalAddress:
+          $ref: '#/components/schemas/PostalAddress'
+        associatedCountries:
+          type: array
+          minItems: 0
+          items:
+            type: string
+            maxLength: 2
+            minLength: 2
+            pattern: ^[A-Z]{2}$
+          description: List of comma-separated 2 character ISO 3166_1 Country Code.
+        identification:
+          type: array
+          minItems: 0
+          maxItems: 21
+          description: SSN, ITIN, DRIVERS_LICENSE_USA, PAN_CARD_INDIA, NATIONAL_ID, NATIONAL_ID_CHINA.
+          items:
+            $ref: '#/components/schemas/EntityId'
+        gender:
+          maxLength: 1
+          minLength: 1
+          pattern: ^[MF]+$
+          type: string
+          description: 'Gender. Possible values: * M (Male) * F (Female)'
+        dateOfBirth:
+          maxLength: 8
+          minLength: 8
+          type: integer
+          description: |-
+            Date of Birth; format = YYYYMMDD.<br>
+            The dateOfBirth is required for individual validation in the United States.
+          format: int32
+        contactDetails:
+          type: object
+          properties:
+            email:
+              maxLength: 320
+              minLength: 1
+              type: string
+              description: The email address.
+            phoneNumbers:
+              $ref: '#/components/schemas/PhoneNumbers'
+        channel:
+          maxLength: 20
+          minLength: 1
+          pattern: Mail|PointOfSale|Kiosk|Internet|Branch|Telephonic|Other
+          type: string
+          description: 'Channel. Possible values: Mail, PointOfSale, Kiosk, Internet, Branch, Telephonic, Other'
+        income:
+          type: object
+          properties:
+            income:
+              maxLength: 20
+              minLength: 1
+              pattern: ^[0-9]+$
+              type: string
+              description: Income.
+            incomeCurrency:
+              maxLength: 3
+              minLength: 1
+              pattern: ^[A-Z]+$
+              type: string
+              description: 'Income Currency. Ex: USD'
+              example: USD
+    Organization:
+      title: Organization
+      required:
+        - organization
+      type: object
+      properties:
+        organization:
+          $ref: '#/components/schemas/OrganizationEntity'
+    OrganizationEntity:
+      title: Organization Entity
+      required:
+        - name
+      type: object
+      properties:
+        name:
+          maxLength: 100
+          minLength: 1
+          type: string
+          description: |-
+            Indicates the organization’s name. <br>
+            This is a required field when authenticating an organization.
+          example: Smith And Co
+        alternateName:
+          maxLength: 100
+          minLength: 1
+          pattern: ^[A-Za-z0-9\s.\-?&:()`@,+/'%#!^>=]+$
+          type: string
+          example: Smith And Co Products
+        postalAddress:
+          $ref: '#/components/schemas/PostalAddress'
+        associatedCountries:
+          type: array
+          minItems: 0
+          items:
+            type: string
+            maxLength: 2
+            minLength: 2
+            pattern: ^[A-Z]{2}$
+          description: List of comma-separated 2 character ISO 3166_1 Country Code.
+        identification:
+          type: array
+          minItems: 0
+          description: FEIN, PAN_CARD_INDIA, ORGANIZATION_ID_CHINA.
+          items:
+            $ref: '#/components/schemas/EntityId'
+        contactDetails:
+          type: object
+          properties:
+            email:
+              maxLength: 320
+              minLength: 1
+              type: string
+              description: The email address.
+            phoneNumbers:
+              $ref: '#/components/schemas/PhoneNumbers'
+        channel:
+          maxLength: 20
+          minLength: 1
+          pattern: Mail|PointOfSale|Kiosk|Internet|Branch|Telephonic|Other
+          type: string
+          description: 'Channel. Possible values: Mail, PointOfSale, Kiosk, Internet, Branch, Telephonic, Other'
+        authorizedIndividuals:
+          type: array
+          minItems: 0
+          description: Related parties such as the Beneficial Owners of the business and the authorized signer or the controller.
+          items:
+            $ref: '#/components/schemas/IndividualEntity'
+    Account:
+      required:
+        - accountNumber
+        - financialInstitutionId
+      type: object
+      properties:
+        accountNumber:
+          maxLength: 17
+          minLength: 4
+          pattern: ^[0-9a-zA-Z]+$
+          type: string
+          example: '123456789012'
+        accountType:
+          type: string
+          description: Type of account. Example values - CLABE, DDA, IBAN
+        financialInstitutionId:
+          $ref: '#/components/schemas/FinancialInstitutionId'
+    FinancialInstitutionId:
+      title: FinancialInstitutionId
+      required:
+        - clearingSystemId
+      type: object
+      properties:
+        bic:
+          type: string
+        postalAddress:
+          $ref: '#/components/schemas/PostalAddress'
+        clearingSystemId:
+          required:
+            - id
+            - idType
+          type: object
+          properties:
+            id:
+              type: string
+            idType:
+              type: string
+              description: |-
+                Type of Institution code. Examples values:
+                - `CLABE`
+                - `INFSC`
+                - `IBAN`
+                - `ABA`
+                - `RTPABA`
+                - `SWIFT_ID`
+    PhoneNumber:
+      type: object
+      properties:
+        phoneNumber:
+          type: string
+          maxLength: 15
+          description: Phone numberValues should match the pattern ^[0-9]{10,15}$<br>
+        phoneNumberType:
+          type: string
+          description: "<br> Allowable types for individuals are::\n *\thome\n *\twork\n *\tmobile\nAllowable types for organizations are:\n *\twork <br>"
+    PhoneNumbers:
+      title: PhoneNumbers
+      type: array
+      minItems: 0
+      items:
+        $ref: '#/components/schemas/PhoneNumber'
+    AccountDetails:
+      required:
+        - account
+        - requestId
+      type: object
+      properties:
+        profileName:
+          type: string
+        requestId:
+          maxLength: 72
+          minLength: 1
+          pattern: ^[a-zA-Z0-9\-]+$
+          type: string
+          description: Unique Identifier for a request.<br>Preferably a Universally Unique Identifier (UUID).
+          example: ad020818-aecb-4427-a4d8-a9912f0742e4
+        account:
+          $ref: '#/components/schemas/Account'
+        entity:
+          oneOf:
+            - $ref: '#/components/schemas/Individual'
+            - $ref: '#/components/schemas/Organization'
+        transactions:
+          type: array
+          minItems: 0
+          items:
+            $ref: '#/components/schemas/Transaction'
+    Transaction:
+      type: object
+      properties:
+        context:
+          type: string
+          description: Denotes the transaction type (i.e., deposit, deposit with cash back, cash check, bill payment, etc.).<br>The type of transaction which determines if a credit offset is required. Supported types- - CASH_LIKE_ITEM_PURCHASE - CHECK_CASHING - DEPOSIT - ENROLLMENT_FOR_RECURRING_PAYMENTS - NEW_ACCOUNT_OPENING - MAKE_A_PAYMENT - PAYROLL - INTERBANK_FUNDS_TRANSFER - ACCOUNT_VALIDATION
+        processControlTransactionCode:
+          maximum: 999999
+          minimum: 100000
+          maxLength: 6
+          minLength: 6
+          type: integer
+          description: Process Control Transaction Code.
+          format: int32
+        amount:
+          $ref: '#/components/schemas/Amount'
+    Amount:
+      type: object
+      properties:
+        amount:
+          minimum: 0
+          type: number
+          description: |-
+            Must be present to receive a Participant Model score and also to receive the benefit of below functionality:
+            * high focus item
+            * duplication detection
+            * stop payment notification
+            <br><br>For inquiries with no dollar amount, enrollments for example, it is recommended to inquire applying an average dollar amount for the use case.<br>
+            <b>Required if available.</b>
+          format: double
+          example: 1234567890.99
+        currency:
+          maxLength: 3
+          minLength: 3
+          type: string
+          description: Required when amount is not zero.
+        checkSerialNo:
+          maxLength: 15
+          minLength: 1
+          type: integer
+          description: |-
+            For check transactions.<br>
+            Must be present to get the benefit of below functionality:<br>
+            * high focus item
+            * duplication detection
+            * stop payment notification.
+            <br><br><b>Not required for ACH inquiries.</b>
+          format: int32
+    Errors:
+      type: object
+      properties:
+        errors:
+          type: array
+          minItems: 0
+          items:
+            type: object
+            properties:
+              errorCode:
+                type: string
+                example: GCA-001
+              errorMsg:
+                type: string
+                example: Unauthorized Access
+x-jpmc-security:
+  - MutualTLS: []
+x-jpmc-securityDefinitions:
+  MutualTLS:
+    type: x509

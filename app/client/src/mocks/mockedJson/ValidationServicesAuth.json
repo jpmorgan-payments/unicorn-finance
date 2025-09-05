@@ -1,0 +1,74 @@
+[
+    {
+        "requestId": "123e4567-e89b-12d3-a456-426614174000",
+        "responses": [
+            {
+                "codes": {
+                    "verification": {
+                        "code": 1002,
+                        "message": "Open Valid"
+                    },
+                    "authentication": {
+                        "code": 5002,
+                        "message": "Ownership Match"
+                    }
+                },
+                "provider": "JPMC_ACH",
+                "details": {
+                    "paymentCheckContributingStatus": "Contributed",
+                    "accountNumber": "XXXX5",
+                    "financialInstitutionId": {
+                        "clearingSystemId": {
+                            "id": "122199983",
+                            "idType": "ABA"
+                        }
+                    }
+                }
+            }
+        ]
+    },
+    [
+        {
+            "requestId": "123e4567-e89b-12d3-a456-426614174000",
+            "responses": [
+                {
+                    "codes": {
+                        "verification": {
+                            "code": 1001,
+                            "message": "Open Valid"
+                        }
+                    },
+                    "provider": "JPMC_ACH",
+                    "details": {
+                        "accountNumber": "XXXX5",
+                        "financialInstitutionId": {
+                            "clearingSystemId": {
+                                "id": "122199983",
+                                "idType": "ABA"
+                            }
+                        }
+                    }
+                },
+                {
+                    "codes": {
+                        "authentication": {
+                            "code": 6002,
+                            "message": "Ownership No Match"
+                        }
+                    },
+                    "provider": "EWS",
+                    "details": {
+                        "paymentCheckContributingStatus": "Contributed",
+                        "accountNumber": "XXXX5",
+                        "financialInstitutionId": {
+                            "clearingSystemId": {
+                                "id": "122199983",
+                                "idType": "ABA"
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+]

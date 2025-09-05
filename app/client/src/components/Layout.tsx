@@ -1,0 +1,38 @@
+import React from "react";
+import { Outlet } from "react-router-dom";
+import { ErrorBoundary } from "react-error-boundary";
+import { Sidebar } from "./Sidebar";
+import ErrorFallback from "./ErrorFallback";
+import { AppShell } from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
+
+function Layout() {
+  const [mobileOpened] = useDisclosure();
+  const [desktopOpened] = useDisclosure(true);
+  return (
+    <AppShell
+      padding="md"
+      layout="alt"
+      navbar={{
+        width: 200,
+        breakpoint: "sm",
+        collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
+      }}
+    >
+      <AppShell.Header p="xs" hiddenFrom="sm">
+        <Sidebar />
+      </AppShell.Header>
+
+      <AppShell.Navbar p="xs">
+        <Sidebar />
+      </AppShell.Navbar>
+      <AppShell.Main>
+        <ErrorBoundary FallbackComponent={ErrorFallback}>
+          <Outlet />
+        </ErrorBoundary>
+      </AppShell.Main>
+    </AppShell>
+  );
+}
+
+export default Layout;

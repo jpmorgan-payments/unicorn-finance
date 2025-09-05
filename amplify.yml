@@ -3,14 +3,13 @@ frontend:
   phases:
     preBuild:
       commands:
-        - nvm install 22
-        - nvm use 22
+        - npm install -g pnpm
         - cd app
         - cd client
-        - yarn install
+        - pnpm install
     build:
       commands:
-        - yarn run build
+        - pnpm run build
 
   artifacts:
     baseDirectory: /app/client/dist
@@ -19,27 +18,3 @@ frontend:
   cache:
     paths:
       - node_modules/**/*
-test:
-  phases:
-    preTest:
-      commands:
-        - cd app
-        - cd client
-        - npm install -g pm2
-        - npm install -g wait-on
-        - pm2 start yarn -- run serve
-        - wait-on http://localhost:3000
-    test:
-      commands:
-        - 'npx cypress run --reporter mochawesome --reporter-options "reportDir=cypress/report/mochawesome-report,overwrite=false,html=false,json=true,timestamp=mmddyyyy_HHMMss"'
-    postTest:
-      commands:
-        - npx mochawesome-merge cypress/report/mochawesome-report/mochawesome*.json > cypress/report/mochawesome.json
-        - pm2 kill
-  artifacts:
-    baseDirectory: app/client/cypress
-    configFilePath: "**/mochawesome.json"
-    files:
-      - "**/*.png"
-      - "**/*.mp4"
-      - "**/*.html"

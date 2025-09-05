@@ -1,21 +1,27 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
-import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { worker } from "./mocks/browser";
 
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 
-const queryClient = new QueryClient();
+async function prepare() {
+  return worker.start({
+    onUnhandledRequest: "bypass", // Temporarily set to 'warn' to debug
+    serviceWorker: {
+      url: "/mockServiceWorker.js",
+    },
+  });
+}
 
-const root = createRoot(document.getElementById("root") as HTMLElement);
-root.render(
-  <React.StrictMode>
-    <QueryClientProvider client={queryClient}>
+prepare().then(() => {
+  const root = createRoot(document.getElementById("root") as HTMLElement);
+
+  root.render(
+    <React.StrictMode>
       <BrowserRouter>
         <App />
-        <ReactQueryDevtools initialIsOpen={false} />
       </BrowserRouter>
-    </QueryClientProvider>
-  </React.StrictMode>,
-);
+    </React.StrictMode>,
+  );
+});

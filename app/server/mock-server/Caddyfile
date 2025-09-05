@@ -1,0 +1,11 @@
+http://localhost
+
+route /payment/v2/* {
+	uri strip_prefix /payment/v2
+	reverse_proxy global_payments_2_0_22:4010
+}
+
+route /tsapi/v2/validations/* {
+	uri strip_prefix /tsapi/v2
+	reverse_proxy validation_services_2_1_11:4010
+}
