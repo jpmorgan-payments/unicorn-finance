@@ -21,7 +21,9 @@ export const RequestPreviewDrawer: React.FC = () => {
             <Text size="sm" fw={500} mb="xs">
               API Endpoint:
             </Text>
-            <Code block>{requestData.endpoint}</Code>
+            <Code block>
+              {requestData.endpoint.replace("/cat-api", "").replace("/api", "")}
+            </Code>
           </div>
 
           <div>
