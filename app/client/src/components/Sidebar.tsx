@@ -41,10 +41,10 @@ export const Sidebar = () => {
             <NavLink
               to={link.to}
               className={({ isActive }) =>
-                `px-3 py-2 text-sm transition-colors hover:text-gray-900 lg:px-4 lg:py-3 lg:border-l-2 lg:border-transparent ${
+                `px-3 py-2 text-sm transition-colors hover:text-gray-900 lg:px-4 lg:py-3 lg:border-l-2 lg:border-transparent rounded-md ${
                   isActive
-                    ? "text-gray-900 lg:border-pink-500"
-                    : "text-gray-600"
+                    ? "text-gray-900 lg:border-pink-500 bg-pink-50 font-medium"
+                    : "text-gray-600 hover:bg-gray-50"
                 }`
               }
             >
