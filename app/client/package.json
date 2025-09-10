@@ -46,7 +46,7 @@
     "msw": "^2.10.5",
     "prettier": "^3.6.1",
     "tailwindcss": "^4.1.11",
-    "vite": "^7.0.0",
+    "vite": "^7.1.5",
     "vite-plugin-svgr": "^4.3.0",
     "vite-tsconfig-paths": "^5.1.4"
   },
