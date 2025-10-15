@@ -69,7 +69,7 @@ const PaymentsPage: React.FC = () => {
 
   return (
     <>
-      <Group gap="xl" justify="space-between" align="center">
+      <Group gap="xl" justify="space-between" align="center" wrap="wrap">
         <Title order={1}>Global Payments</Title>
         <PoweredBy
           apiName="Global Payments 2 API"

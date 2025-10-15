@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 import { ErrorBoundary } from "react-error-boundary";
 import { Sidebar } from "./Sidebar";
 import ErrorFallback from "./ErrorFallback";
-import { AppShell, Button, Paper, Text } from "@mantine/core";
+import { AppShell, Button, Container, Paper, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { Environment } from "../context/EnvContext";
 import EnvironmentSwitcher from "./EnvironmentSwitcher";
@@ -24,6 +24,7 @@ const DemoBar = () => (
       not a real product.
     </Text>
     <Button
+      visibleFrom="md"
       variant="demo"
       color="white"
       size="xs"
@@ -49,6 +50,7 @@ const DemoBar = () => (
 function Layout() {
   const [mobileOpened] = useDisclosure();
   const [desktopOpened] = useDisclosure(true);
+  console.log(mobileOpened, desktopOpened);
   return (
     <AppShell
       padding="md"
@@ -57,26 +59,23 @@ function Layout() {
       navbar={{
         width: 200,
         breakpoint: "sm",
-        collapsed: { mobile: !mobileOpened, desktop: !desktopOpened },
+        collapsed: { mobile: mobileOpened, desktop: !desktopOpened },
       }}
     >
-      <AppShell.Header
-        visibleFrom="md"
-        style={{ backgroundColor: "#31A88C" }}
-        mb={20}
-      >
+      <AppShell.Header style={{ backgroundColor: "#31A88C" }} mb={20}>
         <DemoBar />
       </AppShell.Header>
-      <AppShell.Header hiddenFrom="sm" style={{ backgroundColor: "#31A88C" }}>
-        <DemoBar />
-        <Sidebar />
-      </AppShell.Header>
-      <AppShell.Navbar p="xs">
+
+      <AppShell.Navbar p="xs" visibleFrom="md">
         <EnvironmentSwitcher />
         <Sidebar />
       </AppShell.Navbar>
       <AppShell.Main>
         <ErrorBoundary FallbackComponent={ErrorFallback}>
+          <Container hiddenFrom="md">
+            <Sidebar />
+            <EnvironmentSwitcher />
+          </Container>
           <Outlet />
         </ErrorBoundary>
       </AppShell.Main>

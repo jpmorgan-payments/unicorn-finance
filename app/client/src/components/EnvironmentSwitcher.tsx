@@ -5,25 +5,26 @@ import { useEnv, Environment } from "../context/EnvContext";
 const CheckIcon = () => (
   <div
     style={{
-      width: 16,
-      height: 16,
+      width: 14,
+      height: 14,
       borderRadius: "50%",
       backgroundColor: "#22c55e",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
-      marginRight: 4,
+      marginRight: 6,
+      flexShrink: 0,
     }}
   >
     <svg
-      width="10"
-      height="10"
-      viewBox="0 0 10 10"
+      width="14"
+      height="14"
+      viewBox="0 0 12 12"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
-        d="M8.5 2.5L3.5 7.5L1.5 5.5"
+        d="M10 3L4.5 8.5L2 6"
         stroke="white"
         strokeWidth="1.5"
         strokeLinecap="round"
@@ -42,7 +43,7 @@ const EnvironmentSwitcher = () => {
 
   const chipStyles = {
     root: {
-      "&[data-checked]": {
+      "&[dataChecked]": {
         backgroundColor: "white !important",
         color: "black !important",
         border: "1px solid #ccc !important",
@@ -56,7 +57,7 @@ const EnvironmentSwitcher = () => {
     },
     label: {
       color: "black",
-      "&[data-checked]": {
+      "&[dataChecked]": {
         fontWeight: "bold",
         "&:hover": {
           color: "black !important",
