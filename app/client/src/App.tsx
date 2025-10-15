@@ -27,6 +27,8 @@ const theme = createTheme({
           ${params.variant === "filled" ? " !bg-gradient-to-r !from-pink-500 !to-red-500 !text-white !border-pink-500" : ""}
           ${params.variant === "outline" ? "!border-pink-500  hover:!bg-pink-600 !text-pink-500" : ""}
           ${params.variant === "light" ? "!bg-pink-50 !text-pink-600 !border-pink-200 hover:!bg-pink-100" : ""}
+          ${params.variant === "demo" ? "  !text-white !border-white !bg-transparent" : ""}
+
           ${params.disabled ? "!opacity-50 !cursor-not-allowed !bg-gray-300 !text-gray-500 !border-gray-300" : ""}
         `,
       }),
