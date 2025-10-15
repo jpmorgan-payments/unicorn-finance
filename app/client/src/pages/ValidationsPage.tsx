@@ -6,6 +6,7 @@ import { UnicornTable } from "../components/UnicornTable";
 import type { ValidationHistory } from "../features/ValidationServices/ValidationServicesTypes";
 import { useRequestPreview } from "../context/RequestPreviewContext";
 import ValidationServicesInputForm from "../features/ValidationServices/ValidationServiceInputForm";
+import { PoweredBy } from "../components/PoweredBy";
 
 const VALIDATION_HISTORY_BASE_KEY = "unicorn-validation-history";
 
@@ -76,9 +77,13 @@ const ValidationsPage: React.FC = () => {
 
   return (
     <>
-      <Group gap="xl">
+      <Group gap="xl" justify="space-between" align="center">
         <Title order={1}>Validation Services</Title>
         <EnvironmentSwitcher />
+        <PoweredBy
+          apiName="Validation Services API"
+          apiUrl="https://developer.payments.jpmorgan.com/docs/fraud-solutions/validation-services"
+        />
       </Group>
 
       <Flex

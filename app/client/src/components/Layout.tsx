@@ -40,7 +40,7 @@ const DemoBar = () => (
         flex: "0 0 auto",
       }}
     >
-      Payments Developer Portal -{">"}
+      Payments Developer Portal →
     </Button>
   </Paper>
 );

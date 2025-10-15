@@ -6,6 +6,7 @@ import { useRequestPreview } from "../context/RequestPreviewContext";
 import { useEnv } from "../context/EnvContext";
 import { UnicornTable } from "../components/UnicornTable";
 import { PaymentHistory } from "../features/GlobalPayments/GlobalPaymentTypes";
+import { PoweredBy } from "../components/PoweredBy";
 
 const PAYMENT_HISTORY_BASE_KEY = "unicorn-payment-history";
 
@@ -68,9 +69,13 @@ const PaymentsPage: React.FC = () => {
 
   return (
     <>
-      <Group gap="xl">
+      <Group gap="xl" justify="space-between" align="center">
         <Title order={1}>Global Payments</Title>
         <EnvironmentSwitcher />
+        <PoweredBy
+          apiName="Global Payments 2 API"
+          apiUrl="https://developer.payments.jpmorgan.com/docs/treasury/global-payments/capabilities/global-payments-2"
+        />
       </Group>
       <Flex
         m="md"
