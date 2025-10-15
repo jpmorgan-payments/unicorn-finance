@@ -71,7 +71,6 @@ const PaymentsPage: React.FC = () => {
     <>
       <Group gap="xl" justify="space-between" align="center">
         <Title order={1}>Global Payments</Title>
-        <EnvironmentSwitcher />
         <PoweredBy
           apiName="Global Payments 2 API"
           apiUrl="https://developer.payments.jpmorgan.com/docs/treasury/global-payments/capabilities/global-payments-2"

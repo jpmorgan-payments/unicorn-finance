@@ -6,6 +6,7 @@ import { Avatar, Image } from "@mantine/core";
 import ufLogoLarge from "../images/uf-logo.svg";
 import avatar from "../images/avatar.png";
 import github from "../images/github.png";
+import EnvironmentSwitcher from "./EnvironmentSwitcher";
 
 // Navigation configuration
 const links = [

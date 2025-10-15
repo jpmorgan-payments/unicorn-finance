@@ -79,7 +79,6 @@ const ValidationsPage: React.FC = () => {
     <>
       <Group gap="xl" justify="space-between" align="center">
         <Title order={1}>Validation Services</Title>
-        <EnvironmentSwitcher />
         <PoweredBy
           apiName="Validation Services API"
           apiUrl="https://developer.payments.jpmorgan.com/docs/fraud-solutions/validation-services"

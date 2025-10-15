@@ -8,7 +8,6 @@ const AccountsPage: React.FC = () => {
     <>
       <Group gap="xl">
         <Title order={1}>Account Services</Title>
-        <EnvironmentSwitcher />
       </Group>
 
       <Flex

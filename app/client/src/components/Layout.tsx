@@ -5,6 +5,8 @@ import { Sidebar } from "./Sidebar";
 import ErrorFallback from "./ErrorFallback";
 import { AppShell, Button, Paper, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
+import { Environment } from "../context/EnvContext";
+import EnvironmentSwitcher from "./EnvironmentSwitcher";
 
 const DemoBar = () => (
   <Paper
@@ -70,6 +72,7 @@ function Layout() {
         <Sidebar />
       </AppShell.Header>
       <AppShell.Navbar p="xs">
+        <EnvironmentSwitcher />
         <Sidebar />
       </AppShell.Navbar>
       <AppShell.Main>
