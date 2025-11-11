@@ -1,0 +1,121 @@
+name: Collect Repository Metrics
+
+on:
+  schedule:
+    # Run daily at 6 AM UTC
+    - cron: '0 6 * * *'
+  workflow_dispatch: # Allow manual triggering
+
+jobs:
+  collect-metrics:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      actions: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.ACCESS_TOKEN_METRICS }}
+
+      - name: Create metrics directory if it doesn't exist
+        run: mkdir -p metrics
+
+      - name: Collect clone statistics
+        run: |
+          DATE=$(date -u +"%Y-%m-%d %H:%M:%S")
+          
+          # Get clone statistics (last 14 days)
+          CLONES_RESPONSE=$(curl -s -H "Authorization: Bearer ${{ secrets.ACCESS_TOKEN_METRICS }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/traffic/clones")
+          
+          # Extract total clones and unique cloners
+          TOTAL_CLONES=$(echo "$CLONES_RESPONSE" | jq -r '.count // 0')
+          UNIQUE_CLONES=$(echo "$CLONES_RESPONSE" | jq -r '.uniques // 0')
+          
+          # Initialize CSV if it doesn't exist
+          if [ ! -f metrics/clone_count.csv ]; then
+            echo "Date,Total Clones,Unique Clones" > metrics/clone_count.csv
+          fi
+          
+          # Append new data
+          echo "${DATE},${TOTAL_CLONES},${UNIQUE_CLONES}" >> metrics/clone_count.csv
+          
+          echo "Clone stats collected: Total=${TOTAL_CLONES}, Unique=${UNIQUE_CLONES}"
+
+      - name: Collect view statistics
+        run: |
+          DATE=$(date -u +"%Y-%m-%d %H:%M:%S")
+          
+          # Get view statistics (last 14 days)
+          VIEWS_RESPONSE=$(curl -s -H "Authorization: Bearer ${{ secrets.ACCESS_TOKEN_METRICS }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/traffic/views")
+          
+          # Extract total views and unique visitors
+          TOTAL_VIEWS=$(echo "$VIEWS_RESPONSE" | jq -r '.count // 0')
+          UNIQUE_VIEWS=$(echo "$VIEWS_RESPONSE" | jq -r '.uniques // 0')
+          
+          # Initialize CSV if it doesn't exist
+          if [ ! -f metrics/view_count.csv ]; then
+            echo "Date,Total Views,Unique Visitors" > metrics/view_count.csv
+          fi
+          
+          # Append new data
+          echo "${DATE},${TOTAL_VIEWS},${UNIQUE_VIEWS}" >> metrics/view_count.csv
+          
+          echo "View stats collected: Total=${TOTAL_VIEWS}, Unique=${UNIQUE_VIEWS}"
+
+      - name: Collect referrer statistics
+        run: |
+          DATE=$(date -u +"%Y-%m-%d %H:%M:%S")
+          
+          # Get referrer statistics
+          REFERRERS_RESPONSE=$(curl -s -H "Authorization: Bearer ${{ secrets.ACCESS_TOKEN_METRICS }}" \
+            -H "Accept: application/vnd.github+json" \
+            "https://api.github.com/repos/${{ github.repository }}/traffic/popular/referrers")
+          
+          # Initialize CSV if it doesn't exist
+          if [ ! -f metrics/referrer_stats.csv ]; then
+            echo "Date,Referrer,Count,Uniques" > metrics/referrer_stats.csv
+          fi
+          
+          # Process each referrer and append to CSV
+          echo "$REFERRERS_RESPONSE" | jq -r --arg date "$DATE" '.[] | "\($date),\(.referrer // "direct"),\(.count // 0),\(.uniques // 0)"' >> metrics/referrer_stats.csv
+          
+          # If no referrers, add a line indicating that
+          if [ "$(echo "$REFERRERS_RESPONSE" | jq '. | length')" -eq 0 ]; then
+            echo "${DATE},no-referrers,0,0" >> metrics/referrer_stats.csv
+          fi
+          
+          REFERRER_COUNT=$(echo "$REFERRERS_RESPONSE" | jq '. | length')
+          echo "Referrer stats collected: ${REFERRER_COUNT} referrers found"
+
+      - name: Commit and push metrics
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # Add all CSV files
+          git add metrics/*.csv
+          
+          # Check if there are changes to commit
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update repository metrics - $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
+            git push
+            echo "Metrics updated and pushed to repository"
+          fi
+
+      - name: Summary
+        run: |
+          echo "## Metrics Collection Summary" >> $GITHUB_STEP_SUMMARY
+          echo "- Date: $(date -u +"%Y-%m-%d %H:%M:%S UTC")" >> $GITHUB_STEP_SUMMARY
+          echo "- Clone statistics updated" >> $GITHUB_STEP_SUMMARY
+          echo "- View statistics updated" >> $GITHUB_STEP_SUMMARY
+          echo "- Referrer statistics updated" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "All metrics have been saved to the metrics/ folder and committed to the repository." >> $GITHUB_STEP_SUMMARY
