@@ -94,22 +94,10 @@ jobs:
           REFERRER_COUNT=$(echo "$REFERRERS_RESPONSE" | jq '. | length')
           echo "Referrer stats collected: ${REFERRER_COUNT} referrers found"
 
-      - name: Commit and push metrics
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          
-          # Add all CSV files
-          git add metrics/*.csv
-          
-          # Check if there are changes to commit
-          if git diff --staged --quiet; then
-            echo "No changes to commit"
-          else
-            git commit -m "Update repository metrics - $(date -u +"%Y-%m-%d %H:%M:%S UTC")"
-            git push
-            echo "Metrics updated and pushed to repository"
-          fi
+      - uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: Apply metrics changes
+          branch: metrics
 
       - name: Summary
         run: |
