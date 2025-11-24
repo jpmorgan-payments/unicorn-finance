@@ -18,6 +18,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
+          ref: metrics
 
       - name: Create metrics directory if it doesn't exist
         run: mkdir -p metrics
