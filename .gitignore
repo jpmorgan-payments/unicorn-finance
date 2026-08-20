@@ -4,9 +4,6 @@ node_modules
 
 # Testing
 coverage
-**/cypress/screenshots/
-**/cypress/videos
-**/cypress/report
 
 # Misc
 .DS_Store
@@ -26,6 +23,7 @@ yarn-error.log*
 dist
 .env.*
 .env
+!.env.example
 build
 certs
 archive.zip

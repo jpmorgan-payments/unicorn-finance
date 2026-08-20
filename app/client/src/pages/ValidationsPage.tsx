@@ -1,79 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { Box, Flex, Group, Title, Stack } from "@mantine/core";
-import EnvironmentSwitcher from "../components/EnvironmentSwitcher";
-import { useEnv } from "../context/EnvContext";
 import { UnicornTable } from "../components/UnicornTable";
 import type { ValidationHistory } from "../features/ValidationServices/ValidationServicesTypes";
-import { useRequestPreview } from "../context/RequestPreviewContext";
 import ValidationServicesInputForm from "../features/ValidationServices/ValidationServiceInputForm";
 import { PoweredBy } from "../components/PoweredBy";
-
-const VALIDATION_HISTORY_BASE_KEY = "unicorn-validation-history";
+import { useApiHistory } from "../hooks/useApiHistory";
 
 const ValidationsPage: React.FC = () => {
-  const { environment } = useEnv();
-  const { openDrawer } = useRequestPreview();
-
-  // Create environment-specific localStorage key
-  const getValidationHistoryKey = () =>
-    `${VALIDATION_HISTORY_BASE_KEY}-${environment}`;
-
-  const [validationHistory, setValidationHistory] = useState<
-    ValidationHistory[]
-  >([]);
-
-  // Load validation history when component mounts or environment changes
-  useEffect(() => {
-    try {
-      const stored = localStorage.getItem(getValidationHistoryKey());
-      setValidationHistory(stored ? JSON.parse(stored) : []);
-    } catch (error) {
-      console.error(
-        "Error loading validation history from localStorage:",
-        error,
-      );
-      setValidationHistory([]);
-    }
-  }, [environment]);
-
-  // Save to localStorage whenever validationHistory changes
-  useEffect(() => {
-    try {
-      localStorage.setItem(
-        getValidationHistoryKey(),
-        JSON.stringify(validationHistory),
-      );
-    } catch (error) {
-      console.error("Error saving validation history to localStorage:", error);
-    }
-  }, [validationHistory]);
-
-  const handleValidationComplete = (validationData: ValidationHistory) => {
-    setValidationHistory((prev) => [validationData, ...prev]); // Add to beginning for newest first
-  };
-
-  const clearHistory = () => {
-    setValidationHistory([]);
-    localStorage.removeItem(getValidationHistoryKey());
-  };
-
-  const handleRowClick = (rowIndex: number) => {
-    const selectedValidation = validationHistory[rowIndex];
-    if (selectedValidation) {
-      openDrawer(
-        selectedValidation.requestData,
-        selectedValidation.responseData,
-      );
-    }
-  };
-
-  // Transform history data for table display
-  const tableData = validationHistory.map((item) => [
-    item.requestId,
-    item.accountNumber,
-    item.validationType,
-    item.status,
-  ]);
+  const { history, addEntry, clearHistory, handleRowClick, tableData } =
+    useApiHistory<ValidationHistory>("unicorn-validation-history", (item) => [
+      item.requestId,
+      item.accountNumber,
+      item.validationType,
+      item.status,
+    ]);
 
   return (
     <>
@@ -95,9 +35,7 @@ const ValidationsPage: React.FC = () => {
       >
         <Stack align="stretch" justify="flex-start" flex={1}>
           <Title order={4}>Verify account details</Title>
-          <ValidationServicesInputForm
-            onValidationComplete={handleValidationComplete}
-          />
+          <ValidationServicesInputForm onValidationComplete={addEntry} />
         </Stack>
 
         <Stack
@@ -109,7 +47,7 @@ const ValidationsPage: React.FC = () => {
         >
           <Group justify="space-between" mb="md">
             <Title order={4}>Validation History</Title>
-            {validationHistory.length > 0 && (
+            {history.length > 0 && (
               <button
                 onClick={clearHistory}
                 className="text-sm text-gray-500 hover:text-gray-700"
@@ -118,7 +56,7 @@ const ValidationsPage: React.FC = () => {
               </button>
             )}
           </Group>
-          {validationHistory.length > 0 ? (
+          {history.length > 0 ? (
             <UnicornTable
               columns={[
                 "Request ID",

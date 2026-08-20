@@ -9,17 +9,25 @@ import github from "../images/github.png";
 
 // Navigation configuration
 const links = [
-  // {
-  //   to: "/accounts",
-  //   label: "Accounts",
-  // },
+  {
+    to: "/",
+    label: "Home",
+  },
   {
     to: "/payments",
     label: "Payments",
   },
   {
+    to: "/fx",
+    label: "FX",
+  },
+  {
     to: "/validations",
     label: "Validations",
+  },
+  {
+    to: "/accounts",
+    label: "Accounts",
   },
 ];
 
@@ -40,6 +48,7 @@ export const Sidebar = () => {
           <li key={link.to}>
             <NavLink
               to={link.to}
+              end={link.to === "/"}
               className={({ isActive }) =>
                 `px-3 py-2 text-sm transition-colors hover:text-gray-900 lg:px-4 lg:py-3 lg:border-l-2 lg:border-transparent rounded-md ${
                   isActive

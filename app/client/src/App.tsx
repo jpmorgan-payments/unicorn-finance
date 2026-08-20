@@ -11,8 +11,10 @@ import {
 } from "@mantine/core";
 
 import Layout from "./components/Layout";
+import HomePage from "./pages/HomePage";
 import PaymentsPage from "./pages/PaymentsPage";
 import ValidationsPage from "./pages/ValidationsPage";
+import FxPage from "./pages/FxPage";
 import { RequestPreviewDrawer } from "./components/RequestPreviewDrawer";
 import "@mantine/core/styles.css";
 import AccountsPage from "./pages/AccountPage";
@@ -56,8 +58,9 @@ function App() {
         <MantineProvider theme={theme}>
           <Routes>
             <Route path="/" element={<Layout />}>
-              <Route index element={<ValidationsPage />} />
+              <Route index element={<HomePage />} />
               <Route path="payments" element={<PaymentsPage />} />
+              <Route path="fx" element={<FxPage />} />
               <Route path="validations" element={<ValidationsPage />} />
               <Route path="accounts" element={<AccountsPage />} />
             </Route>

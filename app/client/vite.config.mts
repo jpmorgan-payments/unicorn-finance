@@ -21,6 +21,14 @@ export default defineConfig({
         secure: false,
         rewrite: (path) => path.replace(/^\/cat-api\/api/, ""),
       },
+      "/mock-api": {
+        // JPMC Mock tier -> express server, which mints the OAuth2 Bearer and
+        // forwards to api-mock. Rewrites to the server's /mockapi mount.
+        target: process.env.VITE_MOCK_API_URL || "http://localhost:8082",
+        changeOrigin: true,
+        secure: false,
+        rewrite: (path) => path.replace(/^\/mock-api\/api/, "/mockapi"),
+      },
     },
   },
 });

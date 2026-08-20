@@ -1,15 +1,48 @@
 // EnvContext.tsx
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
+// PDP-aligned environment tiers, in graduation order:
+//   Local Mock - in-app MSW mock; offline, no credentials (the demo default)
+//   JPMC Mock  - PDP's hosted "Mock" environment (api-mock.payments.jpmorgan.com),
+//                reached with an OAuth2 client-credentials Bearer token
+//   JPMC CAT   - Client Acceptance Testing; real integration via mTLS + signed JWT
 export enum Environment {
-  MOCKED = "MOCKED",
-  CAT = "CAT",
+  LOCAL_MOCK = "LOCAL_MOCK",
+  JPMC_MOCK = "JPMC_MOCK",
+  JPMC_CAT = "JPMC_CAT",
 }
 
 const ENVIRONMENT_URLS: Record<Environment, string> = {
-  [Environment.MOCKED]: "", // Use /api proxy for mocked environment (goes to localhost:8081)
-  [Environment.CAT]: "/cat-api", // Use /cat-api proxy for CAT environment (goes to localhost:8082)
+  [Environment.LOCAL_MOCK]: "", // /api/* is intercepted in-browser by MSW
+  [Environment.JPMC_MOCK]: "/mock-api", // server proxy -> api-mock (OAuth2 Bearer)
+  [Environment.JPMC_CAT]: "/cat-api", // server proxy -> CAT (mTLS + signed JWT)
 };
+
+export const ENVIRONMENT_META: Record<
+  Environment,
+  { label: string; hint: string }
+> = {
+  [Environment.LOCAL_MOCK]: {
+    label: "Local Mock",
+    hint: "Runs in this app (MSW) - offline, no keys.",
+  },
+  [Environment.JPMC_MOCK]: {
+    label: "JPMC Mock",
+    hint: "PDP Mock environment (api-mock) via OAuth2 client credentials. Needs a PDP project; enable with VITE_ENABLE_JPMC=true.",
+  },
+  [Environment.JPMC_CAT]: {
+    label: "JPMC CAT",
+    hint: "Client Acceptance Testing - real integration via mTLS certs + signed JWT. Needs onboarding + the server.",
+  },
+};
+
+// The JPMC tiers require onboarding (credentials/certs) plus the express server,
+// so they are gated off by default. Set VITE_ENABLE_JPMC=true (and complete the
+// setup in .env) to make them selectable.
+export const jpmcEnvsEnabled = import.meta.env.VITE_ENABLE_JPMC === "true";
+
+export const isEnvSelectable = (env: Environment): boolean =>
+  env === Environment.LOCAL_MOCK || jpmcEnvsEnabled;
 
 interface EnvContextType {
   environment: Environment;
@@ -26,20 +59,23 @@ const EnvContext = createContext<EnvContextType | undefined>(undefined);
 export const EnvProvider = ({ children }: EnvProviderProps) => {
   const [environment, setEnvironment] = useState<Environment>(() => {
     try {
-      const savedEnv = localStorage.getItem("env");
+      const savedEnv = localStorage.getItem("env") as Environment | null;
       if (
         savedEnv &&
-        Object.values(Environment).includes(savedEnv as Environment)
+        Object.values(Environment).includes(savedEnv) &&
+        isEnvSelectable(savedEnv)
       ) {
-        return savedEnv as Environment;
+        return savedEnv;
       }
     } catch (error) {
       console.warn("Failed to load environment from localStorage:", error);
     }
-    return Environment.MOCKED; // Default fallback
+    return Environment.LOCAL_MOCK; // Default fallback
   });
 
   const switchEnv = (newEnv: Environment) => {
+    // Never land on a gated tier (defensive - the switcher also disables them).
+    if (!isEnvSelectable(newEnv)) return;
     setEnvironment(newEnv);
     try {
       localStorage.setItem("env", newEnv);

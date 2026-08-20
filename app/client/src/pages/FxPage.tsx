@@ -1,29 +1,30 @@
 import React from "react";
-import { Box, Flex, Group, Stack, Title } from "@mantine/core";
-import GlobalPaymentsInputForm from "../features/GlobalPayments/GlobalPaymentsInputForm";
+import { Box, Flex, Group, Title, Stack } from "@mantine/core";
 import { UnicornTable } from "../components/UnicornTable";
-import { PaymentHistory } from "../features/GlobalPayments/GlobalPaymentTypes";
+import type { FXHistory } from "../features/FX/FXTypes";
+import FXInputForm from "../features/FX/FXInputForm";
 import { PoweredBy } from "../components/PoweredBy";
 import { useApiHistory } from "../hooks/useApiHistory";
 
-const PaymentsPage: React.FC = () => {
+const FxPage: React.FC = () => {
   const { history, addEntry, clearHistory, handleRowClick, tableData } =
-    useApiHistory<PaymentHistory>("unicorn-payment-history", (item) => [
-      item.requestId,
-      item.accountNumber,
-      item.paymentType,
+    useApiHistory<FXHistory>("unicorn-fx-history", (item) => [
+      item.accountId,
+      item.currency,
+      String(item.responseData?.data?.length ?? 0),
       item.status,
     ]);
 
   return (
     <>
-      <Group gap="xl" justify="space-between" align="center" wrap="wrap">
-        <Title order={1}>Global Payments</Title>
+      <Group gap="xl" justify="space-between" align="center">
+        <Title order={1}>FX Rate Sheet</Title>
         <PoweredBy
-          apiName="Global Payments 2 API"
-          apiUrl="https://developer.payments.jpmorgan.com/docs/treasury/global-payments/capabilities/global-payments-2"
+          apiName="FX Rate Sheet API"
+          apiUrl="https://developer.payments.jpmorgan.com/docs/treasury/fx-rate-sheet/doc"
         />
       </Group>
+
       <Flex
         m="md"
         w={"100%"}
@@ -33,8 +34,8 @@ const PaymentsPage: React.FC = () => {
         direction={{ base: "column", sm: "row" }}
       >
         <Stack align="stretch" justify="flex-start" flex={1}>
-          <Title order={4}>Submit a Payment</Title>
-          <GlobalPaymentsInputForm onPaymentComplete={addEntry} />
+          <Title order={4}>Get a rate sheet</Title>
+          <FXInputForm onRateSheetComplete={addEntry} />
         </Stack>
 
         <Stack
@@ -45,7 +46,7 @@ const PaymentsPage: React.FC = () => {
           mr={"md"}
         >
           <Group justify="space-between" mb="md">
-            <Title order={4}>Payment History</Title>
+            <Title order={4}>Rate Sheet History</Title>
             {history.length > 0 && (
               <button
                 onClick={clearHistory}
@@ -57,7 +58,7 @@ const PaymentsPage: React.FC = () => {
           </Group>
           {history.length > 0 ? (
             <UnicornTable
-              columns={["Request ID", "Account Number", "Payment Type", "Status"]}
+              columns={["Account", "Base Currency", "Rates", "Status"]}
               data={tableData}
               onRowClick={handleRowClick}
             />
@@ -67,7 +68,7 @@ const PaymentsPage: React.FC = () => {
               style={{ backgroundColor: "#f8f9fa", borderRadius: "4px" }}
             >
               <p className="text-sm text-gray-500 text-center">
-                No payment requests yet. Submit a payment to see history here.
+                No rate sheets yet. Request a rate sheet to see history here.
               </p>
             </Box>
           )}
@@ -77,4 +78,4 @@ const PaymentsPage: React.FC = () => {
   );
 };
 
-export default PaymentsPage;
+export default FxPage;

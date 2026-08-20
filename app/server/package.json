@@ -2,6 +2,10 @@
     "name": "unicornfinance-backend",
     "version": "0.1.0",
     "private": true,
+    "packageManager": "pnpm@10.19.0",
+    "engines": {
+        "node": ">=18"
+    },
     "dependencies": {
         "@aws-sdk/client-secrets-manager": "^3.839.0",
         "@vendia/serverless-express": "^4.12.6",
@@ -19,8 +23,5 @@
         "start:local": "NODE_ENV='development' nodemon app.local.js",
         "build": "zip archive.zip . -r -x \"/certs/**\" -x \"*/.DS_Store\" -x \"app.local.js\" -x \"/mock-server/**\""
     },
-    "license": "Apache-2.0",
-    "resolutions": {
-        "semver": "^6.3.1"
-    }
+    "license": "Apache-2.0"
 }

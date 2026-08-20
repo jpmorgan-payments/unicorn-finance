@@ -1,0 +1,30 @@
+# Unicorn Finance - clone-and-run "Payments Garage" demo.
+#
+# Tier 1 (default) - offline, no credentials:
+#     docker compose up
+#   Serves the app at http://localhost:3000. All four beats (Global Payments,
+#   FX, Validation, Accounts/Transactions) run against the in-browser MSW mock.
+#
+# Tier 2 (++ real) - hit the real JPMorgan CAT sandbox (advanced):
+#     docker compose --profile real up
+#   Also starts the express mTLS + signed-JWT proxy. Requires your client
+#   certificates mounted at ./certs and the client rebuilt with your keys in
+#   .env - see .env.example. The UI Mock/CAT switch then routes to the proxy.
+services:
+  client:
+    build:
+      context: ./app/client
+    ports:
+      - "3000:80"
+
+  server:
+    profiles: ["real"]
+    build:
+      context: ./app/server
+    ports:
+      - "8082:8082"
+    environment:
+      - NODE_ENV=development
+    volumes:
+      # app.js reads certs from ../certs (i.e. /certs when cwd is /app).
+      - ./certs:/certs:ro

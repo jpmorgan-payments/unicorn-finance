@@ -18,14 +18,6 @@ servers:
     description: JPM-PROD Validation Services API Sandbox
     x-jpmc-server-url-type: mock
     x-jpmc-deployment-type: prod
-  - url: https://api-mock-payments.uat.aws.jpmchase.net/tsapi/v2
-    description: JPM-UAT Validation Services API Sandbox
-    x-jpmc-server-url-type: mock
-    x-jpmc-deployment-type: uat
-  - url: https://api-mock-payments.dev.aws.jpmchase.net/tsapi/v2
-    description: JPM-DEV Validation Services API Sandbox
-    x-jpmc-server-url-type: mock
-    x-jpmc-deployment-type: dev
 tags:
   - name: Account Validation
     description: API to validate accounts
