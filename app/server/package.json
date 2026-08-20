@@ -23,5 +23,10 @@
         "start:local": "NODE_ENV='development' nodemon app.local.js",
         "build": "zip archive.zip . -r -x \"/certs/**\" -x \"*/.DS_Store\" -x \"app.local.js\" -x \"/mock-server/**\""
     },
-    "license": "Apache-2.0"
+    "license": "Apache-2.0",
+    "pnpm": {
+        "overrides": {
+            "semver": "^6.3.1"
+        }
+    }
 }

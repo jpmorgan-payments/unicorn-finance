@@ -29,13 +29,32 @@ export function selectFXRates(
   return matched.length > 0 ? matched : all;
 }
 
+/**
+ * Error-simulation trigger shared by every handler: `?statusCode=<code>` makes
+ * the mock return that status instead of its happy-path payload. Kept in one
+ * place so a beat can't drift into answering 401 with a 500. Pure + exported so
+ * it can be unit-tested without spinning up the mock server.
+ */
+export const SIMULATABLE_ERROR_STATUSES = [401, 403, 404, 500] as const;
+
+export function triggeredErrorStatus(url: URL): number | null {
+  const requested = Number(url.searchParams.get("statusCode"));
+  return SIMULATABLE_ERROR_STATUSES.includes(
+    requested as (typeof SIMULATABLE_ERROR_STATUSES)[number],
+  )
+    ? requested
+    : null;
+}
+
 // Define handlers that catch the corresponding requests and returns the mock data.
 export const handlers = [
   http.post("/api/accessapi/balance", ({ request }) => {
     const url = new URL(request.url);
-    const statusCode = url.searchParams.get("statusCode");
-    if (statusCode === "500") {
-      return new HttpResponse(JSON.stringify(errorResponse), { status: 500 });
+    const errorStatus = triggeredErrorStatus(url);
+    if (errorStatus) {
+      return new HttpResponse(JSON.stringify(errorResponse), {
+        status: errorStatus,
+      });
     }
     return HttpResponse.json(
       { accountList: accountBalanceMockedResponse },
@@ -46,9 +65,11 @@ export const handlers = [
     "/api/digitalSignature/payment/v2/payments",
     async ({ request }) => {
       const url = new URL(request.url);
-      const statusCode = url.searchParams.get("statusCode");
-      if (statusCode === "401") {
-        return new HttpResponse(JSON.stringify(errorResponse), { status: 500 });
+      const errorStatus = triggeredErrorStatus(url);
+      if (errorStatus) {
+        return new HttpResponse(JSON.stringify(errorResponse), {
+          status: errorStatus,
+        });
       }
 
       // Parse request body to get requestId
@@ -71,9 +92,11 @@ export const handlers = [
   ),
   http.post("/api/tsapi/v2/validations/accounts", async ({ request }) => {
     const url = new URL(request.url);
-    const statusCode = url.searchParams.get("statusCode");
-    if (statusCode === "401") {
-      return new HttpResponse(JSON.stringify(errorResponse), { status: 500 });
+    const errorStatus = triggeredErrorStatus(url);
+    if (errorStatus) {
+      return new HttpResponse(JSON.stringify(errorResponse), {
+        status: errorStatus,
+      });
     }
     // Parse request body to get requestId
     let requestId = "default-request-id";
@@ -104,9 +127,11 @@ export const handlers = [
   }),
   http.post("/api/fxapi/v1/rate-sheets", async ({ request }) => {
     const url = new URL(request.url);
-    const statusCode = url.searchParams.get("statusCode");
-    if (statusCode === "401") {
-      return new HttpResponse(JSON.stringify(errorResponse), { status: 500 });
+    const errorStatus = triggeredErrorStatus(url);
+    if (errorStatus) {
+      return new HttpResponse(JSON.stringify(errorResponse), {
+        status: errorStatus,
+      });
     }
     const body = (await request.json()) as {
       accountId?: string;
@@ -133,9 +158,11 @@ export const handlers = [
   }),
   http.get("/api/tsapi/v3/transactions", ({ request }) => {
     const url = new URL(request.url);
-    const statusCode = url.searchParams.get("statusCode");
-    if (statusCode === "500") {
-      return new HttpResponse(JSON.stringify(errorResponse), { status: 500 });
+    const errorStatus = triggeredErrorStatus(url);
+    if (errorStatus) {
+      return new HttpResponse(JSON.stringify(errorResponse), {
+        status: errorStatus,
+      });
     }
     return HttpResponse.json(
       { transactions: transactionsMock },

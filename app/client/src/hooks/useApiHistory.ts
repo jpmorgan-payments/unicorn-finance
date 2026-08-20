@@ -52,10 +52,9 @@ export function useApiHistory<T extends ApiHistoryEntry>(
 
   const addEntry = (item: T) => setHistory((prev) => [item, ...prev]);
 
-  const clearHistory = () => {
-    setHistory([]);
-    localStorage.removeItem(storageKey);
-  };
+  // The save effect above persists the cleared list, so there is no separate
+  // removeItem here - it would be undone on the very next render.
+  const clearHistory = () => setHistory([]);
 
   const handleRowClick = (rowIndex: number) => {
     const selected = history[rowIndex];
