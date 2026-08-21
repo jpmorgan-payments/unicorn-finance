@@ -51,7 +51,7 @@ export const handlers = [
   http.post("/api/accessapi/balance", ({ request }) => {
     const url = new URL(request.url);
     const errorStatus = triggeredErrorStatus(url);
-    if (errorStatus) {
+    if (errorStatus !== null) {
       return new HttpResponse(JSON.stringify(errorResponse), {
         status: errorStatus,
       });
@@ -66,7 +66,7 @@ export const handlers = [
     async ({ request }) => {
       const url = new URL(request.url);
       const errorStatus = triggeredErrorStatus(url);
-      if (errorStatus) {
+      if (errorStatus !== null) {
         return new HttpResponse(JSON.stringify(errorResponse), {
           status: errorStatus,
         });
@@ -93,7 +93,7 @@ export const handlers = [
   http.post("/api/tsapi/v2/validations/accounts", async ({ request }) => {
     const url = new URL(request.url);
     const errorStatus = triggeredErrorStatus(url);
-    if (errorStatus) {
+    if (errorStatus !== null) {
       return new HttpResponse(JSON.stringify(errorResponse), {
         status: errorStatus,
       });
@@ -128,7 +128,7 @@ export const handlers = [
   http.post("/api/fxapi/v1/rate-sheets", async ({ request }) => {
     const url = new URL(request.url);
     const errorStatus = triggeredErrorStatus(url);
-    if (errorStatus) {
+    if (errorStatus !== null) {
       return new HttpResponse(JSON.stringify(errorResponse), {
         status: errorStatus,
       });
@@ -159,7 +159,7 @@ export const handlers = [
   http.get("/api/tsapi/v3/transactions", ({ request }) => {
     const url = new URL(request.url);
     const errorStatus = triggeredErrorStatus(url);
-    if (errorStatus) {
+    if (errorStatus !== null) {
       return new HttpResponse(JSON.stringify(errorResponse), {
         status: errorStatus,
       });
