@@ -174,7 +174,7 @@
 <div id="bar"><div id="trip"></div><div id="count"></div></div>
 
 <script>
-const TRIP = 'US$10,000 &nbsp;·&nbsp; <b>San Jose</b> → <b>Berlin</b>';
+const TRIP = 'INV-2026-4417 &nbsp;·&nbsp; <b>€461,550</b> &nbsp;·&nbsp; San Jose → Berlin';
 const S=[
 
 /* 1 */ {html:`
@@ -185,24 +185,47 @@ const S=[
 <div class="say">Today's car: <span class="uf">Unicorn Finance</span>.</div>`},
 
 /* 2 */ {html:`
-<div class="eyebrow">THE JOB</div>
-<h2>One payment.<br>All the way <em>through</em>.</h2>
+<div class="eyebrow">THE JOB &nbsp;·&nbsp; ACCOUNTS PAYABLE, TUESDAY MORNING</div>
+<h2>An invoice is due<br>in <em>Berlin</em></h2>
 <div class="docket">
-  <div class="leg"><span class="lbl">FROM</span><span class="big">San Jose</span><span class="sm">United States · USD</span></div>
+  <div class="leg"><span class="lbl">SUPPLIER</span><span class="big">Berlin</span><span class="sm">Germany · IBAN + BIC</span></div>
   <div class="arrow">→</div>
-  <div class="leg amt"><span class="lbl">AMOUNT</span><span class="big">$10,000</span><span class="sm">and what lands is not this</span></div>
+  <div class="leg amt"><span class="lbl">INVOICE DUE</span><span class="big">€461,550</span><span class="sm">INV-2026-4417 · net 30, due today</span></div>
   <div class="arrow">→</div>
-  <div class="leg"><span class="lbl">TO</span><span class="big">Berlin</span><span class="sm">Germany · EUR · IBAN</span></div>
+  <div class="leg"><span class="lbl">YOU PAY FROM</span><span class="big">San Jose</span><span class="sm">United States · USD account</span></div>
 </div>
-<div class="say">Four bays. Every one of them is a question that shows up somewhere between pressing send and the money arriving.</div>`},
+<div class="say">You hold dollars. The invoice is in euros. It has to arrive <b>exactly</b> on the number, or your supplier's ledger shows a short payment and somebody spends Thursday reconciling it by hand.</div>`},
+
+/* 2b */ {html:`
+<div class="eyebrow">FIRST, WHAT THIS IS NOT</div>
+<h2>This isn't a<br><em>checkout</em></h2>
+<div class="cols">
+<div>
+<div class="say">Taking a card from a consumer is a solved, well-marketed problem. This is the other direction: <b>a business paying a business, on bank rails, across a border.</b></div>
+<div class="say">You can tell from the contract. These are fields a card charge has no use for.</div>
+</div>
+<pre><span class="c">// what a supplier payment carries</span>
+paymentPurpose: {
+  <span class="hl">categoryPurpose: "CXBSNS"</span>  <span class="c">// business payment</span>
+},
+remittanceInformation: {
+  structuredInformation: [{
+    <span class="hl">creditReference: { reference: "INV-2026-4417" }</span>
+  }]
+},
+<span class="hl">taxInformation</span>:       { ... },
+<span class="hl">regulatoryReporting</span>: { authority: { country: <span class="s">"DE"</span> } },
+agentInstructions:   { <span class="c">/* who bears the charges */</span> }</pre>
+</div>
+<div class="say">The invoice number travels <b>with the money</b>. That's what lets the supplier's ledger close itself instead of waiting on a remittance email.</div>`},
 
 /* 3 */ {html:`
 <div class="eyebrow">STAGE SELECT</div>
 <h2>Four bays</h2>
 <div class="bays">
-  <div class="baycard"><span class="no">01</span><span class="nm">Gearbox</span><span class="api">Global Payments</span><span class="d">How does it get from San Jose to Berlin at all?</span></div>
-  <div class="baycard"><span class="no">02</span><span class="nm">Dyno</span><span class="api">FX Rate Sheet</span><span class="d">Hang on. What rate did I actually get?</span></div>
-  <div class="baycard"><span class="no">03</span><span class="nm">Inspection</span><span class="api">Account Validation</span><span class="d">Hang on. Did it go to the right people?</span></div>
+  <div class="baycard"><span class="no">01</span><span class="nm">Gearbox</span><span class="api">Global Payments</span><span class="d">How does it reach a German IBAN at all?</span></div>
+  <div class="baycard"><span class="no">02</span><span class="nm">Dyno</span><span class="api">FX Rate Sheet</span><span class="d">Hang on. Will it land on €461,550 exactly?</span></div>
+  <div class="baycard"><span class="no">03</span><span class="nm">Inspection</span><span class="api">Account Validation</span><span class="d">Hang on. Is that IBAN really the supplier's?</span></div>
   <div class="baycard"><span class="no">04</span><span class="nm">Diagnostics</span><span class="api">Patchmageddon</span><span class="d">And what is any of it worth if the software underneath is open?</span></div>
 </div>
 <div class="say">Three of them are APIs you can call this afternoon. <b>The fourth is why they were built the way they were.</b></div>`},
@@ -211,9 +234,9 @@ const S=[
 /* 4 */ {bay:1, html:`
 <div class="eyebrow"><span class="bay">BAY 01</span> GEARBOX &nbsp;·&nbsp; GLOBAL PAYMENTS</div>
 <h2>San Jose to Berlin.<br>How many <em>integrations</em>?</h2>
-<div class="say">The supplier in Berlin has an IBAN and a BIC. The one you paid last week in Ohio had a nine-digit routing number and wanted it same day.</div>
-<div class="say">Two countries, two rails, two identifier schemes, two clearing systems.</div>
-<div class="say"><b>Everyone assumes that's two builds. It's one.</b></div>`},
+<div class="say">Berlin has an IBAN and a BIC. The supplier you paid on Friday in Ohio had a nine-digit routing number and wanted it same day. Payroll goes out on a third rail entirely.</div>
+<div class="say">Different countries, different rails, different identifier schemes, different clearing systems.</div>
+<div class="say"><b>Every treasury team assumes that's a build each. It's one.</b></div>`},
 
 /* 5 */ {bay:1, html:`
 <div class="eyebrow"><span class="bay">BAY 01</span> BEHIND THE API</div>
@@ -223,11 +246,13 @@ const S=[
   requestedExecutionDate: <span class="s">"2026-08-30"</span>,
   paymentIdentifiers: { <span class="hl">endToEndId: "UF1756..."</span> },
   transferType: <span class="s">"CREDIT"</span>,
-  value: { currency: <span class="s">"USD"</span>, amount: <span class="s">"10000"</span> },
+  value: { currency: <span class="s">"USD"</span>, amount: <span class="s">"500000"</span> },
   <span class="hl">paymentType: "ACH"</span>,   <span class="c">// or "RTP"</span>
   debtor:      { <span class="c">/* San Jose */</span> },
   debtorAgent: { <span class="c">/* USABA routing no. */</span> },
-  creditor:    { <span class="c">/* Berlin — IBAN + BIC */</span> }
+  creditor:    { <span class="c">/* Berlin — IBAN + BIC */</span> },
+  paymentPurpose:        { <span class="c">/* CXBSNS */</span> },
+  remittanceInformation: { <span class="c">/* INV-2026-4417 */</span> }
 }</pre>
 <div>
 <ul class="pts">
@@ -243,9 +268,9 @@ const S=[
 /* 6 */ {bay:2, html:`
 <div class="eyebrow"><span class="bay">BAY 02</span> DYNO &nbsp;·&nbsp; FX RATE SHEET</div>
 <h2>Hang on. What rate<br>did I <em>actually</em> get?</h2>
-<div class="say">You sent ten thousand dollars. Berlin is expecting euros. Somewhere between those two facts a rate got applied.</div>
-<div class="say">You quoted the customer this morning. Settlement is this afternoon.</div>
-<div class="say"><b>Who is carrying the difference?</b></div>`},
+<div class="say">The invoice is fixed at <b>€461,550</b>. That number does not move. What moves is how many dollars it takes to settle it.</div>
+<div class="say">At a guaranteed 0.9231 you send US$500,000 and the invoice closes to the cent. On a rate that drifts to 0.9184, the same half million lands as <b>€459,200</b>.</div>
+<div class="say">Two thousand three hundred and fifty euros short. The invoice stays open, the supplier chases, and your month-end has an exception in it.</div>`},
 
 /* 7 */ {bay:2, html:`
 <div class="eyebrow"><span class="bay">BAY 02</span> BEHIND THE API</div>
@@ -265,10 +290,10 @@ const S=[
 }</pre>
 <div>
 <ul class="pts">
-<li><strong>Guaranteed, or indicative.</strong> One boolean separates a rate you can hold from a rate that is only information.</li>
-<li><strong>The guarantee is bounded.</strong> It holds between <code>minTranSize</code> and <code>maxTranSize</code>. Our $10,000 sits comfortably inside. A rate without bounds isn't a quote.</li>
-<li><strong>And it expires.</strong> <code>effectiveDate</code> and <code>effectiveTime</code> say when.</li>
-<li><strong>Carry the <code>rateId</code> into the payment</strong> and the rate is locked. That's the answer to who takes the difference.</li>
+<li><strong>Guaranteed, or indicative.</strong> One boolean separates a rate you can commit an invoice to from a rate that is only information.</li>
+<li><strong>The guarantee is bounded.</strong> It holds between <code>minTranSize</code> and <code>maxTranSize</code>. Half a million sits inside the cap — but not by much, and at this size that ceiling is suddenly a number you care about.</li>
+<li><strong>And it expires.</strong> <code>effectiveDate</code> and <code>effectiveTime</code> say when, which is what makes a payment run schedulable.</li>
+<li><strong>Carry the <code>rateId</code> into the payment</strong> and the euros are locked. The invoice closes on the number, first time.</li>
 </ul>
 <span class="path"><span class="verb">POST</span> /fxapi/v1/rate-sheets</span>
 </div>
@@ -278,9 +303,9 @@ const S=[
 /* 8 */ {bay:3, html:`
 <div class="eyebrow"><span class="bay">BAY 03</span> INSPECTION &nbsp;·&nbsp; ACCOUNT VALIDATION</div>
 <h2>Hang on. Did it go<br>to the <em>right</em> people?</h2>
-<div class="say">The Berlin supplier emailed updated bank details last month. The invoice was genuine. The supplier is genuine.</div>
-<div class="say"><b>The account number was not.</b></div>
-<div class="say">Ten thousand dollars has now cleared, on time, into somebody else's account.</div>`},
+<div class="say">Three weeks ago the Berlin supplier emailed accounts payable with updated bank details. New IBAN, same letterhead, same contact name, polite note about changing banks.</div>
+<div class="say">The invoice is genuine. The supplier is genuine. <b>The IBAN is not.</b></div>
+<div class="say">Half a million dollars has now cleared, on time, at a locked rate, into somebody else's account. <b>Every other bay worked perfectly.</b></div>`},
 
 /* 9 */ {bay:3, html:`
 <div class="eyebrow"><span class="bay">BAY 03</span> BEHIND THE API</div>
@@ -304,7 +329,7 @@ providerResponse: {
 <li><strong>Verification</strong> asks whether the account is open and valid. The fraudulent one passes this.</li>
 <li><strong>Authentication</strong> asks whether it belongs to who you think. This is where it fails.</li>
 <li><strong>An account can be entirely real and still not theirs.</strong> A single boolean cannot express that, which is why the response never was one.</li>
-<li><strong>Or take the score.</strong> Your risk appetite for a $50 payout is not your appetite for $10,000.</li>
+<li><strong>Or take the score.</strong> Your risk appetite for a $500 refund is not your appetite for a half-million-dollar supplier run.</li>
 </ul>
 <span class="path"><span class="verb">POST</span> /tsapi/v2/validations/accounts</span>
 </div>
