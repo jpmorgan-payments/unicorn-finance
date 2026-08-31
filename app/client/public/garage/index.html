@@ -163,6 +163,27 @@
     width:34px;height:34px;border-radius:4px;cursor:pointer;font-size:15px;line-height:1;
     font-family:"Archivo",sans-serif;transition:.15s;}
   #nav button:hover,#nav button:focus-visible{border-color:var(--gold);color:var(--gold);outline:none;}
+
+  /* ---------- terminal moment ---------- */
+  .term{background:#05070A;border:1px solid var(--line-hot);border-radius:8px;
+    overflow:hidden;margin-top:clamp(12px,2vh,20px);box-shadow:0 14px 40px rgba(0,0,0,.5);}
+  .term .bar{display:flex;align-items:center;gap:7px;padding:9px 13px;
+    background:rgba(255,255,255,.05);border-bottom:1px solid var(--line-hot);}
+  .term .bar i{width:10px;height:10px;border-radius:50%;display:block;}
+  .term .bar .r{background:#FF5F57;} .term .bar .y{background:#FEBC2E;} .term .bar .g{background:#28C840;}
+  .term .bar span{margin-left:8px;font-family:"JetBrains Mono",monospace;
+    font-size:11px;color:var(--ink-faint);}
+  .term .body{padding:clamp(13px,1.5vw,20px);font-family:"JetBrains Mono",monospace;
+    font-size:clamp(11px,1.08vw,15px);line-height:1.75;}
+  .term .cmd{color:#EDE7FF;}
+  .term .cmd::before{content:"$ ";color:var(--gold);font-weight:500;}
+  .term .out{color:var(--ink-faint);}
+  .term .ok{color:#5BE8C0;}
+  .term .url{color:var(--cyan);text-decoration:underline;text-underline-offset:3px;}
+  .term .cur{display:inline-block;width:9px;height:1.05em;background:var(--gold);
+    vertical-align:-2px;margin-left:3px;animation:blink 1s steps(2,end) infinite;}
+  @keyframes blink{50%{opacity:0;}}
+  @media (prefers-reduced-motion:reduce){.term .cur{animation:none;}}
 </style>
 </head>
 <body>
@@ -183,6 +204,32 @@ const S=[
 <div class="rule"></div>
 <div class="lede">Most API sessions hand you a brochure. In here we put it on the ramp, take the panels off, and show you what's actually turning.</div>
 <div class="say">Today's car: <span class="uf">Unicorn Finance</span>.</div>`},
+
+/* 1b */ {html:`
+<div class="eyebrow">BEFORE WE OPEN ANYTHING</div>
+<h2>One command.<br>No <em>keys</em>.</h2>
+<div class="cols">
+<div>
+<div class="term">
+  <div class="bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>unicorn-finance</span></div>
+  <div class="body">
+    <div class="cmd">git clone github.com/jpmorgan-payments/unicorn-finance</div>
+    <div class="cmd">docker compose up</div>
+    <div class="out">building client…</div>
+    <div class="out">mock service worker registered</div>
+    <div class="ok">✓ ready on <span class="url">http://localhost:3000</span><span class="cur"></span></div>
+  </div>
+</div>
+</div>
+<div>
+<ul class="pts">
+<li><strong>No credentials.</strong> No client id, no secret, no certificates, nothing to request from anyone.</li>
+<li><strong>No JPMC network.</strong> No VPN, no allowlist, no ticket. It runs on hotel wifi.</li>
+<li><strong>Real request and response shapes</strong>, served by an in-browser mock. Everything in the next four bays is running right here.</li>
+</ul>
+<div class="say">That is the whole setup. <b>Clone it on the train home and it still works.</b></div>
+</div>
+</div>`},
 
 /* 2 */ {html:`
 <div class="eyebrow">THE JOB &nbsp;·&nbsp; ACCOUNTS PAYABLE, TUESDAY MORNING</div>
