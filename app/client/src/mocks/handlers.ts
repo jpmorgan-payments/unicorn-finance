@@ -56,10 +56,7 @@ export const handlers = [
         status: errorStatus,
       });
     }
-    return HttpResponse.json(
-      { accountList: accountBalanceMockedResponse },
-      { status: 200 },
-    );
+    return HttpResponse.json(accountBalanceMockedResponse, { status: 200 });
   }),
   http.post(
     "/api/digitalSignature/payment/v2/payments",
