@@ -102,7 +102,7 @@ export const handlers = [
     const requestBody = (await request.json()) as any[];
     if (requestBody && requestBody.length > 0) {
       requestId = requestBody[0].requestId || "default-request-id";
-      profile = requestBody[0].profile || "authentication";
+      profile = requestBody[0].profileName || "authentication";
     }
 
     if (profile === "authentication") {
