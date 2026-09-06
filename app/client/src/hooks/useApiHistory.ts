@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useEnv } from "../context/EnvContext";
 import { useRequestPreview } from "../context/RequestPreviewContext";
 
@@ -16,6 +16,16 @@ interface ApiHistoryEntry {
   responseData: unknown;
 }
 
+function loadHistory<T>(baseKey: string, environment: string): T[] {
+  try {
+    const stored = localStorage.getItem(`${baseKey}-${environment}`);
+    return stored ? JSON.parse(stored) : [];
+  } catch (error) {
+    console.error(`Error loading ${baseKey} from localStorage:`, error);
+    return [];
+  }
+}
+
 export function useApiHistory<T extends ApiHistoryEntry>(
   baseKey: string,
   toRow: (item: T) => string[],
@@ -25,30 +35,41 @@ export function useApiHistory<T extends ApiHistoryEntry>(
 
   const storageKey = `${baseKey}-${environment}`;
 
-  const [history, setHistory] = useState<T[]>([]);
+  // Load synchronously on mount (rather than in an effect) so there is no
+  // render where `history` is still [] - that render previously let the save
+  // effect below fire with the pre-load value and briefly overwrite the
+  // just-read data.
+  const [history, setHistory] = useState<T[]>(() =>
+    loadHistory<T>(baseKey, environment),
+  );
 
-  // Load when the environment changes (each environment has its own history).
+  // Skip the save effect run that immediately follows a load (mount or an
+  // environment switch): that `history` value was just read from storage, so
+  // writing it straight back is a no-op at best and, previously, a same-tick
+  // race at worst.
+  const skipNextSaveRef = useRef(true);
+
+  const previousEnvironmentRef = useRef(environment);
   useEffect(() => {
-    try {
-      const stored = localStorage.getItem(storageKey);
-      setHistory(stored ? JSON.parse(stored) : []);
-    } catch (error) {
-      console.error(`Error loading ${baseKey} from localStorage:`, error);
-      setHistory([]);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [environment]);
+    if (previousEnvironmentRef.current === environment) return;
+    previousEnvironmentRef.current = environment;
+    skipNextSaveRef.current = true;
+    setHistory(loadHistory<T>(baseKey, environment));
+  }, [environment, baseKey]);
 
   // Save whenever the history itself changes (not on environment switch, so an
   // environment change never clobbers the newly-loaded key with stale data).
   useEffect(() => {
+    if (skipNextSaveRef.current) {
+      skipNextSaveRef.current = false;
+      return;
+    }
     try {
       localStorage.setItem(storageKey, JSON.stringify(history));
     } catch (error) {
       console.error(`Error saving ${baseKey} to localStorage:`, error);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [history]);
+  }, [history, storageKey, baseKey]);
 
   const addEntry = (item: T) => setHistory((prev) => [item, ...prev]);
 
