@@ -38,5 +38,13 @@ export async function submitTransactionsRequest(url: string) {
       "x-program-id-type": import.meta.env.VITE_PROGRAM_ID_TYPE,
     },
   });
-  return res.json();
+  const text = await res.text();
+  if (!res.ok || !text) {
+    throw new Error(
+      `Transactions request failed (${res.status} ${res.statusText})${
+        text ? `: ${text}` : ""
+      }`,
+    );
+  }
+  return JSON.parse(text);
 }

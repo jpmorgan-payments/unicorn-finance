@@ -77,5 +77,13 @@ export async function submitGlobalPaymentsRequest(
     },
   });
 
-  return res.json();
+  const text = await res.text();
+  if (!res.ok || !text) {
+    throw new Error(
+      `Global payment request failed (${res.status} ${res.statusText})${
+        text ? `: ${text}` : ""
+      }`,
+    );
+  }
+  return JSON.parse(text);
 }
