@@ -18,6 +18,7 @@ import FxPage from "./pages/FxPage";
 import { RequestPreviewDrawer } from "./components/RequestPreviewDrawer";
 import "@mantine/core/styles.css";
 import AccountsPage from "./pages/AccountPage";
+import { useSecretGarage } from "./hooks/useSecretGarage";
 
 export const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -52,6 +53,8 @@ const theme = createTheme({
 });
 
 function App() {
+  useSecretGarage();
+
   return (
     <EnvProvider>
       <RequestPreviewProvider>
