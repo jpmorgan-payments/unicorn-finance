@@ -5,7 +5,11 @@
 export type Transaction = {
   transactionId: string;
   bookingDate: string;
-  amount: number;
+  // JPM payment APIs commonly represent amounts as decimal strings for
+  // precision (see the Global Payments request body); the Local Mock fixture
+  // happens to use a number, but callers must not assume that holds for the
+  // real JPMC Mock/CAT tiers.
+  amount: number | string;
   currency: string;
   creditDebitIndicator: "CREDIT" | "DEBIT";
   counterparty: string;

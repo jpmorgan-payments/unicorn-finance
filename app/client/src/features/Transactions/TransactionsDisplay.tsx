@@ -27,7 +27,7 @@ const TransactionsDisplay: React.FC = () => {
   const tableData = transactions.map((t) => [
     t.transactionId,
     t.bookingDate,
-    `${t.creditDebitIndicator === "CREDIT" ? "+" : "-"}${t.currency} ${t.amount.toFixed(2)}`,
+    `${t.creditDebitIndicator === "CREDIT" ? "+" : "-"}${t.currency} ${Number(t.amount).toFixed(2)}`,
     t.status,
   ]);
 
