@@ -216,17 +216,11 @@ const requestMockAccessToken = async () => {
 };
 
 /**
- * Returns a valid Bearer token for PDP's Mock environment, reusing the cached
- * one until it is within a minute of expiry. Concurrent callers share a single
- * in-flight request instead of each hitting the token endpoint. The client
- * secret stays server-side and never reaches the browser.
+ * Kicks off (or reuses) a single in-flight token request, shared by
+ * concurrent callers instead of each hitting the token endpoint.
  * @returns {Promise<string>} a valid access token
  */
-const getMockAccessToken = async () => {
-  if (cachedToken && cachedToken.expiresAt > Date.now() + 60000) {
-    return cachedToken.value;
-  }
-
+const startTokenRefresh = () => {
   if (!inFlightToken) {
     inFlightToken = requestMockAccessToken()
       .then((token) => {
@@ -237,8 +231,33 @@ const getMockAccessToken = async () => {
         inFlightToken = null;
       });
   }
-
   return inFlightToken;
+};
+
+/**
+ * Returns a valid Bearer token for PDP's Mock environment, reusing the cached
+ * one until it expires. Once the cached token is within a minute of expiry, a
+ * refresh is kicked off in the background - the still-valid cached token keeps
+ * serving requests while it completes, so only the request that lands after
+ * actual expiry (not merely the 60s window) ever blocks on the OAuth round
+ * trip. The client secret stays server-side and never reaches the browser.
+ * @returns {Promise<string>} a valid access token
+ */
+const getMockAccessToken = async () => {
+  const now = Date.now();
+
+  if (cachedToken && cachedToken.expiresAt > now) {
+    if (cachedToken.expiresAt <= now + 60000) {
+      // Background refresh; swallow rejection here so a failed refresh doesn't
+      // surface as an unhandled rejection when no request is awaiting it - the
+      // still-valid cached token below is what actually serves this request,
+      // and the next getMockAccessToken() call will retry if needed.
+      startTokenRefresh().catch(() => {});
+    }
+    return cachedToken.value;
+  }
+
+  return startTokenRefresh();
 };
 
 /**
