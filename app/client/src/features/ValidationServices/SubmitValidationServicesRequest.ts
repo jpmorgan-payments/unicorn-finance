@@ -1,4 +1,6 @@
 import type { AVSAccountDetails } from "./ValidationServicesTypes";
+import { getPdpAuthHeaders } from "../../utils/pdpAuthHeaders";
+import { parseJsonResponse } from "../../utils/parseJsonResponse";
 
 export const generateAVSRequestBody = (
   profileName: string,
@@ -20,24 +22,10 @@ export const generateAVSRequestData = (
   accountDetails: AVSAccountDetails,
   useEnvHeaders = true,
 ) => {
-  const headers = useEnvHeaders
-    ? {
-        "Content-Type": "application/json",
-        "x-client-id": import.meta.env.VITE_CLIENT_ID,
-        "x-program-id": import.meta.env.VITE_PROGRAM_ID,
-        "x-program-id-type": import.meta.env.VITE_PROGRAM_ID_TYPE,
-      }
-    : {
-        "Content-Type": "application/json",
-        "x-client-id": "***",
-        "x-program-id": "***",
-        "x-program-id-type": "***",
-      };
-
   return {
     endpoint: `${url}/api/tsapi/v2/validations/accounts`,
     method: "POST",
-    headers,
+    headers: getPdpAuthHeaders(useEnvHeaders),
     body: generateAVSRequestBody(profileName, accountDetails),
   };
 };
@@ -58,20 +46,7 @@ export async function submitValidationServicesRequest(
     body: JSON.stringify(
       generateAVSRequestBody(arg.profileName, arg.accountDetails),
     ),
-    headers: {
-      "Content-Type": "application/json",
-      "x-client-id": import.meta.env.VITE_CLIENT_ID,
-      "x-program-id": import.meta.env.VITE_PROGRAM_ID,
-      "x-program-id-type": import.meta.env.VITE_PROGRAM_ID_TYPE,
-    },
+    headers: getPdpAuthHeaders(),
   });
-  const text = await res.text();
-  if (!res.ok || !text) {
-    throw new Error(
-      `Validation request failed (${res.status} ${res.statusText})${
-        text ? `: ${text}` : ""
-      }`,
-    );
-  }
-  return JSON.parse(text);
+  return parseJsonResponse(res, "Validation request");
 }

@@ -1,3 +1,6 @@
+import { getPdpAuthHeaders } from "../../utils/pdpAuthHeaders";
+import { parseJsonResponse } from "../../utils/parseJsonResponse";
+
 // FX Rate Sheet API path. Kept as a single constant: confirm the exact
 // path/version with the API owners before pointing at the real CAT sandbox.
 export const FX_RATE_SHEET_PATH = "/api/fxapi/v1/rate-sheets";
@@ -15,24 +18,10 @@ export const generateFXRequestData = (
   currency: string,
   useEnvHeaders = true,
 ) => {
-  const headers = useEnvHeaders
-    ? {
-        "Content-Type": "application/json",
-        "x-client-id": import.meta.env.VITE_CLIENT_ID,
-        "x-program-id": import.meta.env.VITE_PROGRAM_ID,
-        "x-program-id-type": import.meta.env.VITE_PROGRAM_ID_TYPE,
-      }
-    : {
-        "Content-Type": "application/json",
-        "x-client-id": "***",
-        "x-program-id": "***",
-        "x-program-id-type": "***",
-      };
-
   return {
     endpoint: `${url}${FX_RATE_SHEET_PATH}`,
     method: "POST",
-    headers,
+    headers: getPdpAuthHeaders(useEnvHeaders),
     body: generateFXRequestBody(accountId, currency),
   };
 };
@@ -51,20 +40,7 @@ export async function submitFXRequest(
   const res = await fetch(url, {
     method: "POST",
     body: JSON.stringify(generateFXRequestBody(arg.accountId, arg.currency)),
-    headers: {
-      "Content-Type": "application/json",
-      "x-client-id": import.meta.env.VITE_CLIENT_ID,
-      "x-program-id": import.meta.env.VITE_PROGRAM_ID,
-      "x-program-id-type": import.meta.env.VITE_PROGRAM_ID_TYPE,
-    },
+    headers: getPdpAuthHeaders(),
   });
-  const text = await res.text();
-  if (!res.ok || !text) {
-    throw new Error(
-      `FX rate sheet request failed (${res.status} ${res.statusText})${
-        text ? `: ${text}` : ""
-      }`,
-    );
-  }
-  return JSON.parse(text);
+  return parseJsonResponse(res, "FX rate sheet request");
 }
