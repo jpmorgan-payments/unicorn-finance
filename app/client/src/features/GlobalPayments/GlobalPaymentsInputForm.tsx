@@ -75,13 +75,11 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
   // For now, creditor accounts will be the same as debtor accounts
   // In a real implementation, these might be different
   const availableCreditorAccounts = useMemo(() => {
-    return getAccountDetailsForPaymentType(form.values.paymentType).map(
-      (account) => ({
-        name: account.account.name,
-        account: account.account.account,
-      }),
-    );
-  }, [form.values.paymentType]);
+    return availableDebtorAccounts.map((account) => ({
+      name: account.account.name,
+      account: account.account.account,
+    }));
+  }, [availableDebtorAccounts]);
 
   const debtorAccountOptions = availableDebtorAccounts.map((account) => ({
     label: account.account.name + " - " + account.account.account.accountNumber,
@@ -110,24 +108,7 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
   const handleSubmit = async (values: GlobalPaymentsFormValues) => {
     const requestData = getRequestData();
     const requestPayload = requestData.body;
-    if (!onPaymentComplete) {
-      // Just make the API call without saving if no callback
-      await trigger({
-        amount: values.amount,
-        paymentType: values.paymentType,
-        debtorDetails: values.debtorAccountDetails as AccountDetails,
-        creditorDetails: values.creditorAccountDetails as PartyDetails,
-      });
-      return;
-    }
-    // Base payment data
-    const basePaymentData = {
-      requestId: requestPayload.paymentIdentifiers.endToEndId,
-      paymentType: values.paymentType,
-      accountNumber:
-        values.debtorAccountDetails?.account.account.accountNumber || "Unknown",
-      requestPayload: requestPayload,
-    };
+
     const response = await trigger({
       amount: values.amount,
       paymentType: values.paymentType,
@@ -135,11 +116,14 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
       creditorDetails: values.creditorAccountDetails as PartyDetails,
     });
 
-    onPaymentComplete({
-      ...basePaymentData,
+    // `trigger` rejects on error, so reaching here means the call succeeded
+    onPaymentComplete?.({
+      requestId: requestPayload.paymentIdentifiers.endToEndId,
+      paymentType: values.paymentType,
+      accountNumber:
+        values.debtorAccountDetails?.account.account.accountNumber || "Unknown",
       requestData: getRequestData(),
       responseData: response,
-      // `trigger` rejects on error, so reaching here means the call succeeded
       status: "Success",
     });
   };

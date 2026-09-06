@@ -57,22 +57,17 @@ const FXInputForm: React.FC<FXInputFormProps> = ({ onRateSheetComplete }) => {
   };
 
   const handleSubmit = async (values: FXFormValues) => {
-    if (!onRateSheetComplete) {
-      await trigger({ accountId: values.accountId, currency: values.currency });
-      return;
-    }
-
     const response = await trigger({
       accountId: values.accountId,
       currency: values.currency,
     });
 
-    onRateSheetComplete({
+    // `trigger` rejects on error, so reaching here means the call succeeded
+    onRateSheetComplete?.({
       accountId: values.accountId,
       currency: values.currency,
       requestData: getRequestData(),
       responseData: response,
-      // `trigger` rejects on error, so reaching here means the call succeeded
       status: "Success",
     });
   };

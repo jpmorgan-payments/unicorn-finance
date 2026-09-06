@@ -76,30 +76,16 @@ const ValidationServicesInputForm: React.FC<
     const requestData = getRequestData();
     const requestPayload = requestData.body;
 
-    if (!onValidationComplete || !requestPayload) {
-      // Just make the API call without saving if no callback
-      await trigger({
-        profileName: values.validationType,
-        accountDetails: values.accountDetails as AVSAccountDetails,
-      });
-      return;
-    }
-
-    // Base validation data
-    const baseValidationData = {
-      requestId: requestPayload[0].requestId,
-      validationType: values.validationType,
-      accountNumber: values.accountDetails?.accountNumber || "Unknown",
-      requestPayload: requestPayload,
-    };
-
     const response = await trigger({
       profileName: values.validationType,
       accountDetails: values.accountDetails as AVSAccountDetails,
     });
 
-    onValidationComplete({
-      ...baseValidationData,
+    // `trigger` rejects on error, so reaching here means the call succeeded
+    onValidationComplete?.({
+      requestId: requestPayload[0].requestId,
+      validationType: values.validationType,
+      accountNumber: values.accountDetails?.accountNumber || "Unknown",
       requestData: getRequestData(),
       responseData: response,
       status: "Success" as const,
