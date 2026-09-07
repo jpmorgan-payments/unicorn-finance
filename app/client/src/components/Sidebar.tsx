@@ -75,10 +75,19 @@ export const Sidebar = () => {
           <img className="w-5 h-5" src={github} alt="Github" />
         </a>
 
-        <div className="flex items-center gap-3">
+        {/* Failsafe: click the unicorn to jump straight to the Payments
+            Garage presentation, in case the Konami code isn't landing. */}
+        <button
+          type="button"
+          onClick={() => {
+            window.location.href = "/garage/index.html";
+          }}
+          className="flex items-center gap-3 bg-transparent border-0 p-0 cursor-pointer text-left hover:opacity-80 transition-opacity"
+          title="Start the presentation"
+        >
           <Avatar src={avatar} alt="Unicorn avatar" size="md" />
           <p className="text-sm font-medium text-gray-900">Business Unicorn</p>
-        </div>
+        </button>
       </div>
     </div>
   );

@@ -9,6 +9,7 @@ import {
   Text,
   Title,
 } from "@mantine/core";
+import { KonamiProgress } from "../components/KonamiProgress";
 
 interface BeatCard {
   to: string;
@@ -59,6 +60,7 @@ const HomePage: React.FC = () => {
 
   return (
     <Stack gap="lg">
+      <KonamiProgress />
       <Stack gap={4}>
         <Title order={1}>Unicorn Finance</Title>
         <Text c="dimmed" maw={760}>
