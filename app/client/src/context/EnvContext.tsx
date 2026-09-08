@@ -28,7 +28,7 @@ export const ENVIRONMENT_META: Record<
   },
   [Environment.JPMC_MOCK]: {
     label: "JPMC Mock",
-    hint: "PDP Mock environment (api-mock) via OAuth2 client credentials. Needs a PDP project; enable with VITE_ENABLE_JPMC=true.",
+    hint: "PDP Mock environment (api-mock) via OAuth2 client credentials. Not yet available - beats need a Mock-specific adapter first (see docs/NEXT-STEPS.md).",
   },
   [Environment.JPMC_CAT]: {
     label: "JPMC CAT",
@@ -41,8 +41,17 @@ export const ENVIRONMENT_META: Record<
 // setup in .env) to make them selectable.
 export const jpmcEnvsEnabled = import.meta.env.VITE_ENABLE_JPMC === "true";
 
-export const isEnvSelectable = (env: Environment): boolean =>
-  env === Environment.LOCAL_MOCK || jpmcEnvsEnabled;
+// JPMC Mock stays unavailable even with VITE_ENABLE_JPMC=true: the beats send
+// CAT-shaped requests (e.g. Global Payments' signed-body-JWT
+// /digitalSignature/payment/v2/payments) that api-mock's contract doesn't
+// accept (it expects plain-Bearer POST /api/v2/payments) - see
+// docs/NEXT-STEPS.md. Re-enable per beat once it has a Mock-specific adapter
+// and an end-to-end smoke test.
+export const isEnvSelectable = (env: Environment): boolean => {
+  if (env === Environment.LOCAL_MOCK) return true;
+  if (env === Environment.JPMC_MOCK) return false;
+  return jpmcEnvsEnabled;
+};
 
 interface EnvContextType {
   environment: Environment;

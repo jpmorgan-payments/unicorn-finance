@@ -14,6 +14,15 @@ services:
   client:
     build:
       context: ./app/client
+      args:
+        # Baked into the bundle at build time. Read from a `.env` at the repo
+        # root (docker compose's own auto-substitution) - not the same as the
+        # `server` service's `env_file`, and never a secret (PDP_CLIENT_SECRET
+        # stays server-side).
+        VITE_ENABLE_JPMC: ${VITE_ENABLE_JPMC:-false}
+        VITE_CLIENT_ID: ${VITE_CLIENT_ID:-}
+        VITE_PROGRAM_ID: ${VITE_PROGRAM_ID:-}
+        VITE_PROGRAM_ID_TYPE: ${VITE_PROGRAM_ID_TYPE:-}
     ports:
       - "3000:80"
 

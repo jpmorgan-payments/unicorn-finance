@@ -9,6 +9,19 @@ RUN corepack enable
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 COPY . .
+
+# Non-secret Vite settings, baked into the bundle at build time - .dockerignore
+# excludes .env from the build context, so these must arrive as build args
+# (wired up in compose.yaml) rather than a copied .env file.
+ARG VITE_ENABLE_JPMC=false
+ARG VITE_CLIENT_ID=
+ARG VITE_PROGRAM_ID=
+ARG VITE_PROGRAM_ID_TYPE=
+ENV VITE_ENABLE_JPMC=$VITE_ENABLE_JPMC \
+    VITE_CLIENT_ID=$VITE_CLIENT_ID \
+    VITE_PROGRAM_ID=$VITE_PROGRAM_ID \
+    VITE_PROGRAM_ID_TYPE=$VITE_PROGRAM_ID_TYPE
+
 RUN pnpm build
 
 # --- serve stage ---
