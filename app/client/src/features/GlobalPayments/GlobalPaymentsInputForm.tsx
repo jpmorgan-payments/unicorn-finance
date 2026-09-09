@@ -122,7 +122,7 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
       paymentType: values.paymentType,
       accountNumber:
         values.debtorAccountDetails?.account.account.accountNumber || "Unknown",
-      requestData: getRequestData(),
+      requestData,
       responseData: response,
       status: "Success",
     });

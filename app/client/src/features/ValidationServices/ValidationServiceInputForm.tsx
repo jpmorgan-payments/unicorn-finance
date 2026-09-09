@@ -86,7 +86,7 @@ const ValidationServicesInputForm: React.FC<
       requestId: requestPayload[0].requestId,
       validationType: values.validationType,
       accountNumber: values.accountDetails?.accountNumber || "Unknown",
-      requestData: getRequestData(),
+      requestData,
       responseData: response,
       status: "Success" as const,
     });

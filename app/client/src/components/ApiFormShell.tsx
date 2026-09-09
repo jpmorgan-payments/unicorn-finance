@@ -40,7 +40,12 @@ export const ApiFormShell: React.FC<ApiFormShellProps> = ({
   idleActions,
   children,
 }) => (
-  <Box component="form" flex={1} style={{ position: "relative" }}>
+  <Box
+    component="form"
+    onSubmit={(event) => event.preventDefault()}
+    flex={1}
+    style={{ position: "relative" }}
+  >
     <LoadingOverlay
       visible={isMutating}
       zIndex={1000}
