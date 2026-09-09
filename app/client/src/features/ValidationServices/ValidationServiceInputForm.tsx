@@ -76,10 +76,7 @@ const ValidationServicesInputForm: React.FC<
     const requestData = getRequestData();
     const requestPayload = requestData.body;
 
-    const response = await trigger({
-      profileName: values.validationType,
-      accountDetails: values.accountDetails as AVSAccountDetails,
-    });
+    const response = await trigger({ body: requestPayload });
 
     // `trigger` rejects on error, so reaching here means the call succeeded
     onValidationComplete?.({

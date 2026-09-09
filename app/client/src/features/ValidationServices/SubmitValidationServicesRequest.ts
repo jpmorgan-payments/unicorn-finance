@@ -32,20 +32,11 @@ export const generateAVSRequestData = (
 
 export async function submitValidationServicesRequest(
   url: string,
-  {
-    arg,
-  }: {
-    arg: {
-      profileName: string;
-      accountDetails: AVSAccountDetails;
-    };
-  },
+  { arg }: { arg: { body: ReturnType<typeof generateAVSRequestBody> } },
 ) {
   const res = await fetch(url, {
     method: "POST",
-    body: JSON.stringify(
-      generateAVSRequestBody(arg.profileName, arg.accountDetails),
-    ),
+    body: JSON.stringify(arg.body),
     headers: getPdpAuthHeaders(),
   });
   return parseJsonResponse(res, "Validation request");

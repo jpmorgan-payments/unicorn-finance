@@ -109,12 +109,7 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
     const requestData = getRequestData();
     const requestPayload = requestData.body;
 
-    const response = await trigger({
-      amount: values.amount,
-      paymentType: values.paymentType,
-      debtorDetails: values.debtorAccountDetails as AccountDetails,
-      creditorDetails: values.creditorAccountDetails as PartyDetails,
-    });
+    const response = await trigger({ body: requestPayload });
 
     // `trigger` rejects on error, so reaching here means the call succeeded
     onPaymentComplete?.({
