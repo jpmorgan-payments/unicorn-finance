@@ -1,13 +1,18 @@
 import React from "react";
-import { Flex, Group, Title, Stack, Text, Card, Badge } from "@mantine/core";
-import EnvironmentSwitcher from "../components/EnvironmentSwitcher";
+import { Flex, Group, Title, Stack } from "@mantine/core";
 import AccountBalancesDisplay from "../features/AccountBalances/AccountBalancesDisplay";
+import TransactionsDisplay from "../features/Transactions/TransactionsDisplay";
+import { PoweredBy } from "../components/PoweredBy";
 
 const AccountsPage: React.FC = () => {
   return (
     <>
-      <Group gap="xl">
+      <Group gap="xl" justify="space-between" align="center">
         <Title order={1}>Account Services</Title>
+        <PoweredBy
+          apiName="Transactions API"
+          apiUrl="https://developer.payments.jpmorgan.com/docs/treasury/global-payments/capabilities/receivables"
+        />
       </Group>
 
       <Flex
@@ -32,21 +37,8 @@ const AccountsPage: React.FC = () => {
         >
           <Group justify="space-between" mb="md">
             <Title order={4}>Transaction History</Title>
-            <Badge className="!bg-pink-100 !text-pink-500 !border-pink-500">
-              Coming Soon
-            </Badge>
           </Group>
-          <Card shadow="sm" padding="lg" radius="md" withBorder>
-            <Stack align="center" gap="md" py="xl">
-              <Text size="lg" fw={500} c="dimmed">
-                🚧 Transaction History
-              </Text>
-              <Text size="sm" ta="center" c="dimmed">
-                This feature is currently under development. You'll soon be able
-                to view detailed transaction history for each account.
-              </Text>
-            </Stack>
-          </Card>
+          <TransactionsDisplay />
         </Stack>
       </Flex>
     </>

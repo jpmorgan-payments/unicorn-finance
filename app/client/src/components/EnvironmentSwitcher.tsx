@@ -1,6 +1,11 @@
-import { Group, Chip } from "@mantine/core";
+import { Group, Chip, Tooltip } from "@mantine/core";
 import React from "react";
-import { useEnv, Environment } from "../context/EnvContext";
+import {
+  useEnv,
+  Environment,
+  ENVIRONMENT_META,
+  isEnvSelectable,
+} from "../context/EnvContext";
 
 const CheckIcon = () => (
   <div
@@ -34,6 +39,36 @@ const CheckIcon = () => (
   </div>
 );
 
+// Graduation order: Local Mock -> JPMC Sandbox -> JPMC CAT.
+const ENV_ORDER: Environment[] = [
+  Environment.LOCAL_MOCK,
+  Environment.JPMC_MOCK,
+  Environment.JPMC_CAT,
+];
+
+const chipStyles = {
+  root: {
+    "&[dataChecked]": {
+      backgroundColor: "white !important",
+      color: "black !important",
+      border: "1px solid #ccc !important",
+      "&:hover": {
+        backgroundColor: "white !important",
+        color: "black !important",
+        transform: "none !important",
+        boxShadow: "none !important",
+      },
+    },
+  },
+  label: {
+    color: "black",
+    "&[dataChecked]": {
+      fontWeight: "bold",
+      "&:hover": { color: "black !important" },
+    },
+  },
+};
+
 const EnvironmentSwitcher = () => {
   const { environment, switchEnv } = useEnv();
 
@@ -41,64 +76,40 @@ const EnvironmentSwitcher = () => {
     switchEnv(value as Environment);
   };
 
-  const chipStyles = {
-    root: {
-      "&[dataChecked]": {
-        backgroundColor: "white !important",
-        color: "black !important",
-        border: "1px solid #ccc !important",
-        "&:hover": {
-          backgroundColor: "white !important",
-          color: "black !important",
-          transform: "none !important",
-          boxShadow: "none !important",
-        },
-      },
-    },
-    label: {
-      color: "black",
-      "&[dataChecked]": {
-        fontWeight: "bold",
-        "&:hover": {
-          color: "black !important",
-        },
-      },
-    },
-  };
-
   return (
     <Chip.Group multiple={false} value={environment} onChange={onChange}>
       <Group
-        gap={0}
+        gap={4}
         className="bg-gray-100 rounded-md"
         align="center"
         justify="center"
         p={4}
       >
-        <Chip
-          radius="sm"
-          size="sm"
-          value={Environment.MOCKED}
-          icon={<CheckIcon />}
-          color="white"
-          variant="filled"
-          styles={chipStyles}
-          style={{ "--chip-hover": "white" }}
-        >
-          Mock
-        </Chip>
-        <Chip
-          radius="sm"
-          size="sm"
-          value={Environment.CAT}
-          icon={<CheckIcon />}
-          color="white"
-          variant="filled"
-          styles={chipStyles}
-          style={{ "--chip-hover": "white" }}
-        >
-          CAT
-        </Chip>
+        {ENV_ORDER.map((env) => {
+          const { label, hint } = ENVIRONMENT_META[env];
+          const selectable = isEnvSelectable(env);
+          const tooltip = selectable ? hint : `${hint} (disabled - not configured)`;
+          return (
+            <Tooltip key={env} label={tooltip} multiline w={240} withArrow>
+              {/* span wrapper so the tooltip still shows on a disabled chip */}
+              <span>
+                <Chip
+                  radius="sm"
+                  size="sm"
+                  value={env}
+                  icon={<CheckIcon />}
+                  color="white"
+                  variant="filled"
+                  styles={chipStyles}
+                  style={{ "--chip-hover": "white" }}
+                  disabled={!selectable}
+                >
+                  {label}
+                </Chip>
+              </span>
+            </Tooltip>
+          );
+        })}
       </Group>
     </Chip.Group>
   );
@@ -106,5 +117,5 @@ const EnvironmentSwitcher = () => {
 
 export default EnvironmentSwitcher;
 
-// This component can be used to toggle between different environments (e.g., MOCKED and CAT).
-// It can be placed in the layout or header of the application to allow users to switch environments easily.
+// Toggles the API environment (Local Mock / JPMC Sandbox / JPMC CAT). The JPMC
+// tiers are gated off until VITE_ENABLE_JPMC=true and the .env / certs are set up.

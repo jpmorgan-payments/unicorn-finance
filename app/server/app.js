@@ -11,6 +11,11 @@ const { generateJWTJose } = require('./digitalSignature');
 
 // Constants for better maintainability
 const ENV = process.env.NODE_ENV || 'development';
+// Error verbosity is deliberately NOT tied to NODE_ENV. The server container
+// ships with NODE_ENV=development so certs are read from the mounted ./certs
+// rather than Secrets Manager - that must not also expose internal error
+// detail (cert paths, OAuth responses) to anyone who can reach the proxy.
+const DEBUG_ERRORS = process.env.DEBUG_ERRORS === 'true';
 const API_ENDPOINTS = {
   JPMORGAN_SANDBOX: 'https://api-sandbox.payments.jpmorgan.com',
   JPMORGAN_GATEWAY: 'https://apigatewaycat.jpmorgan.com',
@@ -19,6 +24,15 @@ const CERT_PATHS = {
   KEY: '../certs/jpmc.key',
   CERT: '../certs/jpmc.crt',
   DIGITAL: '../certs/digital-signature/key.key',
+};
+
+// JPMC Mock tier (PDP's hosted Mock environment): OAuth2 client-credentials.
+const PDP = {
+  TOKEN_URL:
+    process.env.PDP_TOKEN_URL ||
+    'https://id.payments.jpmorgan.com/am/oauth2/alpha/access_token',
+  SCOPE: process.env.PDP_OAUTH_SCOPE || 'jpm:payments:sandbox',
+  API_MOCK: 'https://api-mock.payments.jpmorgan.com',
 };
 
 const app = express();
@@ -76,7 +90,13 @@ const gatherHttpsOptions = async () => {
     };
   } catch (error) {
     console.error('Error gathering HTTPS options:', error);
-    throw new Error('Failed to load SSL certificates');
+    throw new Error(
+      'Failed to load SSL certificates. Real (CAT) mode is the advanced "++" tier ' +
+        'and needs your JPMorgan client certs (jpmc.key, jpmc.crt, ' +
+        'digital-signature/key.key) in ../certs. For the offline demo you do not ' +
+        'need this server at all - run the client alone (docker compose up, or ' +
+        'cd app/client && pnpm start). See .env.example.'
+    );
   }
 };
 
@@ -146,6 +166,124 @@ function createProxyConfiguration(target, httpsOpts) {
   return createProxyMiddleware(options);
 }
 
+// --- JPMC Mock tier: OAuth2 client-credentials + Bearer proxy to api-mock ---
+
+let cachedToken = null; // { value, expiresAt }
+let inFlightToken = null; // shared by concurrent callers, cleared when settled
+
+/**
+ * Requests a fresh OAuth2 client-credentials token from PDP.
+ * @returns {Promise<{value: string, expiresAt: number}>}
+ */
+const requestMockAccessToken = async () => {
+  const clientId = process.env.PDP_CLIENT_ID;
+  const clientSecret = process.env.PDP_CLIENT_SECRET;
+  if (!clientId || !clientSecret) {
+    throw new Error(
+      'JPMC Mock tier not configured: set PDP_CLIENT_ID and PDP_CLIENT_SECRET ' +
+        'in .env (from your PDP project). See .env.example.'
+    );
+  }
+
+  const body = new URLSearchParams({
+    grant_type: 'client_credentials',
+    scope: PDP.SCOPE,
+    client_id: clientId,
+    client_secret: clientSecret,
+  });
+
+  // Stamp before the round trip so expiry is measured conservatively.
+  const requestedAt = Date.now();
+  const response = await fetch(PDP.TOKEN_URL, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+    body,
+  });
+
+  if (!response.ok) {
+    // The token endpoint echoes request detail back; log it, but keep it out of
+    // the Error so it can never reach a client via DEBUG_ERRORS.
+    const text = await response.text();
+    console.error(`OAuth token request failed (${response.status}): ${text}`);
+    throw new Error(`OAuth token request failed (${response.status})`);
+  }
+
+  const data = await response.json();
+  return {
+    value: data.access_token,
+    expiresAt: requestedAt + Number(data.expires_in || 3600) * 1000,
+  };
+};
+
+/**
+ * Kicks off (or reuses) a single in-flight token request, shared by
+ * concurrent callers instead of each hitting the token endpoint.
+ * @returns {Promise<string>} a valid access token
+ */
+const startTokenRefresh = () => {
+  if (!inFlightToken) {
+    inFlightToken = requestMockAccessToken()
+      .then((token) => {
+        cachedToken = token;
+        return token.value;
+      })
+      .finally(() => {
+        inFlightToken = null;
+      });
+  }
+  return inFlightToken;
+};
+
+/**
+ * Returns a valid Bearer token for PDP's Mock environment, reusing the cached
+ * one until it expires. Once the cached token is within a minute of expiry, a
+ * refresh is kicked off in the background - the still-valid cached token keeps
+ * serving requests while it completes, so only the request that lands after
+ * actual expiry (not merely the 60s window) ever blocks on the OAuth round
+ * trip. The client secret stays server-side and never reaches the browser.
+ * @returns {Promise<string>} a valid access token
+ */
+const getMockAccessToken = async () => {
+  const now = Date.now();
+
+  if (cachedToken && cachedToken.expiresAt > now) {
+    if (cachedToken.expiresAt <= now + 60000) {
+      // Background refresh; swallow rejection here so a failed refresh doesn't
+      // surface as an unhandled rejection when no request is awaiting it - the
+      // still-valid cached token below is what actually serves this request,
+      // and the next getMockAccessToken() call will retry if needed.
+      startTokenRefresh().catch(() => {});
+    }
+    return cachedToken.value;
+  }
+
+  return startTokenRefresh();
+};
+
+/**
+ * Proxy to PDP's Mock environment that attaches the OAuth2 Bearer token.
+ * Standard TLS (no client certs) - auth is the Bearer, not mTLS.
+ *
+ * Built once at startup: creating one per request would allocate a fresh proxy
+ * server and agent on every call. The per-request token rides on `req` instead.
+ */
+const mockProxy = createProxyMiddleware({
+  target: PDP.API_MOCK,
+  changeOrigin: true,
+  on: {
+    proxyReq: (proxyReq, req) => {
+      proxyReq.setHeader('Authorization', `Bearer ${req.pdpAccessToken}`);
+    },
+    proxyRes: (proxyRes) => {
+      // api-mock rejected the token (revoked early, or clock skew). Drop it so
+      // the next call mints a fresh one rather than reusing it until expiry.
+      if (proxyRes.statusCode === 401) {
+        cachedToken = null;
+      }
+    },
+  },
+});
+
 const routeRequest = (splat) => {
   if (splat.includes('payment')) {
     return API_ENDPOINTS.JPMORGAN_SANDBOX;
@@ -157,6 +295,21 @@ const routeRequest = (splat) => {
 
   return API_ENDPOINTS.JPMORGAN_GATEWAY; // default
 };
+
+// JPMC Mock tier. Client calls arrive as /mockapi/<rest>; express strips the
+// /mockapi mount, and we forward <rest> to api-mock with a Bearer token.
+app.use('/mockapi', async (req, res, next) => {
+  try {
+    req.pdpAccessToken = await getMockAccessToken();
+    mockProxy(req, res, next);
+  } catch (error) {
+    console.error('JPMC Mock proxy error:', error);
+    res.status(500).json({
+      error: 'JPMC Mock unavailable',
+      message: DEBUG_ERRORS ? error.message : 'Mock tier not configured',
+    });
+  }
+});
 
 app.use('/digitalSignature/:splat', jsonParser, async (req, res, next) => {
   try {
@@ -176,8 +329,7 @@ app.use('/digitalSignature/:splat', jsonParser, async (req, res, next) => {
     console.error('Error in catch-all route:', error);
     res.status(500).json({
       error: 'Internal server error',
-      message:
-        ENV === 'development' ? error.message : 'Proxy configuration failed',
+      message: DEBUG_ERRORS ? error.message : 'Proxy configuration failed',
     });
   }
 });
@@ -193,8 +345,7 @@ app.use('/:splat', async (req, res, next) => {
     console.error('Error in catch-all route:', error);
     res.status(500).json({
       error: 'Internal server error',
-      message:
-        ENV === 'development' ? error.message : 'Proxy configuration failed',
+      message: DEBUG_ERRORS ? error.message : 'Proxy configuration failed',
     });
   }
 });
@@ -204,7 +355,7 @@ app.use((error, req, res, _next) => {
   console.error('Unhandled error:', error);
   res.status(500).json({
     error: 'Internal server error',
-    message: ENV === 'development' ? error.message : 'Something went wrong',
+    message: DEBUG_ERRORS ? error.message : 'Something went wrong',
   });
 });
 

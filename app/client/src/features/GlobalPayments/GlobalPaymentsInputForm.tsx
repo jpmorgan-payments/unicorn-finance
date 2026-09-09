@@ -1,15 +1,8 @@
 import React, { useMemo } from "react";
-import {
-  Stack,
-  Button,
-  Group,
-  Box,
-  TextInput,
-  LoadingOverlay,
-  Code,
-} from "@mantine/core";
+import { Stack, Button, Group, Box, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import UnicornDropdown from "../../components/UnicornDropdown";
+import { ApiFormShell } from "../../components/ApiFormShell";
 import type {
   AccountDetails,
   PartyDetails,
@@ -82,13 +75,11 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
   // For now, creditor accounts will be the same as debtor accounts
   // In a real implementation, these might be different
   const availableCreditorAccounts = useMemo(() => {
-    return getAccountDetailsForPaymentType(form.values.paymentType).map(
-      (account) => ({
-        name: account.account.name,
-        account: account.account.account,
-      }),
-    );
-  }, [form.values.paymentType]);
+    return availableDebtorAccounts.map((account) => ({
+      name: account.account.name,
+      account: account.account.account,
+    }));
+  }, [availableDebtorAccounts]);
 
   const debtorAccountOptions = availableDebtorAccounts.map((account) => ({
     label: account.account.name + " - " + account.account.account.accountNumber,
@@ -99,42 +90,6 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
     label: account.name + " - " + account.account.accountNumber,
     value: JSON.stringify(account),
   }));
-
-  const handleSubmit = async (values: GlobalPaymentsFormValues) => {
-    const requestData = getRequestData();
-    const requestPayload = requestData.body;
-    if (!onPaymentComplete) {
-      // Just make the API call without saving if no callback
-      await trigger({
-        amount: values.amount,
-        paymentType: values.paymentType,
-        debtorDetails: values.debtorAccountDetails as AccountDetails,
-        creditorDetails: values.creditorAccountDetails as PartyDetails,
-      });
-      return;
-    }
-    // Base payment data
-    const basePaymentData = {
-      requestId: requestPayload.paymentIdentifiers.endToEndId,
-      paymentType: values.paymentType,
-      accountNumber:
-        values.debtorAccountDetails?.account.account.accountNumber || "Unknown",
-      requestPayload: requestPayload,
-    };
-    const response = await trigger({
-      amount: values.amount,
-      paymentType: values.paymentType,
-      debtorDetails: values.debtorAccountDetails as AccountDetails,
-      creditorDetails: values.creditorAccountDetails as PartyDetails,
-    });
-
-    onPaymentComplete({
-      ...basePaymentData,
-      requestData: getRequestData(),
-      responseData: response,
-      status: response.title || "",
-    });
-  };
 
   const getRequestData = () => {
     return generateGlobalPaymentsRequestData(
@@ -150,6 +105,24 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
     openDrawer(getRequestData(), null);
   };
 
+  const handleSubmit = async (values: GlobalPaymentsFormValues) => {
+    const requestData = getRequestData();
+    const requestPayload = requestData.body;
+
+    const response = await trigger({ body: requestPayload });
+
+    // `trigger` rejects on error, so reaching here means the call succeeded
+    onPaymentComplete?.({
+      requestId: requestPayload.paymentIdentifiers.endToEndId,
+      paymentType: values.paymentType,
+      accountNumber:
+        values.debtorAccountDetails?.account.account.accountNumber || "Unknown",
+      requestData,
+      responseData: response,
+      status: "Success",
+    });
+  };
+
   // Reset account selections when payment type changes
   const handlePaymentTypeChange = (value: string) => {
     form.setFieldValue("paymentType", value as PaymentType);
@@ -158,212 +131,121 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
     form.setFieldValue("creditorAccountDetails", null);
   };
 
-  const PreviewRequestButton = () => (
-    <Button
-      variant="light"
-      size="md"
-      onClick={handlePreviewRequest}
-      disabled={!form.isValid()}
-    >
-      Preview Request
-    </Button>
-  );
-
   return (
-    <Box component="form" flex={1} pos={"relative"}>
-      <LoadingOverlay
-        visible={isMutating}
-        zIndex={1000}
-        overlayProps={{ radius: "sm", blur: 2 }}
-        loaderProps={{ color: "pink", type: "bars" }}
-      />
-
-      {isMutating && (
-        <Box
-          style={{
-            minHeight: "200px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
+    <ApiFormShell
+      isMutating={isMutating}
+      data={data}
+      error={error}
+      onPreview={handlePreviewRequest}
+      previewDisabled={!form.isValid()}
+      onReset={() => {
+        reset();
+        form.reset();
+      }}
+      resultActionLabel="Make another payment"
+      idleActions={
+        <Group>
+          <Button type="button" variant="outline" onClick={() => form.reset()}>
+            Reset
+          </Button>
+          <Button
+            type="submit"
+            variant="filled"
+            disabled={!form.isValid()}
+            onClick={() => handleSubmit(form.values)}
+          >
+            Submit
+          </Button>
+        </Group>
+      }
+    >
+      <Box>
+        <label
+          htmlFor="paymentType"
+          style={{ fontWeight: 500, marginBottom: "8px", display: "block" }}
         >
-          <div>Loading...</div>
-        </Box>
-      )}
+          Payment Type *
+        </label>
+        <UnicornDropdown
+          options={paymentTypes}
+          value={form.values.paymentType}
+          onChange={handlePaymentTypeChange}
+          error={form.errors.paymentType}
+        />
+      </Box>
 
-      {!data && !error && !isMutating && (
-        <Box style={{ position: "relative" }}>
-          <Stack gap="md">
-            <Box>
-              <label
-                htmlFor="paymentType"
-                style={{
-                  fontWeight: 500,
-                  marginBottom: "8px",
-                  display: "block",
-                }}
-              >
-                Payment Type *
-              </label>
-              <UnicornDropdown
-                options={paymentTypes}
-                value={form.values.paymentType}
-                onChange={handlePaymentTypeChange}
-                error={form.errors.paymentType}
-              />
-            </Box>
+      <Box>
+        <label
+          htmlFor="debtorAccountDetails"
+          style={{ fontWeight: 500, marginBottom: "8px", display: "block" }}
+        >
+          Debtor Account * (From account)
+        </label>
+        <UnicornDropdown
+          options={debtorAccountOptions}
+          value={
+            form.values.debtorAccountDetails
+              ? JSON.stringify(form.values.debtorAccountDetails)
+              : ""
+          }
+          onChange={(value) => {
+            const selectedAccount = value
+              ? (JSON.parse(value) as AccountDetails)
+              : null;
+            form.setFieldValue("debtorAccountDetails", selectedAccount);
+          }}
+          key={`debtor-${form.values.paymentType}`}
+          error={form.errors.debtorAccountDetails}
+        />
+      </Box>
 
-            <Box>
-              <label
-                htmlFor="debtorAccountDetails"
-                style={{
-                  fontWeight: 500,
-                  marginBottom: "8px",
-                  display: "block",
-                }}
-              >
-                Debtor Account * (From account)
-              </label>
-              <UnicornDropdown
-                options={debtorAccountOptions}
-                value={
-                  form.values.debtorAccountDetails
-                    ? JSON.stringify(form.values.debtorAccountDetails)
-                    : ""
-                }
-                onChange={(value) => {
-                  const selectedAccount = value
-                    ? (JSON.parse(value) as AccountDetails)
-                    : null;
-                  form.setFieldValue("debtorAccountDetails", selectedAccount);
-                }}
-                key={`debtor-${form.values.paymentType}`}
-                error={form.errors.debtorAccountDetails}
-              />
-            </Box>
+      <Box>
+        <label
+          htmlFor="accountNumber"
+          style={{ fontWeight: 500, marginBottom: "8px", display: "block" }}
+        >
+          Creditor Account * (To account)
+        </label>
+        <UnicornDropdown
+          options={creditorAccountOptions}
+          value={
+            form.values.creditorAccountDetails
+              ? JSON.stringify(form.values.creditorAccountDetails)
+              : ""
+          }
+          onChange={(value) => {
+            const selectedAccount = value
+              ? (JSON.parse(value) as PartyDetails)
+              : null;
+            form.setFieldValue("creditorAccountDetails", selectedAccount);
+          }}
+          key={`creditor-${form.values.paymentType}`}
+          error={form.errors.creditorAccountDetails}
+        />
+      </Box>
 
-            <Box>
-              <label
-                htmlFor="accountNumber"
-                style={{
-                  fontWeight: 500,
-                  marginBottom: "8px",
-                  display: "block",
-                }}
-              >
-                Creditor Account * (To account)
-              </label>
-              <UnicornDropdown
-                options={creditorAccountOptions}
-                value={
-                  form.values.creditorAccountDetails
-                    ? JSON.stringify(form.values.creditorAccountDetails)
-                    : ""
-                }
-                onChange={(value) => {
-                  const selectedAccount = value
-                    ? (JSON.parse(value) as PartyDetails)
-                    : null;
-                  form.setFieldValue("creditorAccountDetails", selectedAccount);
-                }}
-                key={`creditor-${form.values.paymentType}`}
-                error={form.errors.creditorAccountDetails}
-              />
-            </Box>
-
-            <Box>
-              <label
-                htmlFor="amount"
-                style={{
-                  fontWeight: 500,
-                  marginBottom: "8px",
-                  display: "block",
-                }}
-              >
-                Amount *
-              </label>
-              <TextInput
-                id="amount"
-                placeholder="0.00"
-                value={form.values.amount}
-                onChange={(event) =>
-                  form.setFieldValue("amount", event.currentTarget.value)
-                }
-                error={form.errors.amount}
-                leftSection="$"
-                type="number"
-                step="0.01"
-                min="0"
-              />
-            </Box>
-
-            <Group justify="space-between" mt="md">
-              <PreviewRequestButton />
-
-              <Group>
-                <Button
-                  type="button"
-                  variant="outline"
-                  onClick={() => form.reset()}
-                >
-                  Reset
-                </Button>
-                <Button
-                  type="submit"
-                  variant="filled"
-                  disabled={!form.isValid()}
-                  onClick={() => handleSubmit(form.values)}
-                >
-                  Submit
-                </Button>
-              </Group>
-            </Group>
-          </Stack>
-        </Box>
-      )}
-      {data && !isMutating && (
-        <Box>
-          <Code block>{JSON.stringify(data, null, 2)}</Code>
-          <Group justify="space-between" mt="md">
-            <PreviewRequestButton />
-
-            <Button
-              type="button"
-              variant="filled"
-              onClick={() => {
-                reset();
-                form.reset();
-              }}
-            >
-              Make another payment
-            </Button>
-          </Group>
-        </Box>
-      )}
-      {error && !isMutating && (
-        <Box>
-          <Code block>
-            {`Error: ${
-              (error as Error).message || "An unknown error occurred"
-            }`}
-          </Code>
-          <Group justify="space-between" mt="md">
-            <PreviewRequestButton />
-
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                reset();
-                form.reset();
-              }}
-            >
-              Try Again
-            </Button>
-          </Group>
-        </Box>
-      )}
-    </Box>
+      <Box>
+        <label
+          htmlFor="amount"
+          style={{ fontWeight: 500, marginBottom: "8px", display: "block" }}
+        >
+          Amount *
+        </label>
+        <TextInput
+          id="amount"
+          placeholder="0.00"
+          value={form.values.amount}
+          onChange={(event) =>
+            form.setFieldValue("amount", event.currentTarget.value)
+          }
+          error={form.errors.amount}
+          leftSection="$"
+          type="number"
+          step="0.01"
+          min="0"
+        />
+      </Box>
+    </ApiFormShell>
   );
 };
 

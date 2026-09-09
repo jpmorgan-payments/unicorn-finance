@@ -11,11 +11,14 @@ import {
 } from "@mantine/core";
 
 import Layout from "./components/Layout";
+import HomePage from "./pages/HomePage";
 import PaymentsPage from "./pages/PaymentsPage";
 import ValidationsPage from "./pages/ValidationsPage";
+import FxPage from "./pages/FxPage";
 import { RequestPreviewDrawer } from "./components/RequestPreviewDrawer";
 import "@mantine/core/styles.css";
 import AccountsPage from "./pages/AccountPage";
+import { SecretGarageProvider } from "./context/SecretGarageContext";
 
 export const fetcher = (url: string) => fetch(url).then((r) => r.json());
 
@@ -53,17 +56,20 @@ function App() {
   return (
     <EnvProvider>
       <RequestPreviewProvider>
-        <MantineProvider theme={theme}>
-          <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<ValidationsPage />} />
-              <Route path="payments" element={<PaymentsPage />} />
-              <Route path="validations" element={<ValidationsPage />} />
-              <Route path="accounts" element={<AccountsPage />} />
-            </Route>
-          </Routes>
-          <RequestPreviewDrawer />
-        </MantineProvider>
+        <SecretGarageProvider>
+          <MantineProvider theme={theme}>
+            <Routes>
+              <Route path="/" element={<Layout />}>
+                <Route index element={<HomePage />} />
+                <Route path="payments" element={<PaymentsPage />} />
+                <Route path="fx" element={<FxPage />} />
+                <Route path="validations" element={<ValidationsPage />} />
+                <Route path="accounts" element={<AccountsPage />} />
+              </Route>
+            </Routes>
+            <RequestPreviewDrawer />
+          </MantineProvider>
+        </SecretGarageProvider>
       </RequestPreviewProvider>
     </EnvProvider>
   );

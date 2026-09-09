@@ -9,17 +9,25 @@ import github from "../images/github.png";
 
 // Navigation configuration
 const links = [
-  // {
-  //   to: "/accounts",
-  //   label: "Accounts",
-  // },
+  {
+    to: "/",
+    label: "Home",
+  },
   {
     to: "/payments",
     label: "Payments",
   },
   {
+    to: "/fx",
+    label: "FX",
+  },
+  {
     to: "/validations",
     label: "Validations",
+  },
+  {
+    to: "/accounts",
+    label: "Accounts",
   },
 ];
 
@@ -40,6 +48,7 @@ export const Sidebar = () => {
           <li key={link.to}>
             <NavLink
               to={link.to}
+              end={link.to === "/"}
               className={({ isActive }) =>
                 `px-3 py-2 text-sm transition-colors hover:text-gray-900 lg:px-4 lg:py-3 lg:border-l-2 lg:border-transparent rounded-md ${
                   isActive
@@ -66,10 +75,19 @@ export const Sidebar = () => {
           <img className="w-5 h-5" src={github} alt="Github" />
         </a>
 
-        <div className="flex items-center gap-3">
+        {/* Failsafe: click the unicorn to jump straight to the Payments
+            Garage presentation, in case the Konami code isn't landing. */}
+        <button
+          type="button"
+          onClick={() => {
+            window.location.href = "/garage/index.html";
+          }}
+          className="flex items-center gap-3 bg-transparent border-0 p-0 cursor-pointer text-left hover:opacity-80 transition-opacity"
+          title="Start the presentation"
+        >
           <Avatar src={avatar} alt="Unicorn avatar" size="md" />
           <p className="text-sm font-medium text-gray-900">Business Unicorn</p>
-        </div>
+        </button>
       </div>
     </div>
   );

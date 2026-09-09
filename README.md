@@ -1,102 +1,128 @@
 # Unicorn Finance
 
-We have created Unicorn Finance as a sample application showcasing the
-capabilities of our J.P. Morgan core external APIs.
-We hit a number of J.P. Morgan
-APIs in the UAT and CAT environment via SSL authentication.
-
-See our project running on AWS Amplify
-[here](https://www.unicorn-finance-dev.com/)
+A sample application showcasing J.P. Morgan Payments core external APIs. It is a
+clone-and-run demo: every call runs offline against a built-in mock, and the same code
+hits the real J.P. Morgan sandbox once you drop in your credentials.
 
 ![Screenshot of Unicorn Finance Account page](account.png "Screenshot of Unicorn Finance")
 
-## What APIs are you hitting?
+## The four beats
 
-1. Service Status Page: We hit the Platform Availability Communication
-   Management API on this page. This returns a list of current outages within J.P.
-   Morgan external APIs. If no outages are returned a message is displayed for
-   the user.
-2. Accounts Page: We hit two APIs on this page:
-   - Balances: This API returns intraday balances for specific accounts. We use
-     it to get the current day balance for a UAT account
-   - Transactions: This API returns all the transactions for a specific account
-     for a specific time period.
-3. Payments Page: We hit the Global Payments API to create a payment in CAT.
+Each page takes you *behind* one API - what it does and how you call it.
 
-On each page you can use the bar at the bottom of the page to toggle 'What APIs are being used on this page' functionality. This will tell you exactly which API is being hit for each section.
-E.g for the account page:
-![Screenshot of Unicorn Finance showing API details for Accounts page](whatApi.png "Screenshot of Unicorn Finance showing API details for Accounts page")
+| Beat | Page | API | What it shows |
+|---|---|---|---|
+| Reach | Payments | Global Payments 2 | Initiate a payment (RTP / ACH) across rails from one contract |
+| Speed | FX | FX Rate Sheet | Pull a real-time rate sheet - lockable (guaranteed) vs indicative rates |
+| Confidence | Validations | Account Validation | Verify an account before you pay it; confidence codes, not a yes/no |
+| Retrieve | Accounts | Balances + Transactions | The query side - balances and the transactions you've sent/received |
 
-## What's included in this repo?
+## Getting started (Tier 1 - offline, no credentials)
 
-The frontend code is written with React and Tailwind CSS. The backend is using expressjs.
-This code takes the data from the server and displays it in a user friendly manner.
+Everything runs against an in-browser mock ([MSW](https://mswjs.io/)), so you need no
+J.P. Morgan network access and no keys.
 
-## Getting started
+**Prerequisites:** either **Docker** (Desktop running), or **Node.js >= 20.19** with
+**pnpm** (`corepack enable` sets pnpm up for you).
 
-Initially you will run the code hitting mocked data.
-This is because you need extra authentication information for hitting our actual APIs which is explained below.
+With Docker:
+
+```sh
+docker compose up
+```
+
+Then open http://localhost:3000.
+
+Or run the client directly:
 
 ```sh
 cd app/client
-yarn install
-yarn start
+corepack enable   # first time only - enables pnpm
+pnpm install
+pnpm start
 ```
 
-If you see an error like this:
+That's the whole demo - all four beats work offline. It opens on a home screen that
+introduces the app and points you to the right API for what you're building.
 
-```
-Proxy error: Could not proxy request /api/tsapi/v1/participants from localhost:3000 to http://localhost:8081.
-See https://nodejs.org/api/errors.html#errors_common_system_errors for more information (ECONNREFUSED).
-```
+> Port 3000 already in use? Stop the other process or run `pnpm start -- --port 3001`.
 
-You can ignore it as this is because our server is not running. (See [Hitting J.P. Morgan APIs locally section](#hitting-jp-morgan-apis-locally))
+## Finding your way around
 
-When looking at the code we recommend looking at the pages files within the src folder, we have 3 core pages; accounts, payments and service status.
-Each page refers to a set of APIs (account services, sending a payment and gathering service status updates).
-Within client and server folders we have readme with more details on each section.
+- **Environment switch** (left navbar): three tiers in graduation order - **Local Mock**
+  (in-app, offline, no keys - the default), **JPMC Mock** (PDP's hosted Mock env, via
+  OAuth2), and **JPMC CAT** (real integration, mTLS certs). The two JPMC tiers stay
+  disabled until you configure them (see below), so nobody hits silent errors.
+- **Request Preview drawer**: every form has a **Preview Request** button, and clicking a
+  history row re-opens it - this is the "what API am I actually hitting" view, showing the
+  exact endpoint, method, headers and body.
+- Pages live in `app/client/src/pages`; each beat's logic is under `app/client/src/features`.
 
-### Hitting J.P. Morgan APIs
+## Code with us
 
-This will require you to provide some SSL certificates.
-You will need to onboard to J.P. Morgan to access this information. Further details are available [here](https://developer.jpmorgan.com/).
+1. **Run the container** (above) - see the real request/response shapes now, no keys.
+2. **Point your AI agent** (Copilot / Claude Code) at the public **pdp-skills** and
+   **pdp-mcp** (github.com/jpmorgan-payments) - they teach it J.P. Morgan's OAuth and API
+   contracts so it builds the integration with you. (Today these cover OAuth + Online
+   Payments + Checkout; skills for the four beats here are a tracked gap - see
+   [`docs/pdp-skills-mcp-gaps.md`](docs/pdp-skills-mcp-gaps.md).)
+3. **Get your keys** - onboard at
+   [developer.payments.jpmorgan.com](https://developer.payments.jpmorgan.com) and graduate
+   to the real sandbox (Tier 2 below).
 
-Once you have the correct files ready you can upload them to your server (DO NOT COMMIT THESE FILES TO YOUR CODEBASE).
+## Tiers 2 & 3 (++ hit real JPMorgan APIs)
 
-#### Hitting J.P. Morgan APIs locally
+Both JPMC tiers run through the express proxy in `app/server`, keep their secrets
+server-side, and stay **gated off in the UI until you set `VITE_ENABLE_JPMC=true`** (and
+rebuild the client). Copy `.env.example` to `.env` first.
 
-1. Store your certs in a folder that is included in .gitignore (eg. certs)
-2. Open server/app.js and check below lines relate to where your certs are
+- **JPMC Mock** - PDP's hosted Mock environment (`api-mock.payments.jpmorgan.com`).
+  Create a project on the [developer portal](https://developer.payments.jpmorgan.com), add
+  an API, and put its **client_id / client_secret** in `.env` (`PDP_CLIENT_ID` /
+  `PDP_CLIENT_SECRET`). The server exchanges them for an OAuth2 Bearer token
+  (`scope=jpm:payments:sandbox`) - no certificates, and the secret never reaches the
+  browser.
+- **JPMC CAT** - real Client Acceptance Testing via **mTLS certificates + a signed JWT**.
+  Put your certs in `./certs` (gitignored): `jpmc.key`, `jpmc.crt`,
+  `digital-signature/key.key`, plus your client/program IDs in `.env`.
 
-```js
-// const httpsOpts = {
-//   KEY: fs.readFileSync('../certs/jpmc.key', 'utf-8'),
-//   CERT: fs.readFileSync('../certs/jpmc.crt', 'utf-8'),
-// };
-```
-
-3. Make sure paths on these lines match your folder
-4. Then run:
+Then run the proxy alongside the client and pick the tier in the switch:
 
 ```sh
-cd app/server
-yarn install
-yarn start:local
+docker compose --profile real up   # or: cd app/server && pnpm install && pnpm start:local
 ```
+
+See `app/server/README.md` for details.
+
+> Status: **Local Mock** is the offline default. **JPMC Mock** now has its server-side
+> OAuth2 client-credentials token exchange + `api-mock` Bearer proxy wired (gated behind
+> `VITE_ENABLE_JPMC` + your PDP creds); each beat's exact `api-mock` path/contract still
+> needs confirming per PDP product (today's paths mirror the CAT/gateway shapes, and
+> payments on CAT use a signed JWT rather than the Bearer+JSON the Mock tier expects).
+> **JPMC CAT** (mTLS certs + signed JWT) is wired.
+
+## What's in this repo
+
+- `app/client` - the React (Vite + Mantine + Tailwind) front end. Offline mock in
+  `src/mocks` (MSW).
+- `app/server` - the express mTLS + signed-JWT proxy for real mode, and its AWS Lambda
+  deployment (`DEPLOYMENT_GUIDE.md`).
+- `app/server/mock-server` - an optional Prism/Caddy contract mock driven by the OpenAPI
+  specs in `specs/` (`docker compose up` there for a server-side mock on :8081).
+- `postman` - a Postman collection with a request per beat.
 
 ## Testing
 
-We are using cypress to test our screens.
-
 ```sh
 cd app/client
-npx cypress open
+pnpm test          # watch
+pnpm test:no-watch # once
 ```
 
 ## Contributing
 
-We welcome any contributions you have. Steps for contribution are:
+We welcome contributions.
 
-1. If this is your first time contributing to JPMC codebases you will need to fill out our Contribution Licence Agreement (CLA). More information can be found at: https://github.com/jpmorganchase/.github/blob/main/CONTRIBUTING.md
-2. Write your code and create a PR and we will review it
-3. Your code will then be reviewed and merged if no issues are found.
+1. First-time JPMC contributors: complete the Contribution Licence Agreement -
+   https://github.com/jpmorganchase/.github/blob/main/CONTRIBUTING.md
+2. Open a PR; we'll review and merge if all checks pass.

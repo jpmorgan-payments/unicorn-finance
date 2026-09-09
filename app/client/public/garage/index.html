@@ -1,0 +1,487 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Payments Garage — Unicorn Finance</title>
+<meta name="description" content="One payment, San Jose to Berlin. Four bays, behind the J.P. Morgan Payments APIs.">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Archivo:ital,wght@0,400;0,600;0,800;0,900;1,800;1,900&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+  :root{
+    --deep:#0C0620; --panel:rgba(14,8,34,.84); --line:#3A2566; --line-hot:#5B3A9E;
+    --ink:#FDF6FF; --ink-dim:#BCA9DA; --ink-faint:#7B67A3;
+    --magenta:#FF3E9D; --orange:#FF7A29; --gold:#FFD23F; --cyan:#3FE0F0;
+    --uf:#31A88C; --uf-hot:#5BE8C0;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;}
+  body{background:var(--deep);color:var(--ink);font-family:"Archivo",system-ui,sans-serif;overflow:hidden;}
+
+  /* ---------- OUT RUN BACKDROP ---------- */
+  #sky{position:fixed;inset:0;z-index:0;background:linear-gradient(180deg,
+    #0A0424 0%,#240B4A 26%,#6B1B6E 46%,#C42E72 58%,#FF5C3C 66%,#FF9A2E 71%,#12081F 71.5%,#0C0620 100%);}
+  #sun{position:fixed;left:50%;top:44%;transform:translate(-50%,-50%);
+    width:min(46vh,420px);height:min(46vh,420px);border-radius:50%;z-index:1;
+    background:linear-gradient(180deg,#FFE86B 0%,#FFC93C 30%,#FF6B4A 62%,#FF3E9D 100%);}
+  #sun::after{content:"";position:absolute;inset:0;border-radius:50%;
+    background:repeating-linear-gradient(180deg,transparent 0 14px,var(--deep) 14px 19px);opacity:.92;
+    -webkit-mask-image:linear-gradient(180deg,transparent 42%,#000 56%);
+            mask-image:linear-gradient(180deg,transparent 42%,#000 56%);}
+  #grid{position:fixed;left:-25%;right:-25%;bottom:0;height:29%;z-index:2;
+    perspective:190px;perspective-origin:50% 0%;overflow:hidden;pointer-events:none;}
+  #grid::before{content:"";position:absolute;inset:-140% 0 -40% 0;
+    background:repeating-linear-gradient(90deg,transparent 0 78px,rgba(255,62,157,.6) 78px 81px),
+               repeating-linear-gradient(0deg,transparent 0 78px,rgba(63,224,240,.4) 78px 81px);
+    transform:rotateX(72deg);transform-origin:50% 0%;animation:roll 2.6s linear infinite;}
+  @keyframes roll{from{background-position:0 0,0 0;}to{background-position:0 0,0 81px;}}
+  #horizon{position:fixed;left:0;right:0;bottom:29%;height:2px;z-index:3;
+    background:linear-gradient(90deg,transparent,var(--cyan),var(--gold),var(--magenta),transparent);
+    box-shadow:0 0 22px rgba(255,62,157,.75);}
+  #scan{position:fixed;inset:0;z-index:20;pointer-events:none;
+    background:repeating-linear-gradient(0deg,rgba(0,0,0,.16) 0 1px,transparent 1px 3px);mix-blend-mode:multiply;}
+  #vig{position:fixed;inset:0;z-index:19;pointer-events:none;
+    background:radial-gradient(ellipse at 50% 45%,transparent 42%,rgba(6,3,16,.72) 100%);}
+  @media (prefers-reduced-motion:reduce){#grid::before{animation:none;}}
+
+  /* ---------- SLIDES ---------- */
+  #deck{position:fixed;inset:0;z-index:10;}
+  .slide{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;
+    padding:clamp(50px,7vh,80px) clamp(28px,5.4vw,90px) 88px;
+    animation:zoom .32s cubic-bezier(.2,.8,.3,1);}
+  .slide.on{display:flex;}
+  @keyframes zoom{from{opacity:0;transform:scale(.985) translateY(10px);}to{opacity:1;transform:none;}}
+  @media (prefers-reduced-motion:reduce){.slide{animation:none;}}
+
+  .eyebrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+    margin-bottom:clamp(12px,2vh,22px);font-family:"Press Start 2P",monospace;
+    font-size:clamp(8px,.78vw,10.5px);color:var(--cyan);text-shadow:0 0 12px rgba(63,224,240,.55);}
+  .bay{background:linear-gradient(180deg,var(--gold),var(--orange));color:#2A0A00;
+    padding:5px 9px 4px;border-radius:2px;font-family:"Press Start 2P",monospace;
+    font-size:clamp(8px,.78vw,10.5px);box-shadow:0 2px 0 #8B3A00;}
+  h1{font-weight:900;font-style:italic;font-size:clamp(42px,8.4vw,116px);line-height:.85;
+    letter-spacing:-.038em;text-transform:uppercase;text-wrap:balance;
+    background:linear-gradient(180deg,#FFF 6%,#FFE86B 34%,#FF9A2E 54%,#FF3E9D 84%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 3px 0 rgba(90,20,90,.85)) drop-shadow(0 0 26px rgba(255,62,157,.45));}
+  h2{font-weight:900;font-style:italic;font-size:clamp(28px,4.9vw,66px);line-height:1;
+    letter-spacing:-.03em;text-transform:uppercase;max-width:19ch;text-wrap:balance;
+    text-shadow:0 2px 0 rgba(90,20,90,.9),0 0 24px rgba(255,62,157,.3);}
+  h2 em{font-style:italic;color:var(--gold);text-shadow:0 2px 0 #7A2600,0 0 22px rgba(255,210,63,.6);}
+  h2 .uf{color:var(--uf-hot);text-shadow:0 2px 0 #06382C,0 0 22px rgba(91,232,192,.55);}
+  h3{font-family:"Press Start 2P",monospace;font-size:clamp(11px,1.3vw,17px);line-height:1.5;
+    color:var(--gold);margin-bottom:14px;text-shadow:0 2px 0 #7A2600;}
+  .lede{font-size:clamp(15px,1.6vw,22px);line-height:1.5;color:var(--ink-dim);max-width:50ch;margin-top:clamp(12px,2vh,22px);}
+  .say{font-size:clamp(13.5px,1.42vw,18.5px);line-height:1.55;color:var(--ink-dim);max-width:56ch;margin-top:14px;}
+  .say b{color:var(--gold);font-weight:800;}
+  .say .uf{color:var(--uf-hot);font-weight:800;}
+  .rule{height:4px;width:clamp(90px,11vw,170px);margin:clamp(12px,1.8vh,20px) 0;border-radius:2px;
+    background:linear-gradient(90deg,var(--gold),var(--magenta));box-shadow:0 0 18px rgba(255,62,157,.7);}
+
+  .cols{display:grid;grid-template-columns:1fr 1fr;gap:clamp(16px,2.4vw,46px);align-items:start;margin-top:clamp(10px,1.6vh,20px);}
+  @media (max-width:940px){.cols{grid-template-columns:1fr;gap:16px;}}
+
+  /* ---------- the docket: our one payment ---------- */
+  .docket{display:flex;align-items:stretch;gap:clamp(8px,1.2vw,18px);flex-wrap:wrap;
+    margin-top:clamp(14px,2.2vh,26px);}
+  .leg{background:var(--panel);border:1px solid var(--line);border-radius:8px;
+    padding:clamp(12px,1.4vw,20px) clamp(14px,1.6vw,24px);backdrop-filter:blur(7px);
+    display:flex;flex-direction:column;gap:6px;min-width:150px;flex:1;}
+  .leg .lbl{font-family:"Press Start 2P",monospace;font-size:8px;color:var(--cyan);}
+  .leg .big{font-weight:900;font-style:italic;text-transform:uppercase;
+    font-size:clamp(19px,2.5vw,34px);line-height:1;letter-spacing:-.025em;}
+  .leg .sm{font-size:clamp(11.5px,1.05vw,14.5px);color:var(--ink-faint);}
+  .leg.amt{border-color:var(--gold);background:linear-gradient(180deg,rgba(255,210,63,.16),rgba(255,122,41,.1));}
+  .leg.amt .big{color:var(--gold);text-shadow:0 2px 0 #7A2600;}
+  .arrow{display:flex;align-items:center;font-size:clamp(20px,2.6vw,36px);color:var(--magenta);
+    text-shadow:0 0 18px rgba(255,62,157,.8);font-weight:900;}
+
+  pre{background:rgba(4,2,12,.9);border:1px solid var(--line-hot);border-left:3px solid var(--cyan);
+    border-radius:6px;padding:clamp(11px,1.25vw,18px);overflow:auto;max-height:44vh;
+    font-family:"JetBrains Mono",ui-monospace,monospace;
+    font-size:clamp(10px,.96vw,13.5px);line-height:1.6;color:#C6B8E8;backdrop-filter:blur(6px);}
+  .k{color:var(--cyan);} .s{color:var(--gold);} .n{color:#8FE3B4;}
+  .c{color:var(--ink-faint);font-style:italic;}
+  .hl{background:rgba(255,62,157,.26);border-radius:2px;padding:1px 4px;color:#FFC9E4;}
+  .path{font-family:"JetBrains Mono",monospace;font-size:clamp(11px,1.05vw,15px);
+    color:var(--cyan);background:rgba(10,5,26,.85);border:1px solid var(--line-hot);
+    border-radius:5px;padding:8px 12px;display:inline-block;margin-top:10px;word-break:break-all;}
+  .path .verb{color:var(--gold);font-weight:500;}
+
+  ul.pts{list-style:none;display:flex;flex-direction:column;gap:clamp(9px,1.3vh,17px);margin-top:4px;}
+  ul.pts li{font-size:clamp(13px,1.3vw,17.5px);line-height:1.45;color:var(--ink-dim);padding-left:22px;position:relative;}
+  ul.pts li::before{content:"";position:absolute;left:0;top:.5em;width:10px;height:3px;border-radius:2px;
+    background:linear-gradient(90deg,var(--gold),var(--magenta));}
+  ul.pts li strong{color:var(--ink);font-weight:800;}
+  ul.pts li code,.say code,p code{font-family:"JetBrains Mono",monospace;font-size:.88em;color:var(--cyan);}
+
+  .bays{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(8px,1vw,15px);margin-top:clamp(14px,2.4vh,28px);}
+  @media (max-width:900px){.bays{grid-template-columns:repeat(2,1fr);}}
+  .baycard{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--magenta);
+    border-radius:7px;padding:clamp(11px,1.3vw,18px);display:flex;flex-direction:column;gap:7px;backdrop-filter:blur(7px);}
+  .baycard .no{font-family:"Press Start 2P",monospace;font-size:clamp(13px,1.5vw,20px);
+    color:var(--gold);text-shadow:0 2px 0 #7A2600;}
+  .baycard .nm{font-weight:900;font-style:italic;text-transform:uppercase;
+    font-size:clamp(14px,1.65vw,22px);line-height:1;letter-spacing:-.02em;}
+  .baycard .api{font-family:"JetBrains Mono",monospace;font-size:clamp(9.5px,.85vw,11.5px);color:var(--uf-hot);}
+  .baycard .d{font-size:clamp(11.5px,1vw,14px);color:var(--ink-dim);line-height:1.42;}
+
+  .stat{display:flex;gap:clamp(16px,3vw,44px);flex-wrap:wrap;margin-top:clamp(12px,2vh,22px);}
+  .stat div{display:flex;flex-direction:column;gap:5px;}
+  .stat .big{font-family:"Press Start 2P",monospace;font-size:clamp(14px,1.9vw,25px);
+    color:var(--gold);text-shadow:0 2px 0 #7A2600,0 0 20px rgba(255,210,63,.5);}
+  .stat .lbl{font-size:clamp(10.5px,.95vw,13px);color:var(--ink-faint);text-transform:uppercase;
+    letter-spacing:.13em;font-weight:700;max-width:22ch;}
+
+  .board{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:clamp(12px,2vh,22px);}
+  @media (max-width:820px){.board{grid-template-columns:repeat(2,1fr);}}
+  .p{background:rgba(10,5,26,.72);border:1px solid var(--line);border-radius:5px;padding:10px 12px;
+    font-size:clamp(11px,1.05vw,15px);color:var(--ink-faint);font-weight:600;backdrop-filter:blur(6px);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:48px;}
+  .p.us{background:linear-gradient(180deg,rgba(255,210,63,.22),rgba(255,122,41,.18));
+    border-color:var(--gold);color:var(--gold);font-weight:900;
+    box-shadow:0 0 26px rgba(255,210,63,.42);text-shadow:0 1px 0 #7A2600;transform:scale(1.035);}
+  .p .tag{font-family:"Press Start 2P",monospace;font-size:7px;color:var(--magenta);margin-top:5px;text-shadow:none;}
+
+  .chequer{height:22px;margin-top:18px;border-radius:3px;
+    background:repeating-conic-gradient(#FDF6FF 0% 25%,#160B2E 0% 50%) 0 0/22px 22px;opacity:.9;}
+
+  /* ---------- footer HUD (audience-safe) ---------- */
+  #bar{position:fixed;left:0;right:0;bottom:0;height:58px;z-index:30;
+    background:linear-gradient(180deg,rgba(10,4,26,.5),rgba(8,3,20,.97));
+    border-top:2px solid var(--magenta);box-shadow:0 -6px 30px rgba(255,62,157,.28);
+    display:flex;align-items:center;justify-content:space-between;
+    padding:0 clamp(16px,3vw,40px);gap:16px;}
+  #trip{font-family:"JetBrains Mono",monospace;font-size:clamp(10px,.95vw,13px);color:var(--ink-faint);}
+  #trip b{color:var(--uf-hot);font-weight:500;}
+  #count{font-family:"Press Start 2P",monospace;color:var(--cyan);font-size:10px;
+    text-shadow:0 0 10px rgba(63,224,240,.6);white-space:nowrap;}
+  #prog{position:fixed;left:0;bottom:58px;height:3px;z-index:31;
+    background:linear-gradient(90deg,var(--cyan),var(--gold),var(--magenta));
+    box-shadow:0 0 14px rgba(255,62,157,.8);transition:width .3s;}
+  #nav{position:fixed;bottom:70px;right:18px;z-index:32;display:flex;gap:6px;}
+  #nav button{background:rgba(14,8,34,.85);border:1px solid var(--line-hot);color:var(--ink-faint);
+    width:34px;height:34px;border-radius:4px;cursor:pointer;font-size:15px;line-height:1;
+    font-family:"Archivo",sans-serif;transition:.15s;}
+  #nav button:hover,#nav button:focus-visible{border-color:var(--gold);color:var(--gold);outline:none;}
+
+  /* ---------- terminal moment ---------- */
+  .term{background:#05070A;border:1px solid var(--line-hot);border-radius:8px;
+    overflow:hidden;margin-top:clamp(12px,2vh,20px);box-shadow:0 14px 40px rgba(0,0,0,.5);}
+  .term .bar{display:flex;align-items:center;gap:7px;padding:9px 13px;
+    background:rgba(255,255,255,.05);border-bottom:1px solid var(--line-hot);}
+  .term .bar i{width:10px;height:10px;border-radius:50%;display:block;}
+  .term .bar .r{background:#FF5F57;} .term .bar .y{background:#FEBC2E;} .term .bar .g{background:#28C840;}
+  .term .bar span{margin-left:8px;font-family:"JetBrains Mono",monospace;
+    font-size:11px;color:var(--ink-faint);}
+  .term .body{padding:clamp(13px,1.5vw,20px);font-family:"JetBrains Mono",monospace;
+    font-size:clamp(11px,1.08vw,15px);line-height:1.75;}
+  .term .cmd{color:#EDE7FF;}
+  .term .cmd::before{content:"$ ";color:var(--gold);font-weight:500;}
+  .term .out{color:var(--ink-faint);}
+  .term .ok{color:#5BE8C0;}
+  .term .url{color:var(--cyan);text-decoration:underline;text-underline-offset:3px;}
+  .term .cur{display:inline-block;width:9px;height:1.05em;background:var(--gold);
+    vertical-align:-2px;margin-left:3px;animation:blink 1s steps(2,end) infinite;}
+  @keyframes blink{50%{opacity:0;}}
+  @media (prefers-reduced-motion:reduce){.term .cur{animation:none;}}
+</style>
+</head>
+<body>
+<div id="sky"></div><div id="sun"></div><div id="grid"></div><div id="horizon"></div>
+<div id="deck"></div>
+<div id="vig"></div><div id="scan"></div>
+<div id="prog"></div>
+<div id="nav"><button id="prev" aria-label="Previous">‹</button><button id="next" aria-label="Next">›</button></div>
+<div id="bar"><div id="trip"></div><div id="count"></div></div>
+
+<script>
+const TRIP = 'INV-2026-4417 &nbsp;·&nbsp; <b>€923,100</b> &nbsp;·&nbsp; San Jose → Berlin';
+const S=[
+
+/* 1 */ {html:`
+<div class="eyebrow">J.P. MORGAN PAYMENTS &nbsp;·&nbsp; INSERT COIN</div>
+<h1>Payments<br>Garage</h1>
+<div class="rule"></div>
+<div class="lede">Most API sessions hand you a brochure. In here we put it on the ramp, take the panels off, and show you what's actually turning.</div>
+<div class="say">Today's car: <span class="uf">Unicorn Finance</span>.</div>`},
+
+/* 1b */ {html:`
+<div class="eyebrow">BEFORE WE OPEN ANYTHING</div>
+<h2>One command.<br>No <em>keys</em>.</h2>
+<div class="cols">
+<div>
+<div class="term">
+  <div class="bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>unicorn-finance</span></div>
+  <div class="body">
+    <div class="cmd">git clone github.com/jpmorgan-payments/unicorn-finance</div>
+    <div class="cmd">docker compose up</div>
+    <div class="out">building client…</div>
+    <div class="out">mock service worker registered</div>
+    <div class="ok">✓ ready on <span class="url">http://localhost:3000</span><span class="cur"></span></div>
+  </div>
+</div>
+</div>
+<div>
+<ul class="pts">
+<li><strong>No credentials.</strong> No client id, no secret, no certificates, nothing to request from anyone.</li>
+<li><strong>No JPMC network.</strong> No VPN, no allowlist, no ticket. It runs on hotel wifi.</li>
+<li><strong>Real request and response shapes</strong>, served by an in-browser mock. Everything in the next four bays is running right here.</li>
+</ul>
+<div class="say">That is the whole setup. <b>Clone it on the train home and it still works.</b></div>
+</div>
+</div>`},
+
+/* 2 */ {html:`
+<div class="eyebrow">THE JOB &nbsp;·&nbsp; ACCOUNTS PAYABLE, TUESDAY MORNING</div>
+<h2>An invoice is due<br>in <em>Berlin</em></h2>
+<div class="docket">
+  <div class="leg"><span class="lbl">SUPPLIER</span><span class="big">Berlin</span><span class="sm">Germany · IBAN + BIC</span></div>
+  <div class="arrow">→</div>
+  <div class="leg amt"><span class="lbl">INVOICE DUE</span><span class="big">€923,100</span><span class="sm">INV-2026-4417 · net 30, due today</span></div>
+  <div class="arrow">→</div>
+  <div class="leg"><span class="lbl">YOU PAY FROM</span><span class="big">San Jose</span><span class="sm">United States · USD account</span></div>
+</div>
+<div class="say">You hold dollars. The invoice is in euros. It has to arrive <b>exactly</b> on the number, or your supplier's ledger shows a short payment and somebody spends Thursday reconciling it by hand.</div>`},
+
+/* 2b */ {html:`
+<div class="eyebrow">FIRST, WHAT THIS IS NOT</div>
+<h2>This isn't a<br><em>checkout</em></h2>
+<div class="cols">
+<div>
+<div class="say">Taking a card from a consumer is a solved, well-marketed problem. This is the other direction: <b>a business paying a business, on bank rails, across a border.</b></div>
+<div class="say">You can tell from the contract. These are fields a card charge has no use for.</div>
+</div>
+<pre><span class="c">// what a supplier payment carries</span>
+paymentPurpose: {
+  <span class="hl">categoryPurpose: "CXBSNS"</span>  <span class="c">// business payment</span>
+},
+remittanceInformation: {
+  structuredInformation: [{
+    <span class="hl">creditReference: { reference: "INV-2026-4417" }</span>
+  }]
+},
+<span class="hl">taxInformation</span>:       { ... },
+<span class="hl">regulatoryReporting</span>: { authority: { country: <span class="s">"DE"</span> } },
+agentInstructions:   { <span class="c">/* who bears the charges */</span> }</pre>
+</div>
+<div class="say">The invoice number travels <b>with the money</b>. That's what lets the supplier's ledger close itself instead of waiting on a remittance email.</div>`},
+
+/* 3 */ {html:`
+<div class="eyebrow">STAGE SELECT</div>
+<h2>Four bays</h2>
+<div class="bays">
+  <div class="baycard"><span class="no">01</span><span class="nm">Gearbox</span><span class="api">Global Payments</span><span class="d">How does it reach a German IBAN at all?</span></div>
+  <div class="baycard"><span class="no">02</span><span class="nm">Dyno</span><span class="api">FX Rate Sheet</span><span class="d">Hang on. Will it land on €923,100 exactly?</span></div>
+  <div class="baycard"><span class="no">03</span><span class="nm">Inspection</span><span class="api">Account Validation</span><span class="d">Hang on. Is that IBAN really the supplier's?</span></div>
+  <div class="baycard"><span class="no">04</span><span class="nm">Diagnostics</span><span class="api">Patchmageddon</span><span class="d">And what is any of it worth if the software underneath is open?</span></div>
+</div>
+<div class="say">Three of them are APIs you can call this afternoon. <b>The fourth is why they were built the way they were.</b></div>`},
+
+/* ============ BAY 01 ============ */
+/* 4 */ {bay:1, html:`
+<div class="eyebrow"><span class="bay">BAY 01</span> GEARBOX &nbsp;·&nbsp; GLOBAL PAYMENTS</div>
+<h2>San Jose to Berlin.<br>How many <em>integrations</em>?</h2>
+<div class="say">Berlin has an IBAN and a BIC. The supplier you paid on Friday in Ohio had a nine-digit routing number and wanted it same day. Payroll goes out on a third rail entirely.</div>
+<div class="say">Different countries, different rails, different identifier schemes, different clearing systems.</div>
+<div class="say"><b>Every treasury team assumes that's a build each. It's one.</b></div>`},
+
+/* 5 */ {bay:1, html:`
+<div class="eyebrow"><span class="bay">BAY 01</span> BEHIND THE API</div>
+<h3>ONE BODY. THE RAIL IS A FIELD.</h3>
+<div class="cols">
+<pre>{
+  requestedExecutionDate: <span class="s">"2026-08-30"</span>,
+  paymentIdentifiers: { <span class="hl">endToEndId: "UF1756..."</span> },
+  transferType: <span class="s">"CREDIT"</span>,
+  value: { currency: <span class="s">"USD"</span>, amount: <span class="s">"1000000"</span> },
+  <span class="hl">paymentType: "ACH"</span>,   <span class="c">// or "RTP"</span>
+  debtor:      { <span class="c">/* San Jose */</span> },
+  debtorAgent: { <span class="c">/* USABA routing no. */</span> },
+  creditor:    { <span class="c">/* Berlin — IBAN + BIC */</span> },
+  paymentPurpose:        { <span class="c">/* CXBSNS */</span> },
+  remittanceInformation: { <span class="c">/* INV-2026-4417 */</span> }
+}</pre>
+<div>
+<ul class="pts">
+<li><strong>The rail is one field.</strong> <code>paymentType</code> moves you between RTP and ACH. Nothing else about the body changes shape.</li>
+<li><strong>The identifier adapts underneath.</strong> A US account carries a routing number, <code>idType: USABA</code>. Berlin carries <code>DE89 3704 0044 …</code> and a <code>BIC</code>. Same slot, different scheme.</li>
+<li><strong>The <code>endToEndId</code> is minted here</strong> and survives the whole journey. It's how you prove, later, that this exact payment landed.</li>
+</ul>
+<span class="path"><span class="verb">POST</span> /payment/v2/payments</span>
+</div>
+</div>`},
+
+/* ============ BAY 02 ============ */
+/* 6 */ {bay:2, html:`
+<div class="eyebrow"><span class="bay">BAY 02</span> DYNO &nbsp;·&nbsp; FX RATE SHEET</div>
+<h2>Hang on. What rate<br>did I <em>actually</em> get?</h2>
+<div class="say">The invoice is fixed at <b>€923,100</b>. That number does not move. What moves is how many dollars it takes to settle it.</div>
+<div class="say">At a guaranteed 0.9231 you send US$1,000,000 and the invoice closes to the cent. On a rate that drifts to 0.9184, the same million lands as <b>€918,400</b>.</div>
+<div class="say">Four thousand seven hundred euros short. The invoice stays open, the supplier chases, and your month-end has an exception in it.</div>`},
+
+/* 7 */ {bay:2, html:`
+<div class="eyebrow"><span class="bay">BAY 02</span> BEHIND THE API</div>
+<h3>A RATE SHEET, NOT A NUMBER</h3>
+<div class="cols">
+<pre>{
+  rateId: <span class="s">"RS-USD-EUR-001"</span>,
+  baseCurrency: <span class="s">"USD"</span>,
+  counterCurrency: <span class="s">"EUR"</span>,
+  payoutType: <span class="s">"WIRE"</span>,
+  <span class="hl">guarenteedRateInd: true</span>,
+  minTranSize: <span class="n">100</span>,
+  maxTranSize: <span class="n">1000000</span>,
+  effectiveDate: <span class="s">"2026-08-20"</span>,
+  effectiveTime: <span class="s">"09:00:00"</span>,
+  rate: <span class="n">0.9231</span>
+}</pre>
+<div>
+<ul class="pts">
+<li><strong>Guaranteed, or indicative.</strong> One boolean separates a rate you can commit an invoice to from a rate that is only information.</li>
+<li><strong>The guarantee is bounded, and the bounds say something.</strong> EUR, GBP, CAD, AUD and SGD carry a $1m ceiling and a guarantee. JPY drops to $750k. INR and BRL fall to $500k and $250k — and those two are exactly where <code>guarenteedRateInd</code> is <em>false</em>. <strong>Rate certainty and ticket size move together, corridor by corridor.</strong></li>
+<li><strong>And it expires.</strong> <code>effectiveDate</code> and <code>effectiveTime</code> say when, which is what makes a payment run schedulable.</li>
+<li><strong>Carry the <code>rateId</code> into the payment</strong> and the euros are locked. The invoice closes on the number, first time.</li>
+</ul>
+<span class="path"><span class="verb">POST</span> /fxapi/v1/rate-sheets</span>
+</div>
+</div>`},
+
+/* ============ BAY 03 ============ */
+/* 8 */ {bay:3, html:`
+<div class="eyebrow"><span class="bay">BAY 03</span> INSPECTION &nbsp;·&nbsp; ACCOUNT VALIDATION</div>
+<h2>Hang on. Did it go<br>to the <em>right</em> people?</h2>
+<div class="say">Three weeks ago the Berlin supplier emailed accounts payable with updated bank details. New IBAN, same letterhead, same contact name, polite note about changing banks.</div>
+<div class="say">The invoice is genuine. The supplier is genuine. <b>The IBAN is not.</b></div>
+<div class="say">A million dollars has now cleared, on time, at a locked rate, into somebody else's account. <b>Every other bay worked perfectly.</b></div>`},
+
+/* 9 */ {bay:3, html:`
+<div class="eyebrow"><span class="bay">BAY 03</span> BEHIND THE API</div>
+<h3>CODES, NOT PASS / FAIL</h3>
+<div class="cols">
+<pre><span class="c">// two questions, asked separately</span>
+codes: {
+  <span class="hl">verification</span>:   { code: <span class="n">1002</span>, message: <span class="s">"Open Valid"</span> },
+  <span class="hl">authentication</span>: { code: <span class="n">5002</span>, message: <span class="s">"Ownership Match"</span> }
+}
+
+<span class="c">// or ask for a confidence score instead</span>
+accountScore: { code: <span class="n">1109</span>, message: <span class="s">"Information Found"</span> },
+providerResponse: {
+  score: <span class="n">658</span>,
+  <span class="hl">rag: "GREEN"</span>,
+  description: <span class="s">"High-confidence score range."</span>
+}</pre>
+<div>
+<ul class="pts">
+<li><strong>Verification</strong> asks whether the account is open and valid. The fraudulent one passes this.</li>
+<li><strong>Authentication</strong> asks whether it belongs to who you think. This is where it fails.</li>
+<li><strong>An account can be entirely real and still not theirs.</strong> A single boolean cannot express that, which is why the response never was one.</li>
+<li><strong>Or take the score.</strong> Your risk appetite for a $500 refund is not your appetite for a seven-figure supplier run.</li>
+</ul>
+<span class="path"><span class="verb">POST</span> /tsapi/v2/validations/accounts</span>
+</div>
+</div>`},
+
+/* ============ BAY 04 ============ */
+/* 10 */ {bay:4, html:`
+<div class="eyebrow"><span class="bay">BAY 04</span> DIAGNOSTICS &nbsp;·&nbsp; PATCHMAGEDDON</div>
+<h2>The patch arrives.<br>Nobody <em>fits</em> it.</h2>
+<div class="cols">
+<div>
+<div class="say">Everything in the last three bays assumed the code underneath is sound. Every API, every library, every dependency, all the way down.</div>
+<div class="say"><b>Frontier models now find exploitable vulnerabilities faster than anyone can patch them by hand. State-grade capability, available to anyone who wants it.</b></div>
+</div>
+<div>
+<div class="stat" style="flex-direction:column;gap:15px">
+  <div><span class="big">ZERO DAYS</span><span class="lbl">Average gap between disclosure and first exploitation</span></div>
+  <div><span class="big">75 / 530</span><span class="lbl">High &amp; critical vulnerabilities patched, May 2026</span></div>
+  <div><span class="big">~60%</span><span class="lbl">Of breaches happened with a patch already available</span></div>
+</div>
+<div class="say" style="font-size:.82em;opacity:.68">Eye on the Market · J.P. Morgan Cybersecurity Teams</div>
+</div>
+</div>`},
+
+/* 11 */ {bay:4, html:`
+<div class="eyebrow">PROJECT GLASSWING &nbsp;·&nbsp; SECURING CRITICAL SOFTWARE FOR THE AI ERA</div>
+<h2>Twelve launch partners.<br><em>One</em> bank.</h2>
+<div class="board">
+  <div class="p">Amazon Web Services</div><div class="p">Anthropic</div><div class="p">Apple</div><div class="p">Broadcom</div>
+  <div class="p">Cisco</div><div class="p">CrowdStrike</div><div class="p">Google</div>
+  <div class="p us">JPMorganChase<span class="tag">THE ONLY BANK</span></div>
+  <div class="p">Linux Foundation</div><div class="p">Microsoft</div><div class="p">NVIDIA</div><div class="p">Palo Alto Networks</div>
+</div>
+<div class="say">Every other name is a technology company. The financial system <b>is</b> critical infrastructure, so the bank is in the room where it gets defended.</div>`},
+
+/* 12 */ {bay:4, html:`
+<div class="eyebrow"><span class="bay">BAY 04</span> WHAT THAT MEANS HERE</div>
+<h2>Every bay today<br>was <em>already</em> this</h2>
+<div class="cols">
+<ul class="pts">
+<li><strong>Bay 01 — a surface you don't maintain.</strong> One contract instead of an integration per rail. Every payment dependency you would otherwise be patching yourself is one we patch, on our clock.</li>
+<li><strong>Bay 02 — a rate you can prove.</strong> Bounded, time-stamped, guaranteed or explicitly not. Not a number scraped from somewhere and trusted.</li>
+<li><strong>Bay 03 — the fraud a patch can't fix.</strong> "Real, but not theirs" is not a defect anyone can issue a CVE for.</li>
+</ul>
+<div>
+<div class="say">And in this demo: secrets stay server-side and never reach the browser, mTLS and a signed JWT for real traffic, tiers locked until you configure them. <b>Secure defaults you didn't have to ask for.</b></div>
+<div class="say"><b>This is a sliver of it.</b> One product surface, in one bank. But it's the sliver you can pick up this afternoon.</div>
+</div>
+</div>`},
+
+/* 13 */ {html:`
+<div class="eyebrow">OFF THE FORECOURT</div>
+<h2>Three tiers,<br>in <em>order</em></h2>
+<div class="bays" style="grid-template-columns:repeat(3,1fr)">
+  <div class="baycard"><span class="no">01</span><span class="nm">Local Mock</span><span class="api">offline · no keys</span><span class="d">In-browser MSW. Everything you've seen today. Clone and run it now.</span></div>
+  <div class="baycard"><span class="no">02</span><span class="nm">JPMC Mock</span><span class="api">OAuth2 · client creds</span><span class="d">Our hosted mock. A client_id and secret from the developer portal. No certificates.</span></div>
+  <div class="baycard"><span class="no">03</span><span class="nm">JPMC CAT</span><span class="api">mTLS · signed JWT</span><span class="d">Real integration testing against the sandbox.</span></div>
+</div>
+<div class="say">The two JPMC tiers stay <b>greyed out until you configure them</b>, so nobody hits a silent auth error and assumes the demo is broken. Secrets sit server-side in the proxy and never reach the browser.</div>`},
+
+/* 14 */ {html:`
+<div class="eyebrow">BRING YOUR OWN CAR</div>
+<h2>Take it <em>home</em></h2>
+<div class="cols">
+<ul class="pts">
+<li><strong>Run the container.</strong> <code>docker compose up</code>, then localhost:3000. Real request and response shapes, no keys, no VPN.</li>
+<li><strong>Point your agent at pdp-skills and pdp-mcp.</strong> They teach Copilot or Claude Code our OAuth flow and API contracts, so it builds the integration alongside you.</li>
+<li><strong>Get your keys.</strong> developer.payments.jpmorgan.com, and graduate to tier two.</li>
+</ul>
+<div>
+<div class="say">Today the public skills cover OAuth, Online Payments and Checkout. Skills for these four bays are a tracked gap, written up in the repo.</div>
+<div class="say" style="margin-top:16px"><span class="uf">github.com/jpmorgan-payments</span></div>
+<div class="chequer"></div>
+</div>
+</div>`},
+
+];
+
+const deck=document.getElementById("deck"),trip=document.getElementById("trip"),
+      cnt=document.getElementById("count"),prog=document.getElementById("prog");
+let i=0;
+S.forEach(s=>{const d=document.createElement("div");d.className="slide";d.innerHTML=s.html;deck.appendChild(d);});
+const els=[...document.querySelectorAll(".slide")];
+function show(n){
+  i=Math.max(0,Math.min(S.length-1,n));
+  els.forEach((el,x)=>el.classList.toggle("on",x===i));
+  trip.innerHTML = S[i].bay ? TRIP : "";
+  cnt.textContent="STAGE "+String(i+1).padStart(2,"0")+"/"+S.length;
+  prog.style.width=((i+1)/S.length*100)+"%";
+  try{localStorage.setItem("garage-slide",i);}catch(e){}
+}
+addEventListener("keydown",e=>{
+  if(["ArrowRight","ArrowDown"," ","PageDown","n"].includes(e.key)){e.preventDefault();show(i+1);}
+  else if(["ArrowLeft","ArrowUp","PageUp","p"].includes(e.key)){e.preventDefault();show(i-1);}
+  else if(e.key==="Home")show(0); else if(e.key==="End")show(S.length-1);
+  else if(e.key==="f"){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}
+});
+document.getElementById("next").onclick=e=>{e.stopPropagation();show(i+1);};
+document.getElementById("prev").onclick=e=>{e.stopPropagation();show(i-1);};
+addEventListener("click",e=>{if(!e.target.closest("#bar")&&!e.target.closest("#nav"))show(i+(e.clientX<innerWidth*0.28?-1:1));});
+let sx=0;
+addEventListener("touchstart",e=>sx=e.changedTouches[0].clientX,{passive:true});
+addEventListener("touchend",e=>{const d=e.changedTouches[0].clientX-sx;if(Math.abs(d)>50)show(i+(d<0?1:-1));},{passive:true});
+let saved=0;try{saved=parseInt(localStorage.getItem("garage-slide"))||0;}catch(e){}
+show(saved);
+</script>
+</body>
+</html>

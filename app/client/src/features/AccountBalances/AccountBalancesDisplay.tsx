@@ -71,13 +71,9 @@ const AccountBalancesDisplay: React.FC = () => {
       headers: {
         "Content-Type": "application/json",
       },
+      // Mirror the payload actually sent by submitAccountBalancesRequest
       body: {
         relativeDateType: "CURRENT_DAY",
-        accountList: [
-          {
-            accountId: accountId,
-          },
-        ],
       },
     };
   };

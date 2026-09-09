@@ -1,5 +1,9 @@
 # Manual AWS Lambda Deployment Guide
 
+> Internal ops reference for hosting the express proxy on AWS Lambda. You do NOT
+> need any of this to run the demo: the offline app runs with `docker compose up`
+> (or `cd app/client && pnpm start`) and needs no server. See the root `README.md`.
+
 ## 📋 Overview
 
 Your application has been split into two parts:

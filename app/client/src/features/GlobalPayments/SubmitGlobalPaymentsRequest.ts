@@ -1,4 +1,5 @@
 import type { PartyDetails, AccountDetails } from "./GlobalPaymentTypes";
+import { parseJsonResponse } from "../../utils/parseJsonResponse";
 
 function generateGlobalPaymentsRequestBody(
   amount: string,
@@ -51,31 +52,15 @@ export const generateGlobalPaymentsRequestData = (
 // We send this to our backend which forwards it to Global Payments after generating a digital signature
 export async function submitGlobalPaymentsRequest(
   url: string,
-  {
-    arg,
-  }: {
-    arg: {
-      amount: string;
-      paymentType: string;
-      debtorDetails: AccountDetails;
-      creditorDetails: PartyDetails;
-    };
-  },
+  { arg }: { arg: { body: ReturnType<typeof generateGlobalPaymentsRequestBody> } },
 ) {
   const res = await fetch(url, {
     method: "POST",
-    body: JSON.stringify(
-      generateGlobalPaymentsRequestBody(
-        arg.amount,
-        arg.paymentType,
-        arg.debtorDetails,
-        arg.creditorDetails,
-      ),
-    ),
+    body: JSON.stringify(arg.body),
     headers: {
       "Content-Type": "application/json",
     },
   });
 
-  return res.json();
+  return parseJsonResponse(res, "Global payment request");
 }

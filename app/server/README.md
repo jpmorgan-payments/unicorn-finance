@@ -1,65 +1,52 @@
-# Unicorn Finance Lambda/API Gateway
+# Unicorn Finance server (the "++ real" proxy)
 
-Currently we are deploying the backend using Lambda with an API Gateway.
+An express server (`http-proxy-middleware`) that proxies the frontend's requests to the
+real J.P. Morgan APIs, adding the TLS client certificate and, for payments, a signed JWT.
 
-The code is an express server using the http-proxy-middleware package.
-The server acts as a proxy between our frontend application and J.P. Morgan APIs.
-Requests are received, we add our TLS details and then forward the request on to the API.
+**You only need this for Tier 2 (real / CAT).** The offline demo runs entirely in the
+browser via MSW - no server, no certificates. See the root `README.md`.
 
-## Types of request
+## Routing
 
-Currently the server has 3 proxies configured, each with slightly different criteria.
-The proxy used is determined by the beginning of the request path.
+`app.js` picks the upstream from the request path (`routeRequest`):
 
-1. /cat/\* - This path takes all requests for JP CAT server
-2. /digitalSignature/\* - This path takes any requests that require a digital signature. More information on this is available below.
-3. /\* - any request not caught in below paths. This will proxy requests to JP UAT server.
+- path contains `payment` → `https://api-sandbox.payments.jpmorgan.com`
+- path contains `tsapi` (validations, transactions) → `https://apigatewaycat.jpmorgan.com`
+- everything else → the gateway (default)
 
-## Digital Signature
+Handlers: `/mockapi/*` (JPMC Mock tier - mints an OAuth2 client-credentials Bearer token
+and proxies to `api-mock.payments.jpmorgan.com`, no certs), `/digitalSignature/*` (CAT
+payments - the body is signed with `jose` and sent as the JWT), and a catch-all `/*` for
+the rest of CAT.
 
-For some J.P. Morgan APIs we need to use a digital signature.
-We are using 'jose' nodejs package to generate a digital signature.
+![Digital signature flow](digitalSignature.png "Digital signature flow")
 
-![Screenshot of digital signature flow](digitalSignature.png "Screenshot of digital signature flow")
+## Running it locally
 
-## Code overview
+You need a J.P. Morgan client certificate (onboard at developer.payments.jpmorgan.com and
+ask your technical implementation manager). Then:
 
-The code is in JS using express js.
-The code is designed to be ran on an AWS Lambda.
-We store our certificates on AWS Secrets manager.
+1. Put your certs in `../certs` (gitignored): `jpmc.key`, `jpmc.crt`,
+   `digital-signature/key.key`.
+2. Start the proxy on `:8082`:
 
-## Running the server
+   ```sh
+   cd app/server
+   pnpm install
+   pnpm start:local
+   ```
 
-For the server to hit J.P. Morgan APIs you will need to create a ssl certificate and upload it to developer.jpmorgan.com
-Please reach out to your technical implementation manager for further help.
+3. Run the client (`cd app/client && pnpm start`) and flip the UI switch to **CAT** - the
+   client's `/cat-api` calls proxy to this server.
 
-1. Store your certs in a folder that is included in .gitignore (eg. certs)
-2. Open server/app.js and check below lines relate to where your certs are
-
-```js
-// const httpsOpts = {
-//   KEY: fs.readFileSync('../certs/jpmc.key', 'utf-8'),
-//   CERT: fs.readFileSync('../certs/jpmc.crt', 'utf-8'),
-// };
-```
-
-3. Make sure paths on these lines match your folder
-4. Then run:
+Or run it in a container as the `real` profile (mounts `./certs` at `/certs`):
 
 ```sh
-cd app/server
-yarn install
-yarn start:local
+docker compose --profile real up
 ```
 
-## Deploying a new version
+## Deploying
 
-1. Ensure app.js is not looking for local files
-2. Run below commands from within this folder
-
-```bash
-yarn build
-```
-
-3. Log on to AWS lambda service
-4. Upload new code
+Hosted on AWS Lambda + API Gateway; certs come from AWS Secrets Manager (`SECRET_NAME`,
+fields `KEY`/`CERT`/`DIGITAL`) when `NODE_ENV` is not `development`. Build the artifact
+with `pnpm build` (or `lambda-deployment/build-lambda.sh`). Full steps: `DEPLOYMENT_GUIDE.md`.

@@ -1,0 +1,43 @@
+# Unicorn Finance - clone-and-run "Payments Garage" demo.
+#
+# Tier 1 (default) - offline, no credentials:
+#     docker compose up
+#   Serves the app at http://localhost:3000. All four beats (Global Payments,
+#   FX, Validation, Accounts/Transactions) run against the in-browser MSW mock.
+#
+# Tier 2 (++ real) - hit the real JPMorgan CAT sandbox (advanced):
+#     docker compose --profile real up
+#   Also starts the express mTLS + signed-JWT proxy. Requires your client
+#   certificates mounted at ./certs and the client rebuilt with your keys in
+#   .env - see .env.example. The UI Mock/CAT switch then routes to the proxy.
+services:
+  client:
+    build:
+      context: ./app/client
+      args:
+        # Baked into the bundle at build time. Read from a `.env` at the repo
+        # root (docker compose's own auto-substitution) - not the same as the
+        # `server` service's `env_file`, and never a secret (PDP_CLIENT_SECRET
+        # stays server-side).
+        VITE_ENABLE_JPMC: ${VITE_ENABLE_JPMC:-false}
+        VITE_CLIENT_ID: ${VITE_CLIENT_ID:-}
+        VITE_PROGRAM_ID: ${VITE_PROGRAM_ID:-}
+        VITE_PROGRAM_ID_TYPE: ${VITE_PROGRAM_ID_TYPE:-}
+    ports:
+      - "3000:80"
+
+  server:
+    profiles: ["real"]
+    build:
+      context: ./app/server
+    ports:
+      - "8082:8082"
+    # .dockerignore excludes .env from the image, so PDP_CLIENT_ID/PDP_CLIENT_SECRET
+    # etc. (see .env.example) must be forwarded at runtime via env_file.
+    env_file:
+      - .env
+    environment:
+      - NODE_ENV=development
+    volumes:
+      # app.js reads certs from ../certs (i.e. /certs when cwd is /app).
+      - ./certs:/certs:ro

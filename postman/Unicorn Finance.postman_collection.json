@@ -1,192 +1,109 @@
 {
 	"info": {
-		"_postman_id": "0e3ee822-5ed0-4f52-bf2e-48b71f102c4d",
-		"name": "Unicorn Finance",
-		"description": "We have created Unicorn Finance as a sample application showcasing the\ncapabilities of our J.P. Morgan core external APIs. We hit a number of J.P. Morgan\nAPIs in the UAT environment via ssl authentication.\n\nSee our project running on AWS Amplify\n[here](https://www.unicorn-finance-dev.com/)",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-		"_exporter_id": "18083699"
+		"name": "Unicorn Finance - Payments Garage",
+		"description": "Raw API calls behind the four Unicorn Finance beats - Global Payments (Reach), FX Rate Sheet (Speed), Account Validation (Confidence) and the Transactions/Balances retrieve side.\n\n`baseUrl` defaults to the local Prism mock-server (`cd app/server/mock-server && docker compose up`, port 8081). Global Payments and Account Validation are backed by the OpenAPI specs in `app/server/mock-server/specs` and work fully offline against it. FX, Transactions and Balances currently run in the app via the in-browser MSW mock (open the app's Request Preview drawer to see them) and against the real CAT sandbox once you are onboarded - their Prism specs are a follow-up.\n\nNo credentials or secrets are stored here. Real (CAT) mode uses mTLS + a signed JWT via the express server - see .env.example.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8081"
+		}
+	],
 	"item": [
 		{
-			"name": "Balance API",
-			"protocolProfileBehavior": {
-				"strictSSL": true,
-				"disableUrlEncoding": true
-			},
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "raw",
-					"raw": "{\n    \"accountList\": [\n        {\n            \"accountId\": \"000000010962009\"\n        },\n        {\n            \"accountId\": \"000000011153244\"\n        },\n        {\n            \"accountId\": \"000000010962009\"\n        },\n        {\n            \"accountId\": \"000000010900009\"\n        },\n        {\n            \"accountId\": \"000000011315421\"\n        }\n    ]\n}",
-					"options": {
-						"raw": {
-							"language": "json"
-						}
-					}
-				},
-				"url": {
-					"raw": "https://apigatewaycat.jpmorgan.com/accessapi/balance",
-					"protocol": "https",
-					"host": [
-						"apigatewaycat",
-						"jpmorgan",
-						"com"
-					],
-					"path": [
-						"accessapi",
-						"balance"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "PACMAN ",
-			"protocolProfileBehavior": {
-				"strictSSL": true
-			},
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "https://apigatewaycat.jpmorgan.com/tsapi/v1/participants?status=ONLINE",
-					"protocol": "https",
-					"host": [
-						"apigatewaycat",
-						"jpmorgan",
-						"com"
-					],
-					"path": [
-						"tsapi",
-						"v1",
-						"participants"
-					],
-					"query": [
-						{
-							"key": "status",
-							"value": "ONLINE"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Transactions",
-			"request": {
-				"method": "GET",
-				"header": [],
-				"url": {
-					"raw": "https://apigatewaycat.jpmorgan.com/tsapi/v2/transactions?relativeDateType=CURRENT_DAY&accountIds=000000010975001,000000011008182,000000010975514,000000010975001,000000010900009",
-					"protocol": "https",
-					"host": [
-						"apigatewaycat",
-						"jpmorgan",
-						"com"
-					],
-					"path": [
-						"tsapi",
-						"v2",
-						"transactions"
-					],
-					"query": [
-						{
-							"key": "startDate",
-							"value": "2021-09-10",
-							"disabled": true
-						},
-						{
-							"key": "relativeDateType",
-							"value": "PRIOR_DAY",
-							"disabled": true
-						},
-						{
-							"key": "endDate",
-							"value": "2021-03-01",
-							"disabled": true
-						},
-						{
-							"key": "accountIds",
-							"value": "000000010013324",
-							"disabled": true
-						},
-						{
-							"key": "relativeDateType",
-							"value": "CURRENT_DAY"
-						},
-						{
-							"key": "accountIds",
-							"value": "000000010975001,000000011008182,000000010975514,000000010975001,000000010900009"
-						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Make payment",
+			"name": "Global Payments - create payment (Reach)",
 			"request": {
 				"method": "POST",
 				"header": [
-					{
-						"key": "Content-Type",
-						"value": "text/xml",
-						"type": "text"
-					}
+					{ "key": "Content-Type", "value": "application/json" }
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiSm9obiBEb2UiLCJlbWFpbCI6ImpvaG5AZXhhbXBsZS5jb20iLCJpYXQiOjE2Nzg4MTI0MjZ9.FHVogz9_rl12vVu3F8BrdeLG7eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJmb28iOiJiYXIifQ.KUgRjVH1hG9MlVng34kzmvpDU-fIvFBDHgFuh6xNWvpkRniJ8lRj6r50WRRBV-PYZcvBrrgqsIMTUYT1irw6j_eRKVsrcho2acjy0joVW_X4aRefQ82Nf00287-k0hs10f6pbKy1xFnT8d3si9HBIsan6RWkLCnZQE0_4sXfJeZZDIoRITp3sCyEiQXUwQ9C5QOnQp-WE-ozI95LI_hGxZWY1gEURDghQ1M6Cq_-v2g2a8wO1cmAMZtYtJnvqtP_kN2BMVf-LAErtybnc7hFkF2pbCo33uWhnaPnQyRqPa0JRLCukYsq4SiCwhEB__Uen20V6_1rMuri0QHZKGzJYg9Ef3NRuJ0FSadRiFOAljLoIdE3YEa0TyCctiOl_8TjaIDKPwf5w_D3wpg7Aewnee9v6YIurgzR5i_ARgjMyHx0IBLYDFp2hWKTUAfXaYWD0JMlDqmcXbZQIsbF_5njaHA6QDNWxnklxyuXIFxVZVq9QvrVUaXUbza8loznqpItJBEXyWEDAlm9EcoJqTNiBBrR13n7-_HiLEAKjenBeYCDFri-qkzS9nyEsvLFxwkNkNOV94qIFxka1qmgfyHvKx0Q8BxrZ49L4SIhkEdqQCfFi2BmWVdD_GHxfjb_OZss-Y2Yu86-RQqDP45zE1w",
-					"options": {
-						"raw": {
-							"language": "xml"
-						}
-					}
+					"raw": "{\n  \"requestedExecutionDate\": \"2026-08-20\",\n  \"paymentIdentifiers\": { \"endToEndId\": \"UF1000000000001\" },\n  \"transferType\": \"CREDIT\",\n  \"value\": { \"currency\": \"USD\", \"amount\": \"100\" },\n  \"paymentType\": \"RTP\",\n  \"debtor\": { \"name\": \"RAPID AUDIO LLC\", \"account\": { \"accountNumber\": \"000000010900009\" } },\n  \"creditor\": { \"name\": \"OFFICE 123 INC\", \"account\": { \"accountNumber\": \"000000010975001\" } }\n}",
+					"options": { "raw": { "language": "json" } }
 				},
 				"url": {
-					"raw": "https://apigatewaycat.jpmorgan.com/tsapi/v1/payments",
-					"protocol": "https",
-					"host": [
-						"apigatewaycat",
-						"jpmorgan",
-						"com"
-					],
-					"path": [
-						"tsapi",
-						"v1",
-						"payments"
-					]
+					"raw": "{{baseUrl}}/payment/v2/payments",
+					"host": ["{{baseUrl}}"],
+					"path": ["payment", "v2", "payments"]
 				}
 			},
 			"response": []
 		},
 		{
-			"name": "Payment status",
+			"name": "FX Rate Sheet (Speed)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{ "key": "Content-Type", "value": "application/json" }
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"accountId\": \"000000010900009\",\n  \"currency\": \"USD\"\n}",
+					"options": { "raw": { "language": "json" } }
+				},
+				"url": {
+					"raw": "{{baseUrl}}/fxapi/v1/rate-sheets",
+					"host": ["{{baseUrl}}"],
+					"path": ["fxapi", "v1", "rate-sheets"]
+				},
+				"description": "Runs in-app via MSW today; add an FX Prism spec + Caddy route to serve it from the mock-server."
+			},
+			"response": []
+		},
+		{
+			"name": "Account Validation (Confidence)",
+			"request": {
+				"method": "POST",
+				"header": [
+					{ "key": "Content-Type", "value": "application/json" }
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "[\n  {\n    \"requestId\": \"UF1000000000001\",\n    \"profileName\": \"authentication\",\n    \"account\": {\n      \"accountNumber\": \"1234559\",\n      \"financialInstitutionId\": { \"clearingSystemId\": { \"id\": \"021000021\", \"idType\": \"ABA\" } }\n    }\n  }\n]",
+					"options": { "raw": { "language": "json" } }
+				},
+				"url": {
+					"raw": "{{baseUrl}}/tsapi/v2/validations/accounts",
+					"host": ["{{baseUrl}}"],
+					"path": ["tsapi", "v2", "validations", "accounts"]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Transactions - retrieve (Beat 4 companion)",
 			"request": {
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "https://apigatewaycat.jpmorgan.com/tsapi/v1/payments/status?endToEndId=uf1682944782231",
-					"protocol": "https",
-					"host": [
-						"apigatewaycat",
-						"jpmorgan",
-						"com"
-					],
-					"path": [
-						"tsapi",
-						"v1",
-						"payments",
-						"status"
-					],
-					"query": [
-						{
-							"key": "endToEndId",
-							"value": "uf1682944782231"
-						}
-					]
-				}
+					"raw": "{{baseUrl}}/tsapi/v3/transactions",
+					"host": ["{{baseUrl}}"],
+					"path": ["tsapi", "v3", "transactions"]
+				},
+				"description": "Runs in-app via MSW today; add a Prism spec + Caddy route to serve it from the mock-server."
+			},
+			"response": []
+		},
+		{
+			"name": "Account Balances",
+			"request": {
+				"method": "POST",
+				"header": [
+					{ "key": "Content-Type", "value": "application/json" }
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"relativeDateType\": \"CURRENT_DAY\"\n}",
+					"options": { "raw": { "language": "json" } }
+				},
+				"url": {
+					"raw": "{{baseUrl}}/accessapi/balance",
+					"host": ["{{baseUrl}}"],
+					"path": ["accessapi", "balance"]
+				},
+				"description": "Runs in-app via MSW today; add a Prism spec + Caddy route to serve it from the mock-server."
 			},
 			"response": []
 		}

@@ -50,7 +50,6 @@ const DemoBar = () => (
 function Layout() {
   const [mobileOpened] = useDisclosure();
   const [desktopOpened] = useDisclosure(true);
-  console.log(mobileOpened, desktopOpened);
   return (
     <AppShell
       padding="md"
