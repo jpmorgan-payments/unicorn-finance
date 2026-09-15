@@ -6,14 +6,18 @@ export const generateAVSRequestBody = (
   profileName: string,
   accountDetails: AVSAccountDetails,
 ) => {
-  const requestBody = [
-    {
-      requestId: "UF" + new Date().getTime(),
-      profileName: profileName,
-      account: accountDetails,
-    },
-  ];
-  return requestBody;
+  const entry: { requestId: string; profileName?: string; account: AVSAccountDetails } = {
+    requestId: "UF" + new Date().getTime(),
+    account: accountDetails,
+  };
+  // Real PDP contract (per the spec's own "Account Validation Request
+  // (Palo Alto Supplier)" example, which this app's example is modeled on):
+  // Verify + Authenticate passes profileName: "authentication" in the body.
+  // Account Confidence Score omits profileName entirely.
+  if (profileName === "authentication") {
+    entry.profileName = profileName;
+  }
+  return [entry];
 };
 
 export const generateAVSRequestData = (

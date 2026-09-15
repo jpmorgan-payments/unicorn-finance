@@ -1,4 +1,5 @@
 [
+  { "transactionId": "TXN-20260820-0000", "bookingDate": "2026-08-20", "amount": 25000.0, "currency": "USD", "creditDebitIndicator": "DEBIT", "counterparty": "PALO ALTO ROBOTICS LLC", "reference": "INV-2026-4417", "status": "BOOKED" },
   { "transactionId": "TXN-20260819-0001", "bookingDate": "2026-08-19", "amount": 12500.0, "currency": "USD", "creditDebitIndicator": "CREDIT", "counterparty": "RAPID AUDIO LLC", "status": "BOOKED" },
   { "transactionId": "TXN-20260819-0002", "bookingDate": "2026-08-19", "amount": 875.5, "currency": "USD", "creditDebitIndicator": "DEBIT", "counterparty": "OFFICE 123 INC", "status": "BOOKED" },
   { "transactionId": "TXN-20260818-0007", "bookingDate": "2026-08-18", "amount": 4200.0, "currency": "EUR", "creditDebitIndicator": "DEBIT", "counterparty": "AMSTERDAM TRADING BV", "status": "BOOKED" },

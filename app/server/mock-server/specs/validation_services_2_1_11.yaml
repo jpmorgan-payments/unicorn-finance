@@ -667,6 +667,20 @@ paths:
                           - idType: TAX_ID
                             id: '111223333'
                     transactions: []
+              Account Validation Request (Palo Alto Supplier):
+                value:
+                  - requestId: UF1756000001
+                    profileName: authentication
+                    account:
+                      accountNumber: XXXX9821
+                      financialInstitutionId:
+                        clearingSystemId:
+                          id: '121000248'
+                          idType: ABA
+                    entity:
+                      organization:
+                        name: Palo Alto Robotics LLC
+                    transactions: []
               Account Confidence Request (US):
                 value:
                   - requestId: 123e4567-e89b-12d3-a456-426614174000

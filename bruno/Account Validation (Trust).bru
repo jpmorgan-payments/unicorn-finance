@@ -1,0 +1,43 @@
+meta {
+  name: Account Validation (Trust)
+  type: http
+  seq: 4
+}
+
+post {
+  url: {{baseUrl}}/tsapi/v2/validations/accounts
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  [
+    {
+      "requestId": "UF1756000001",
+      "profileName": "authentication",
+      "account": {
+        "accountNumber": "XXXX9821",
+        "financialInstitutionId": {
+          "clearingSystemId": { "id": "121000248", "idType": "ABA" }
+        }
+      },
+      "entity": {
+        "organization": { "name": "Palo Alto Robotics LLC" }
+      }
+    }
+  ]
+}
+
+docs {
+  Validates the Palo Alto supplier's routing number and account before the
+  $1,000,000 payment goes out. Verification and authentication are asked as
+  two separate questions - an account can be real (verification: Open Valid)
+  without belonging to who you think (authentication: Ownership No Match).
+  See `app/client/src/mocks/mockedJson/ValidationServicesAuth.json` for both
+  the genuine-match and no-match Palo Alto-supplier examples this collection's
+  mock server returns.
+}

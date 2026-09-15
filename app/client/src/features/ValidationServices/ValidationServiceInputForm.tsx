@@ -7,8 +7,9 @@ import type {
   AVSAccountDetails,
   ValidationHistory,
 } from "./ValidationServicesTypes";
+import type { NamedExampleAccount } from "./ValidationServiceConfig";
 import {
-  DEFAULT_ACCOUNT_NUMBERS,
+  EXAMPLE_ACCOUNTS,
   VALIDATION_TYPE_OPTIONS,
   ValidationType,
 } from "./ValidationServiceConfig";
@@ -26,13 +27,13 @@ interface ValidationFormValues {
 }
 
 interface ValidationServicesInputFormProps {
-  accountDetails?: AVSAccountDetails[];
+  exampleAccounts?: NamedExampleAccount[];
   onValidationComplete?: (validationData: ValidationHistory) => void;
 }
 
 const ValidationServicesInputForm: React.FC<
   ValidationServicesInputFormProps
-> = ({ accountDetails = DEFAULT_ACCOUNT_NUMBERS, onValidationComplete }) => {
+> = ({ exampleAccounts = EXAMPLE_ACCOUNTS, onValidationComplete }) => {
   const { url } = useEnv();
   const { openDrawer } = useRequestPreview();
 
@@ -67,9 +68,9 @@ const ValidationServicesInputForm: React.FC<
     openDrawer(getRequestData(), null);
   };
 
-  const accountNumberOptions = accountDetails.map((account) => ({
-    label: account.accountNumber,
-    value: JSON.stringify(account),
+  const accountNumberOptions = exampleAccounts.map((example) => ({
+    label: `${example.label} (…${example.account.accountNumber}) — ${example.expectedOutcome}`,
+    value: JSON.stringify(example.account),
   }));
 
   const handleSubmit = async (values: ValidationFormValues) => {

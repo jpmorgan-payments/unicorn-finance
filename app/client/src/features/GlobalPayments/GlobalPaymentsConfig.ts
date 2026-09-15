@@ -11,9 +11,41 @@ export const paymentTypes = [
 export const rtpAccountDetails: AccountDetails[] = [
   {
     account: {
-      name: "RAPID AUDIO LLC",
+      name: "UNICORN FINANCE - SAN JOSE",
       account: {
         accountNumber: "000000010900009",
+      },
+    },
+    agent: {
+      financialInstitutionIds: [
+        {
+          id: "021000021",
+          idType: "USABA",
+        },
+      ],
+    },
+  },
+  {
+    account: {
+      name: "PALO ALTO ROBOTICS LLC",
+      account: {
+        accountNumber: "000000010900042",
+      },
+    },
+    agent: {
+      financialInstitutionIds: [
+        {
+          id: "121000248",
+          idType: "USABA",
+        },
+      ],
+    },
+  },
+  {
+    account: {
+      name: "RAPID AUDIO LLC",
+      account: {
+        accountNumber: "000000010900010",
       },
     },
     agent: {
@@ -59,52 +91,52 @@ export const rtpAccountDetails: AccountDetails[] = [
   },
 ];
 
-// ACH specific accounts
+// ACH specific accounts - US domestic only, same routing-number scheme as RTP
 export const achAccountDetails: AccountDetails[] = [
   {
     account: {
-      name: "EUROPEAN TECH SOLUTIONS",
+      name: "CLEVELAND SUPPLY CO",
       account: {
-        accountNumber: "DE89370400440532013000",
+        accountNumber: "000000010900101",
       },
     },
     agent: {
       financialInstitutionIds: [
         {
-          id: "COBADEFF",
-          idType: "BIC",
+          id: "041000124",
+          idType: "USABA",
         },
       ],
     },
   },
   {
     account: {
-      name: "AMSTERDAM TRADING BV",
+      name: "CHICAGO LOGISTICS INC",
       account: {
-        accountNumber: "NL91ABNA0417164300",
+        accountNumber: "000000010900102",
       },
     },
     agent: {
       financialInstitutionIds: [
         {
-          id: "ABNANL2A",
-          idType: "BIC",
+          id: "071000013",
+          idType: "USABA",
         },
       ],
     },
   },
   {
     account: {
-      name: "PARIS CONSULTING SARL",
+      name: "AUSTIN MANUFACTURING LLC",
       account: {
-        accountNumber: "FR1420041010050500013M02606",
+        accountNumber: "000000010900103",
       },
     },
     agent: {
       financialInstitutionIds: [
         {
-          id: "BNPAFRPP",
-          idType: "BIC",
+          id: "111000025",
+          idType: "USABA",
         },
       ],
     },

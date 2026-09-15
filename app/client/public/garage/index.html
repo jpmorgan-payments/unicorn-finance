@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Payments Garage — Unicorn Finance</title>
-<meta name="description" content="One payment, San Jose to Berlin. Four bays, behind the J.P. Morgan Payments APIs.">
+<meta name="description" content="One payment, San Jose to Palo Alto. Four beats, behind the J.P. Morgan Payments APIs.">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Archivo:ital,wght@0,400;0,600;0,800;0,900;1,800;1,900&family=JetBrains+Mono:wght@400;500&display=swap">
 <style>
   :root{
@@ -52,17 +52,30 @@
   @keyframes zoom{from{opacity:0;transform:scale(.985) translateY(10px);}to{opacity:1;transform:none;}}
   @media (prefers-reduced-motion:reduce){.slide{animation:none;}}
 
+  /* ---------- QR CARD ---------- */
+  .qr{position:absolute;top:clamp(18px,3vh,30px);right:clamp(20px,3.6vw,48px);z-index:25;
+    display:flex;flex-direction:column;align-items:center;gap:8px;
+    background:#fff;border-radius:10px;padding:14px 14px 11px;
+    box-shadow:0 0 0 2px var(--cyan),0 0 34px rgba(63,224,240,.65),0 10px 34px rgba(0,0,0,.5);}
+  .qr img{width:clamp(140px,15vw,190px);height:clamp(140px,15vw,190px);display:block;}
+  .qr span{font-family:"JetBrains Mono",monospace;font-weight:500;font-size:clamp(10.5px,1vw,13px);
+    color:#160B2E;white-space:nowrap;}
+  .qr-big{background:#fff;border-radius:14px;padding:clamp(18px,2.6vw,26px) clamp(18px,2.6vw,26px) clamp(14px,2vw,20px);
+    display:flex;flex-direction:column;align-items:center;gap:12px;
+    box-shadow:0 16px 50px rgba(0,0,0,.55);}
+  .qr-big img{width:clamp(210px,27vw,320px);height:clamp(210px,27vw,320px);display:block;}
+  .qr-big span{font-family:"JetBrains Mono",monospace;font-weight:600;font-size:clamp(12px,1.15vw,15px);
+    color:#160B2E;white-space:nowrap;}
+
   .eyebrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;
     margin-bottom:clamp(12px,2vh,22px);font-family:"Press Start 2P",monospace;
     font-size:clamp(8px,.78vw,10.5px);color:var(--cyan);text-shadow:0 0 12px rgba(63,224,240,.55);}
-  .bay{background:linear-gradient(180deg,var(--gold),var(--orange));color:#2A0A00;
-    padding:5px 9px 4px;border-radius:2px;font-family:"Press Start 2P",monospace;
-    font-size:clamp(8px,.78vw,10.5px);box-shadow:0 2px 0 #8B3A00;}
   h1{font-weight:900;font-style:italic;font-size:clamp(42px,8.4vw,116px);line-height:.85;
     letter-spacing:-.038em;text-transform:uppercase;text-wrap:balance;
     background:linear-gradient(180deg,#FFF 6%,#FFE86B 34%,#FF9A2E 54%,#FF3E9D 84%);
     -webkit-background-clip:text;background-clip:text;color:transparent;
-    filter:drop-shadow(0 3px 0 rgba(90,20,90,.85)) drop-shadow(0 0 26px rgba(255,62,157,.45));}
+    filter:drop-shadow(0 3px 0 rgba(90,20,90,.85)) drop-shadow(0 0 26px rgba(255,62,157,.45))
+      drop-shadow(0 0 3px rgba(6,3,16,.9)) drop-shadow(0 0 14px rgba(6,3,16,.75));}
   h2{font-weight:900;font-style:italic;font-size:clamp(28px,4.9vw,66px);line-height:1;
     letter-spacing:-.03em;text-transform:uppercase;max-width:19ch;text-wrap:balance;
     text-shadow:0 2px 0 rgba(90,20,90,.9),0 0 24px rgba(255,62,157,.3);}
@@ -70,8 +83,10 @@
   h2 .uf{color:var(--uf-hot);text-shadow:0 2px 0 #06382C,0 0 22px rgba(91,232,192,.55);}
   h3{font-family:"Press Start 2P",monospace;font-size:clamp(11px,1.3vw,17px);line-height:1.5;
     color:var(--gold);margin-bottom:14px;text-shadow:0 2px 0 #7A2600;}
-  .lede{font-size:clamp(15px,1.6vw,22px);line-height:1.5;color:var(--ink-dim);max-width:50ch;margin-top:clamp(12px,2vh,22px);}
-  .say{font-size:clamp(13.5px,1.42vw,18.5px);line-height:1.55;color:var(--ink-dim);max-width:56ch;margin-top:14px;}
+  .lede{font-size:clamp(15px,1.6vw,22px);line-height:1.5;color:var(--ink-dim);max-width:50ch;margin-top:clamp(12px,2vh,22px);
+    text-shadow:0 1px 4px rgba(4,2,12,.75),0 0 18px rgba(4,2,12,.5);}
+  .say{font-size:clamp(13.5px,1.42vw,18.5px);line-height:1.55;color:var(--ink-dim);max-width:56ch;margin-top:14px;
+    text-shadow:0 1px 4px rgba(4,2,12,.75),0 0 18px rgba(4,2,12,.5);}
   .say b{color:var(--gold);font-weight:800;}
   .say .uf{color:var(--uf-hot);font-weight:800;}
   .rule{height:4px;width:clamp(90px,11vw,170px);margin:clamp(12px,1.8vh,20px) 0;border-radius:2px;
@@ -90,8 +105,9 @@
   .leg .big{font-weight:900;font-style:italic;text-transform:uppercase;
     font-size:clamp(19px,2.5vw,34px);line-height:1;letter-spacing:-.025em;}
   .leg .sm{font-size:clamp(11.5px,1.05vw,14.5px);color:var(--ink-faint);}
-  .leg.amt{border-color:var(--gold);background:linear-gradient(180deg,rgba(255,210,63,.16),rgba(255,122,41,.1));}
-  .leg.amt .big{color:var(--gold);text-shadow:0 2px 0 #7A2600;}
+  .leg.amt{border-color:var(--cyan);background:linear-gradient(180deg,rgba(10,6,24,.88),rgba(10,6,24,.8));
+    box-shadow:0 0 24px rgba(0,0,0,.4);}
+  .leg.amt .big{color:var(--cyan);text-shadow:0 2px 0 #06323A,0 0 16px rgba(63,224,240,.7);}
   .arrow{display:flex;align-items:center;font-size:clamp(20px,2.6vw,36px);color:var(--magenta);
     text-shadow:0 0 18px rgba(255,62,157,.8);font-weight:900;}
 
@@ -116,14 +132,51 @@
 
   .bays{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(8px,1vw,15px);margin-top:clamp(14px,2.4vh,28px);}
   @media (max-width:900px){.bays{grid-template-columns:repeat(2,1fr);}}
+
+  /* ---------- STATUS TRACKER (GPI Track and Trace) ---------- */
+  .steps{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-top:clamp(14px,2.2vh,26px);}
+  .step{font-family:"Press Start 2P",monospace;font-size:clamp(7.5px,.8vw,10.5px);
+    padding:9px 11px;border-radius:4px;border:1px solid var(--line);color:var(--ink-faint);
+    background:var(--panel);backdrop-filter:blur(6px);}
+  .step.done{border-color:var(--uf-hot);color:var(--uf-hot);}
+  .step.on{border-color:var(--cyan);color:var(--cyan);text-shadow:0 0 10px rgba(63,224,240,.6);
+    box-shadow:0 0 20px rgba(63,224,240,.4);}
+  .step.retry{border-color:var(--gold);color:var(--gold);text-shadow:0 0 10px rgba(255,210,63,.6);
+    box-shadow:0 0 20px rgba(255,210,63,.35);}
+  .step.err{border-color:#FF4D4D;color:#FF4D4D;text-shadow:0 0 10px rgba(255,77,77,.6);
+    box-shadow:0 0 20px rgba(255,77,77,.35);}
+  .steps .arrow2{color:var(--ink-faint);font-size:15px;font-weight:900;}
+
+  /* ---------- HOP MAP (global, every rail) ---------- */
+  .hopmap{margin-top:clamp(14px,2vh,22px);border:1px solid var(--line);border-radius:10px;
+    background:var(--panel);backdrop-filter:blur(7px);padding:10px;max-width:820px;}
+  .hopmap svg{width:100%;height:auto;display:block;}
+  .hopmap .landmass path{fill:rgba(63,224,240,.09);stroke:var(--line-hot);stroke-width:1;}
+  .hopmap .hop{stroke:var(--gold);stroke-width:2;fill:none;stroke-dasharray:6 7;opacity:.9;
+    filter:drop-shadow(0 0 6px rgba(255,210,63,.55));animation:hopflow 2.2s linear infinite;}
+  .hopmap .node circle{fill:var(--magenta);filter:drop-shadow(0 0 8px rgba(255,62,157,.8));}
+  .hopmap .node.origin circle{fill:var(--cyan);filter:drop-shadow(0 0 8px rgba(63,224,240,.8));}
+  .hopmap .node text{font-family:"Press Start 2P",monospace;font-size:9.5px;fill:var(--ink);text-anchor:middle;}
+  @keyframes hopflow{to{stroke-dashoffset:-130;}}
+  @media (prefers-reduced-motion:reduce){.hopmap .hop{animation:none;}}
   .baycard{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--magenta);
-    border-radius:7px;padding:clamp(11px,1.3vw,18px);display:flex;flex-direction:column;gap:7px;backdrop-filter:blur(7px);}
+    border-radius:7px;padding:clamp(11px,1.3vw,18px);display:flex;flex-direction:column;gap:7px;backdrop-filter:blur(7px);
+    transition:opacity .3s,filter .3s;}
+  .baycard.dim{opacity:.28;filter:blur(1.2px) grayscale(.5);border-top-color:var(--line);}
   .baycard .no{font-family:"Press Start 2P",monospace;font-size:clamp(13px,1.5vw,20px);
     color:var(--gold);text-shadow:0 2px 0 #7A2600;}
+  .baycard .no.flag{font-size:clamp(30px,4vw,50px);line-height:1;}
+  .baycard .beat{font-family:"Press Start 2P",monospace;font-size:8px;color:var(--cyan);
+    text-shadow:0 0 10px rgba(63,224,240,.5);}
   .baycard .nm{font-weight:900;font-style:italic;text-transform:uppercase;
     font-size:clamp(14px,1.65vw,22px);line-height:1;letter-spacing:-.02em;}
   .baycard .api{font-family:"JetBrains Mono",monospace;font-size:clamp(9.5px,.85vw,11.5px);color:var(--uf-hot);}
   .baycard .d{font-size:clamp(11.5px,1vw,14px);color:var(--ink-dim);line-height:1.42;}
+  .baycard .head{display:flex;align-items:baseline;gap:9px;}
+  .baycard .routing{font-family:"JetBrains Mono",monospace;font-weight:700;
+    font-size:clamp(15px,1.7vw,21px);color:var(--cyan);text-shadow:0 0 10px rgba(63,224,240,.5);}
+  .baycard .routing.hl{color:#FFC9E4;background:rgba(255,62,157,.26);border-radius:3px;
+    padding:1px 6px;display:inline-block;}
 
   .stat{display:flex;gap:clamp(16px,3vw,44px);flex-wrap:wrap;margin-top:clamp(12px,2vh,22px);}
   .stat div{display:flex;flex-direction:column;gap:5px;}
@@ -195,21 +248,20 @@
 <div id="bar"><div id="trip"></div><div id="count"></div></div>
 
 <script>
-const TRIP = 'INV-2026-4417 &nbsp;·&nbsp; <b>€923,100</b> &nbsp;·&nbsp; San Jose → Berlin';
+const TRIPS = {};
 const S=[
 
-/* 1 */ {html:`
+/* 0 */ {html:`
 <div class="eyebrow">J.P. MORGAN PAYMENTS &nbsp;·&nbsp; INSERT COIN</div>
-<h1>Payments<br>Garage</h1>
+<h1>Insert<br>Coin.</h1>
 <div class="rule"></div>
-<div class="lede">Most API sessions hand you a brochure. In here we put it on the ramp, take the panels off, and show you what's actually turning.</div>
-<div class="say">Today's car: <span class="uf">Unicorn Finance</span>.</div>`},
+<div class="say">Every repo behind today's demo lives in the open, at <span class="uf">github.com/jpmorgan-payments</span>.</div>
+<div class="say"><b>I'm going to show you, through one of them, what it means to Insert Coin - send a $100,000 coin through US RTP, and a few other rails.</b></div>`},
 
 /* 1b */ {html:`
+<div class="qr"><img src="assets/repo-qr.svg" alt="QR code to github.com/jpmorgan-payments/unicorn-finance"><span>github.com/jpmorgan-payments/unicorn-finance</span></div>
 <div class="eyebrow">BEFORE WE OPEN ANYTHING</div>
 <h2>One command.<br>No <em>keys</em>.</h2>
-<div class="cols">
-<div>
 <div class="term">
   <div class="bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>unicorn-finance</span></div>
   <div class="body">
@@ -219,223 +271,326 @@ const S=[
     <div class="out">mock service worker registered</div>
     <div class="ok">✓ ready on <span class="url">http://localhost:3000</span><span class="cur"></span></div>
   </div>
-</div>
-</div>
-<div>
-<ul class="pts">
-<li><strong>No credentials.</strong> No client id, no secret, no certificates, nothing to request from anyone.</li>
-<li><strong>No JPMC network.</strong> No VPN, no allowlist, no ticket. It runs on hotel wifi.</li>
-<li><strong>Real request and response shapes</strong>, served by an in-browser mock. Everything in the next four bays is running right here.</li>
-</ul>
-<div class="say">That is the whole setup. <b>Clone it on the train home and it still works.</b></div>
-</div>
 </div>`},
+
+/* 13 */ {html:`
+<div class="qr"><img src="assets/repo-qr.svg" alt="QR code to github.com/jpmorgan-payments/unicorn-finance"><span>github.com/jpmorgan-payments/unicorn-finance</span></div>
+<div class="eyebrow">OFF THE FORECOURT</div>
+<h2>Three tiers,<br>in <em>order</em></h2>
+<div class="bays" style="grid-template-columns:repeat(3,1fr)">
+  <div class="baycard"><span class="no">01</span><span class="nm">Local Mock</span><span class="api">offline · no keys</span><span class="d">In-browser MSW. Everything you're about to see. Clone and run it now.</span></div>
+  <div class="baycard"><span class="no">02</span><span class="nm">JPMC Mock</span><span class="api">OAuth2 · client creds</span><span class="d">Our hosted mock. A client_id and secret from the developer portal. No certificates.</span></div>
+  <div class="baycard"><span class="no">03</span><span class="nm">JPMC CAT</span><span class="api">mTLS · signed JWT</span><span class="d">Real integration testing against the sandbox.</span></div>
+</div>`},
+
+/* 1c */ {html:`
+<div class="qr"><img src="assets/repo-qr.svg" alt="QR code to github.com/jpmorgan-payments/unicorn-finance"><span>github.com/jpmorgan-payments/unicorn-finance</span></div>
+<div class="eyebrow">CHECKPOINT &nbsp;·&nbsp; DO THIS NOW</div>
+<h1>Whoa …<br>who's cloned it?</h1>
+<div class="rule"></div>
+<div class="say">Scan it. <code>docker compose up</code>.</div>`},
 
 /* 2 */ {html:`
 <div class="eyebrow">THE JOB &nbsp;·&nbsp; ACCOUNTS PAYABLE, TUESDAY MORNING</div>
-<h2>An invoice is due<br>in <em>Berlin</em></h2>
+<h2>Pay a supplier<br>in <em>Palo Alto</em></h2>
 <div class="docket">
-  <div class="leg"><span class="lbl">SUPPLIER</span><span class="big">Berlin</span><span class="sm">Germany · IBAN + BIC</span></div>
+  <div class="leg"><span class="lbl">SUPPLIER</span><span class="big">Palo Alto</span><span class="sm">United States · Routing # + Account</span></div>
   <div class="arrow">→</div>
-  <div class="leg amt"><span class="lbl">INVOICE DUE</span><span class="big">€923,100</span><span class="sm">INV-2026-4417 · net 30, due today</span></div>
+  <div class="leg amt"><span class="lbl">SEND</span><span class="big">$100,000</span><span class="sm">INV-2026-4417 · net 30, due today</span></div>
   <div class="arrow">→</div>
   <div class="leg"><span class="lbl">YOU PAY FROM</span><span class="big">San Jose</span><span class="sm">United States · USD account</span></div>
 </div>
-<div class="say">You hold dollars. The invoice is in euros. It has to arrive <b>exactly</b> on the number, or your supplier's ledger shows a short payment and somebody spends Thursday reconciling it by hand.</div>`},
+<div class="say">This is the coin. Everything from here is where it goes once it leaves your hand.</div>`},
 
 /* 2b */ {html:`
 <div class="eyebrow">FIRST, WHAT THIS IS NOT</div>
 <h2>This isn't a<br><em>checkout</em></h2>
-<div class="cols">
-<div>
-<div class="say">Taking a card from a consumer is a solved, well-marketed problem. This is the other direction: <b>a business paying a business, on bank rails, across a border.</b></div>
-<div class="say">You can tell from the contract. These are fields a card charge has no use for.</div>
-</div>
-<pre><span class="c">// what a supplier payment carries</span>
-paymentPurpose: {
-  <span class="hl">categoryPurpose: "CXBSNS"</span>  <span class="c">// business payment</span>
-},
-remittanceInformation: {
-  structuredInformation: [{
-    <span class="hl">creditReference: { reference: "INV-2026-4417" }</span>
-  }]
-},
-<span class="hl">taxInformation</span>:       { ... },
-<span class="hl">regulatoryReporting</span>: { authority: { country: <span class="s">"DE"</span> } },
-agentInstructions:   { <span class="c">/* who bears the charges */</span> }</pre>
-</div>
-<div class="say">The invoice number travels <b>with the money</b>. That's what lets the supplier's ledger close itself instead of waiting on a remittance email.</div>`},
+<div class="say">Taking a card from a consumer is a solved, well-marketed problem. This is the other direction: <b>a business paying a business, on bank rails.</b></div>`},
 
 /* 3 */ {html:`
 <div class="eyebrow">STAGE SELECT</div>
-<h2>Four bays</h2>
-<div class="bays">
-  <div class="baycard"><span class="no">01</span><span class="nm">Gearbox</span><span class="api">Global Payments</span><span class="d">How does it reach a German IBAN at all?</span></div>
-  <div class="baycard"><span class="no">02</span><span class="nm">Dyno</span><span class="api">FX Rate Sheet</span><span class="d">Hang on. Will it land on €923,100 exactly?</span></div>
-  <div class="baycard"><span class="no">03</span><span class="nm">Inspection</span><span class="api">Account Validation</span><span class="d">Hang on. Is that IBAN really the supplier's?</span></div>
-  <div class="baycard"><span class="no">04</span><span class="nm">Diagnostics</span><span class="api">Patchmageddon</span><span class="d">And what is any of it worth if the software underneath is open?</span></div>
+<h2>Follow the<br><em>coin</em></h2>
+<div class="bays" style="grid-template-columns:repeat(3,1fr)">
+  <div class="baycard"><span class="no">01</span><span class="beat">REACH</span><span class="nm">Global Payments</span><span class="d">Drop it in the slot. One API, many countries, many rails.</span></div>
+  <div class="baycard"><span class="no">02</span><span class="beat">CONFIDENCE</span><span class="nm">Track Payment</span><span class="d">Watch it fall through the machine. How do I know it landed?</span></div>
+  <div class="baycard"><span class="no">03</span><span class="beat">TRUST</span><span class="nm">Account Validation</span><span class="d">Make sure it lands in the right tray. Is that really the supplier's account?</span></div>
 </div>
-<div class="say">Three of them are APIs you can call this afternoon. <b>The fourth is why they were built the way they were.</b></div>`},
+<div class="say">Three APIs. The whole trip the coin takes, once it leaves your hand.</div>`},
+
+/* 3c */ {html:`
+<div class="eyebrow">STAGE SELECT &nbsp;·&nbsp; FIRST UP</div>
+<h2>Let's start<br>with <em>these two</em></h2>
+<div class="bays" style="grid-template-columns:repeat(3,1fr)">
+  <div class="baycard"><span class="no">01</span><span class="beat">REACH</span><span class="nm">Global Payments</span><span class="d">Drop it in the slot. One API, many countries, many rails.</span></div>
+  <div class="baycard"><span class="no">02</span><span class="beat">CONFIDENCE</span><span class="nm">Track Payment</span><span class="d">Watch it fall through the machine. How do I know it landed?</span></div>
+  <div class="baycard dim"><span class="no">03</span><span class="beat">TRUST</span><span class="nm">Account Validation</span><span class="d">Make sure it lands in the right tray. Is that really the supplier's account?</span></div>
+</div>
+<div class="say">Reach and Confidence first. <b>Trust comes later.</b></div>`},
 
 /* ============ BAY 01 ============ */
-/* 4 */ {bay:1, html:`
-<div class="eyebrow"><span class="bay">BAY 01</span> GEARBOX &nbsp;·&nbsp; GLOBAL PAYMENTS</div>
-<h2>San Jose to Berlin.<br>How many <em>integrations</em>?</h2>
-<div class="say">Berlin has an IBAN and a BIC. The supplier you paid on Friday in Ohio had a nine-digit routing number and wanted it same day. Payroll goes out on a third rail entirely.</div>
-<div class="say">Different countries, different rails, different identifier schemes, different clearing systems.</div>
-<div class="say"><b>Every treasury team assumes that's a build each. It's one.</b></div>`},
+/* 4 */ {html:`
+<div class="eyebrow">GLOBAL PAYMENTS</div>
+<h2>One API.<br>Many <em>countries</em>, many <em>methods</em>.</h2>
+<div class="say">All your needs, in many regions, on one contract.</div>
+<div class="bays" style="grid-template-columns:repeat(5,1fr)">
+  <div class="baycard"><span class="no flag">🇺🇸</span><span class="nm">United States</span><span class="d">RTP, ACH, WIRE.</span></div>
+  <div class="baycard"><span class="no flag">🇬🇧</span><span class="nm">United Kingdom</span><span class="d">UK Faster Payments.</span></div>
+  <div class="baycard"><span class="no flag">🇪🇺</span><span class="nm">Eurozone</span><span class="d">SEPA Instant.</span></div>
+  <div class="baycard"><span class="no flag">🇮🇳</span><span class="nm">India</span><span class="d">India IMPS.</span></div>
+  <div class="baycard"><span class="no flag">🇧🇷</span><span class="nm">Brazil</span><span class="d">Brazil PIX.</span></div>
+</div>`},
 
-/* 5 */ {bay:1, html:`
-<div class="eyebrow"><span class="bay">BAY 01</span> BEHIND THE API</div>
+/* 5 */ {html:`
+<div class="eyebrow">BEHIND THE API</div>
+<span class="path"><span class="verb">POST</span> /payment/v2/payments</span>
 <h3>ONE BODY. THE RAIL IS A FIELD.</h3>
 <div class="cols">
-<pre>{
-  requestedExecutionDate: <span class="s">"2026-08-30"</span>,
+<pre><span class="c">// 🇺🇸 Palo Alto supplier, domestic RTP</span>
+{
   paymentIdentifiers: { <span class="hl">endToEndId: "UF1756..."</span> },
-  transferType: <span class="s">"CREDIT"</span>,
-  value: { currency: <span class="s">"USD"</span>, amount: <span class="s">"1000000"</span> },
-  <span class="hl">paymentType: "ACH"</span>,   <span class="c">// or "RTP"</span>
+  <span class="hl">paymentType: "RTP"</span>,
+  value: { currency: <span class="s">"USD"</span>, amount: <span class="s">"100000"</span> },
   debtor:      { <span class="c">/* San Jose */</span> },
-  debtorAgent: { <span class="c">/* USABA routing no. */</span> },
-  creditor:    { <span class="c">/* Berlin — IBAN + BIC */</span> },
-  paymentPurpose:        { <span class="c">/* CXBSNS */</span> },
+  creditor:    { <span class="hl">idType: "USABA"</span>, id: <span class="s">"121000248"</span>, accountNo: <span class="s">"…4417"</span> },
   remittanceInformation: { <span class="c">/* INV-2026-4417 */</span> }
 }</pre>
-<div>
-<ul class="pts">
-<li><strong>The rail is one field.</strong> <code>paymentType</code> moves you between RTP and ACH. Nothing else about the body changes shape.</li>
-<li><strong>The identifier adapts underneath.</strong> A US account carries a routing number, <code>idType: USABA</code>. Berlin carries <code>DE89 3704 0044 …</code> and a <code>BIC</code>. Same slot, different scheme.</li>
-<li><strong>The <code>endToEndId</code> is minted here</strong> and survives the whole journey. It's how you prove, later, that this exact payment landed.</li>
-</ul>
-<span class="path"><span class="verb">POST</span> /payment/v2/payments</span>
-</div>
+<pre><span class="c">// 🇺🇸 Palo Alto supplier, domestic ACH</span>
+{
+  paymentIdentifiers: { <span class="hl">endToEndId: "UF1756..."</span> },
+  <span class="hl">paymentType: "ACH"</span>,
+  value: { currency: <span class="s">"USD"</span>, amount: <span class="s">"100000"</span> },
+  debtor:      { <span class="c">/* San Jose */</span> },
+  creditor:    { <span class="hl">idType: "USABA"</span>, id: <span class="s">"021000021"</span>, accountNo: <span class="s">"…4417"</span> },
+  remittanceInformation: { <span class="c">/* INV-2026-4417 */</span> }
+}</pre>
 </div>`},
+
+/* 5a */ {html:`
+<div class="eyebrow">BEHIND THE API</div>
+<span class="path"><span class="verb">POST</span> /payment/v2/payments</span>
+<h3>ONE BODY. THE RAIL IS A FIELD.</h3>
+<div class="cols">
+<pre><span class="c">// 🇬🇧 London supplier, UK Faster Payments</span>
+{
+  paymentIdentifiers: { <span class="hl">endToEndId: "UF1756..."</span> },
+  <span class="hl">paymentType: "FPS"</span>,
+  value: { currency: <span class="s">"GBP"</span>, amount: <span class="s">"75000"</span> },
+  debtor:      { <span class="c">/* San Jose */</span> },
+  creditor:    { <span class="hl">idType: "SORT_CODE"</span>, id: <span class="s">"20-00-00"</span>, accountNo: <span class="s">"…4417"</span> },
+  remittanceInformation: { <span class="c">/* INV-2026-4417 */</span> }
+}</pre>
+<pre><span class="c">// 🇧🇷 São Paulo supplier, Brazil PIX</span>
+{
+  paymentIdentifiers: { <span class="hl">endToEndId: "UF1756..."</span> },
+  <span class="hl">paymentType: "PIX"</span>,
+  value: { currency: <span class="s">"BRL"</span>, amount: <span class="s">"350000"</span> },
+  debtor:      { <span class="c">/* San Jose */</span> },
+  creditor:    { <span class="hl">idType: "PIX_KEY"</span>, id: <span class="s">"+55 11 91234-5678"</span> },
+  remittanceInformation: { <span class="c">/* INV-2026-4417 */</span> }
+}</pre>
+</div>`},
+
+/* 5b */ {html:`
+<div class="eyebrow">BEHIND THE BEAT &nbsp;·&nbsp; HOW THE MONEY ACTUALLY MOVES</div>
+<h2>One payment,<br>four <em>statuses</em></h2>
+<div class="bays" style="grid-template-columns:repeat(4,1fr)">
+  <div class="baycard"><span class="no">01</span><span class="nm">Received</span><span class="d">The instruction is in. Not yet accepted.</span></div>
+  <div class="baycard"><span class="no">02</span><span class="nm">Accepted</span><span class="d">Payer authorised, fields validated, accepted for processing.</span></div>
+  <div class="baycard"><span class="no">03</span><span class="nm">Processing</span><span class="d">Sent to clearing. This is where it actually moves.</span></div>
+  <div class="baycard"><span class="no">04</span><span class="nm">Completed</span><span class="d">Delivered to the recipient's bank. Confirmed.</span></div>
+</div>
+<div class="say">Four real states from <code>GET /payments/{paymentId}/status</code>. <b>Not a guess. Not a phone call. The exact call you'll watch this app make in a minute.</b></div>`},
+
+/* 7 */ {bay:2, html:`
+<div class="eyebrow">BEHIND THE API</div>
+<span class="path"><span class="verb">POST</span> /payment/v2/payments</span>
+<h3>SEND IT RTP. TRACK IT LIVE.</h3>
+<div class="cols">
+<pre><span class="c">// San Jose → Palo Alto</span>
+{
+  paymentIdentifiers: { <span class="hl">endToEndId: "UF1756..."</span> },
+  <span class="hl">paymentType: "RTP"</span>,
+  value: { currency: <span class="s">"USD"</span>, amount: <span class="s">"100000"</span> },
+  debtor:      { <span class="c">/* San Jose */</span> },
+  creditor:    { <span class="hl">idType: "USABA"</span>, id: <span class="s">"121000248"</span> }
+}</pre>
+</div>`},
+
+/* 5c */ {html:`
+<div class="eyebrow">ENOUGH SLIDES</div>
+<h1>Let's demo,<br><em>live</em>.</h1>
+<div class="rule"></div>
+<div class="say">Send it. Show the code. Ask your assistant to change it.</div>`},
+
+/* 5d */ {html:`
+<div class="eyebrow">CHECKPOINT &nbsp;·&nbsp; SHOW ME</div>
+<h1>Whoa …<br>who's sent one?</h1>
+<div class="rule"></div>
+<div class="say">Global Payments. Any amount, any account. If you've got a response back on your screen, hold it up.</div>`},
+
+/* 5e */ {bay:2, html:`
+<div class="eyebrow">BEHIND THE API &nbsp;·&nbsp; THE HAPPY PATH</div>
+<h2>One track,<br>four <em>stops</em>.</h2>
+<div class="steps">
+  <span class="step done">RECEIVED</span><span class="arrow2">→</span>
+  <span class="step done">ACCEPTED</span><span class="arrow2">→</span>
+  <span class="step done">PROCESSING</span><span class="arrow2">→</span>
+  <span class="step on">COMPLETED</span>
+</div>
+<div class="say">The exact statuses the app's Track API returns. <code>GET /payments/{paymentId}/status</code>.</div>`},
+
+/* 5f */ {bay:2, html:`
+<div class="eyebrow">BEHIND THE API &nbsp;·&nbsp; WHEN THINGS GO WRONG</div>
+<h2>This is where<br>the machine <em>jams</em></h2>
+<div class="say">Same track. Two ways it doesn't run straight through to Completed.</div>
+<div class="steps">
+  <span class="step done">RECEIVED</span><span class="arrow2">→</span>
+  <span class="step done">ACCEPTED</span><span class="arrow2">→</span>
+  <span class="step done">PROCESSING</span><span class="arrow2">→</span>
+  <span class="step retry">RETRY</span><span class="arrow2">→</span>
+  <span class="step on">COMPLETED</span>
+</div>
+<div class="say">Operational hiccup. Absorbed, retried, and it still lands.</div>
+<div class="steps">
+  <span class="step done">RECEIVED</span><span class="arrow2">→</span>
+  <span class="step done">ACCEPTED</span><span class="arrow2">→</span>
+  <span class="step err">REJECTED</span>
+</div>
+<div class="say">Funds check failed, or a fraud hold. <b>Only this one gets flagged.</b></div>`},
+
+/* 5g */ {bay:2, html:`
+<div class="eyebrow">BEHIND THE API &nbsp;·&nbsp; RETRY SAFELY</div>
+<h2>Accepted?<br>We've got <em>it</em>.</h2>
+<span class="path"><span class="verb">POST</span> /payment/v2/payments</span>
+<pre><span class="c">// once accepted, retries between stages are on us</span>
+{
+  paymentIdentifiers: { <span class="hl">endToEndId: "UF1756..."</span> },
+  ...
+}</pre>
+<div class="say">Once J.P. Morgan accepts it, any operational hiccup between stages gets retried on our side - automatically, at scale, on every rail.</div>
+<div class="say"><b>One key, endToEndId, keeps every retry safe.</b> No duplicate payments, no noise to you. Same rule, every method, every currency - RTP, ACH, WIRE, FPS, SEPA Instant, PIX, IMPS.</div>`},
+
+/* 5h */ {bay:2, html:`
+<div class="eyebrow">BEHIND THE API &nbsp;·&nbsp; THE RETRY LOOP</div>
+<h2>Stuck isn't<br><em>lost</em>.</h2>
+<div class="bays" style="grid-template-columns:repeat(4,1fr)">
+  <div class="baycard"><span class="no">01</span><span class="nm">Captured</span><span class="d">A technical hiccup - a timeout, a dropped connection - is captured with its context. Not silently dropped, not spammed back at the rail.</span></div>
+  <div class="baycard"><span class="no">02</span><span class="nm">Retried</span><span class="d">Retried automatically, on a backoff, for a bounded window. Not forever, and not your problem to orchestrate.</span></div>
+  <div class="baycard"><span class="no">03</span><span class="nm">Replayed</span><span class="d">Once the hiccup clears, it's replayed from where it left off. No resubmission needed from you.</span></div>
+  <div class="baycard"><span class="no">04</span><span class="nm">Escalated</span><span class="d">Still stuck past that window? Escalated to a human. Never left silently spinning.</span></div>
+</div>
+<div class="say">Every hop is journaled before and after. <b>A retry resumes from the last save point - not from scratch, and never as a second payment.</b></div>
+<div class="say">Not payments-specific. <b>It's a default every service gets from the platform underneath it.</b></div>`},
+
+/* 5i */ {bay:2, html:`
+<div class="eyebrow">BEHIND THE API &nbsp;·&nbsp; EVERY HOP, EVERYWHERE</div>
+<h2>One loop.<br>Every <em>rail</em>.</h2>
+<div class="hopmap">
+  <svg viewBox="0 0 800 400" preserveAspectRatio="xMidYMid meet">
+    <g class="landmass">
+      <path d="M55,85 Q95,55 155,65 Q215,78 208,125 Q228,165 188,198 Q148,220 108,198 Q65,178 55,138 Z"/>
+      <path d="M158,222 Q208,212 228,252 Q248,302 218,352 Q188,392 158,362 Q138,320 148,270 Z"/>
+      <path d="M345,58 Q395,48 415,78 Q405,108 375,108 Q345,98 345,58 Z"/>
+      <path d="M335,128 Q395,118 425,158 Q435,218 415,278 Q395,328 365,318 Q345,258 340,198 Z"/>
+      <path d="M425,58 Q545,38 645,88 Q685,138 655,198 Q595,238 535,218 Q465,198 435,148 Z"/>
+      <path d="M605,278 Q655,268 675,298 Q665,328 625,328 Q595,308 605,278 Z"/>
+    </g>
+    <g class="hoplines">
+      <path class="hop" d="M138,128 Q112,138 92,150"/>
+      <path class="hop" d="M138,128 Q260,55 383,93"/>
+      <path class="hop" d="M138,128 Q285,35 398,103"/>
+      <path class="hop" d="M138,128 Q330,245 518,193"/>
+      <path class="hop" d="M138,128 Q188,218 228,298"/>
+    </g>
+    <g class="node origin" transform="translate(138,128)"><circle r="7"/><text x="-20" y="-15">SAN JOSE</text></g>
+    <g class="node" transform="translate(92,150)"><circle r="6"/><text x="0" y="20">PALO ALTO · RTP</text></g>
+    <g class="node" transform="translate(383,93)"><circle r="6"/><text x="-10" y="-13">UK · FPS</text></g>
+    <g class="node" transform="translate(398,103)"><circle r="6"/><text x="46" y="10">EU · SEPA</text></g>
+    <g class="node" transform="translate(518,193)"><circle r="6"/><text x="8" y="-13">INDIA · IMPS</text></g>
+    <g class="node" transform="translate(228,298)"><circle r="6"/><text x="0" y="20">BRAZIL · PIX</text></g>
+  </svg>
+</div>
+<div class="say">Captured. Retried. Replayed. Escalated if it has to be. <b>Every hop, every method, every currency - same loop.</b></div>`},
 
 /* ============ BAY 02 ============ */
 /* 6 */ {bay:2, html:`
-<div class="eyebrow"><span class="bay">BAY 02</span> DYNO &nbsp;·&nbsp; FX RATE SHEET</div>
-<h2>Hang on. What rate<br>did I <em>actually</em> get?</h2>
-<div class="say">The invoice is fixed at <b>€923,100</b>. That number does not move. What moves is how many dollars it takes to settle it.</div>
-<div class="say">At a guaranteed 0.9231 you send US$1,000,000 and the invoice closes to the cent. On a rate that drifts to 0.9184, the same million lands as <b>€918,400</b>.</div>
-<div class="say">Four thousand seven hundred euros short. The invoice stays open, the supplier chases, and your month-end has an exception in it.</div>`},
+<div class="eyebrow">ENOUGH SLIDES</div>
+<h1>Let's add<br><em>chaos</em>.</h1>
+<div class="rule"></div>
+<div class="say">Flip Chaos. Send it again. Watch it wobble.</div>`},
 
-/* 7 */ {bay:2, html:`
-<div class="eyebrow"><span class="bay">BAY 02</span> BEHIND THE API</div>
-<h3>A RATE SHEET, NOT A NUMBER</h3>
-<div class="cols">
-<pre>{
-  rateId: <span class="s">"RS-USD-EUR-001"</span>,
-  baseCurrency: <span class="s">"USD"</span>,
-  counterCurrency: <span class="s">"EUR"</span>,
-  payoutType: <span class="s">"WIRE"</span>,
-  <span class="hl">guarenteedRateInd: true</span>,
-  minTranSize: <span class="n">100</span>,
-  maxTranSize: <span class="n">1000000</span>,
-  effectiveDate: <span class="s">"2026-08-20"</span>,
-  effectiveTime: <span class="s">"09:00:00"</span>,
-  rate: <span class="n">0.9231</span>
-}</pre>
-<div>
-<ul class="pts">
-<li><strong>Guaranteed, or indicative.</strong> One boolean separates a rate you can commit an invoice to from a rate that is only information.</li>
-<li><strong>The guarantee is bounded, and the bounds say something.</strong> EUR, GBP, CAD, AUD and SGD carry a $1m ceiling and a guarantee. JPY drops to $750k. INR and BRL fall to $500k and $250k — and those two are exactly where <code>guarenteedRateInd</code> is <em>false</em>. <strong>Rate certainty and ticket size move together, corridor by corridor.</strong></li>
-<li><strong>And it expires.</strong> <code>effectiveDate</code> and <code>effectiveTime</code> say when, which is what makes a payment run schedulable.</li>
-<li><strong>Carry the <code>rateId</code> into the payment</strong> and the euros are locked. The invoice closes on the number, first time.</li>
-</ul>
-<span class="path"><span class="verb">POST</span> /fxapi/v1/rate-sheets</span>
+/* 3d */ {html:`
+<div class="eyebrow">STAGE SELECT &nbsp;·&nbsp; LAST ONE</div>
+<h2>Now,<br>the <em>trust</em> beat</h2>
+<div class="bays" style="grid-template-columns:repeat(3,1fr)">
+  <div class="baycard dim"><span class="no">01</span><span class="beat">REACH</span><span class="nm">Global Payments</span><span class="d">Drop it in the slot. One API, many countries, many rails.</span></div>
+  <div class="baycard dim"><span class="no">02</span><span class="beat">CONFIDENCE</span><span class="nm">Track Payment</span><span class="d">Watch it fall through the machine. How do I know it landed?</span></div>
+  <div class="baycard"><span class="no">03</span><span class="beat">TRUST</span><span class="nm">Account Validation</span><span class="d">Make sure it lands in the right tray. Is that really the supplier's account?</span></div>
 </div>
-</div>`},
+<div class="say">Reach and Confidence, done. <b>Now: is this really the right account?</b></div>`},
 
 /* ============ BAY 03 ============ */
 /* 8 */ {bay:3, html:`
-<div class="eyebrow"><span class="bay">BAY 03</span> INSPECTION &nbsp;·&nbsp; ACCOUNT VALIDATION</div>
-<h2>Hang on. Did it go<br>to the <em>right</em> people?</h2>
-<div class="say">Three weeks ago the Berlin supplier emailed accounts payable with updated bank details. New IBAN, same letterhead, same contact name, polite note about changing banks.</div>
-<div class="say">The invoice is genuine. The supplier is genuine. <b>The IBAN is not.</b></div>
-<div class="say">A million dollars has now cleared, on time, at a locked rate, into somebody else's account. <b>Every other bay worked perfectly.</b></div>`},
+<div class="eyebrow">ACCOUNT VALIDATION</div>
+<h2>Before we send it...<br>are we <em>sure</em>?</h2>
+<div class="bays" style="grid-template-columns:repeat(3,1fr)">
+  <div class="baycard">
+    <div class="head"><span class="no">01</span><span class="nm">On file</span></div>
+    <span class="routing">021000021</span>
+    <span class="d">Acct …4417. What we've paid for two years.</span>
+  </div>
+  <div class="baycard">
+    <div class="head"><span class="no">02</span><span class="nm">Recent email</span></div>
+    <span class="routing hl">121000248</span>
+    <span class="d">Acct …8825. "We've switched banks," three weeks ago.</span>
+  </div>
+  <div class="baycard">
+    <div class="head"><span class="no">03</span><span class="nm">Today's invoice</span></div>
+    <span class="routing hl">121000248</span>
+    <span class="d">Acct …8825. Same letterhead, same contact name.</span>
+  </div>
+</div>
+<div class="say">Same supplier name on all three. <b>Do we know which one is the right one?</b></div>`},
 
 /* 9 */ {bay:3, html:`
-<div class="eyebrow"><span class="bay">BAY 03</span> BEHIND THE API</div>
+<div class="eyebrow">BEHIND THE API</div>
 <h3>CODES, NOT PASS / FAIL</h3>
+<span class="path"><span class="verb">POST</span> /tsapi/v2/validations/accounts</span>
 <div class="cols">
-<pre><span class="c">// two questions, asked separately</span>
+<pre><span class="c">// profile: verify + authenticate</span>
+[{ <span class="hl">profileName: "authentication"</span>,
+   account: { idType: <span class="s">"USABA"</span>, id: <span class="s">"121000248"</span> } }]
+
 codes: {
   <span class="hl">verification</span>:   { code: <span class="n">1002</span>, message: <span class="s">"Open Valid"</span> },
   <span class="hl">authentication</span>: { code: <span class="n">5002</span>, message: <span class="s">"Ownership Match"</span> }
-}
-
-<span class="c">// or ask for a confidence score instead</span>
-accountScore: { code: <span class="n">1109</span>, message: <span class="s">"Information Found"</span> },
-providerResponse: {
-  score: <span class="n">658</span>,
-  <span class="hl">rag: "GREEN"</span>,
-  description: <span class="s">"High-confidence score range."</span>
 }</pre>
-<div>
-<ul class="pts">
-<li><strong>Verification</strong> asks whether the account is open and valid. The fraudulent one passes this.</li>
-<li><strong>Authentication</strong> asks whether it belongs to who you think. This is where it fails.</li>
-<li><strong>An account can be entirely real and still not theirs.</strong> A single boolean cannot express that, which is why the response never was one.</li>
-<li><strong>Or take the score.</strong> Your risk appetite for a $500 refund is not your appetite for a seven-figure supplier run.</li>
-</ul>
-<span class="path"><span class="verb">POST</span> /tsapi/v2/validations/accounts</span>
-</div>
-</div>`},
+<pre><span class="c">// profile: confidence score</span>
+[{ <span class="c">// no profileName - same URL</span>
+   account: { idType: <span class="s">"USABA"</span>, id: <span class="s">"121000248"</span> } }]
 
-/* ============ BAY 04 ============ */
-/* 10 */ {bay:4, html:`
-<div class="eyebrow"><span class="bay">BAY 04</span> DIAGNOSTICS &nbsp;·&nbsp; PATCHMAGEDDON</div>
-<h2>The patch arrives.<br>Nobody <em>fits</em> it.</h2>
-<div class="cols">
-<div>
-<div class="say">Everything in the last three bays assumed the code underneath is sound. Every API, every library, every dependency, all the way down.</div>
-<div class="say"><b>Frontier models now find exploitable vulnerabilities faster than anyone can patch them by hand. State-grade capability, available to anyone who wants it.</b></div>
+accountScore: { code: <span class="n">1109</span>, message: <span class="s">"Information Found"</span> },
+providerResponse: { score: <span class="n">628</span>, <span class="hl">rag: "GREEN"</span> }</pre>
 </div>
-<div>
-<div class="stat" style="flex-direction:column;gap:15px">
-  <div><span class="big">ZERO DAYS</span><span class="lbl">Average gap between disclosure and first exploitation</span></div>
-  <div><span class="big">75 / 530</span><span class="lbl">High &amp; critical vulnerabilities patched, May 2026</span></div>
-  <div><span class="big">~60%</span><span class="lbl">Of breaches happened with a patch already available</span></div>
-</div>
-<div class="say" style="font-size:.82em;opacity:.68">Eye on the Market · J.P. Morgan Cybersecurity Teams</div>
-</div>
-</div>`},
+<div class="say">Same URL, same account. <b>What you pass in the body decides the profile - two different questions.</b></div>
+<div class="say">Verification: is it open and valid. Authentication: is it really theirs. <b>A boolean can't say "real, but not theirs" - that's why there isn't one.</b></div>`},
 
-/* 11 */ {bay:4, html:`
-<div class="eyebrow">PROJECT GLASSWING &nbsp;·&nbsp; SECURING CRITICAL SOFTWARE FOR THE AI ERA</div>
-<h2>Twelve launch partners.<br><em>One</em> bank.</h2>
-<div class="board">
-  <div class="p">Amazon Web Services</div><div class="p">Anthropic</div><div class="p">Apple</div><div class="p">Broadcom</div>
-  <div class="p">Cisco</div><div class="p">CrowdStrike</div><div class="p">Google</div>
-  <div class="p us">JPMorganChase<span class="tag">THE ONLY BANK</span></div>
-  <div class="p">Linux Foundation</div><div class="p">Microsoft</div><div class="p">NVIDIA</div><div class="p">Palo Alto Networks</div>
+/* 9b */ {bay:3, html:`
+<div class="eyebrow">BEHIND THE API &nbsp;·&nbsp; CONFIGURABLE PROFILES</div>
+<h2>Name your<br>own <em>profile</em>.</h2>
+<div class="bays" style="grid-template-columns:repeat(2,1fr)">
+  <div class="baycard">
+    <span class="no">01</span><span class="nm">My High Value Profile</span>
+    <span class="d"><code>profileName: "MyHighValueProfile"</code></span>
+    <span class="d">Returns: verification + authentication + accountScore.</span>
+  </div>
+  <div class="baycard">
+    <span class="no">02</span><span class="nm">My Low Value Profile</span>
+    <span class="d"><code>profileName: "MyLowValueProfile"</code></span>
+    <span class="d">Returns: verification only.</span>
+  </div>
 </div>
-<div class="say">Every other name is a technology company. The financial system <b>is</b> critical infrastructure, so the bank is in the room where it gets defended.</div>`},
-
-/* 12 */ {bay:4, html:`
-<div class="eyebrow"><span class="bay">BAY 04</span> WHAT THAT MEANS HERE</div>
-<h2>Every bay today<br>was <em>already</em> this</h2>
-<div class="cols">
-<ul class="pts">
-<li><strong>Bay 01 — a surface you don't maintain.</strong> One contract instead of an integration per rail. Every payment dependency you would otherwise be patching yourself is one we patch, on our clock.</li>
-<li><strong>Bay 02 — a rate you can prove.</strong> Bounded, time-stamped, guaranteed or explicitly not. Not a number scraped from somewhere and trusted.</li>
-<li><strong>Bay 03 — the fraud a patch can't fix.</strong> "Real, but not theirs" is not a defect anyone can issue a CVE for.</li>
-</ul>
-<div>
-<div class="say">And in this demo: secrets stay server-side and never reach the browser, mTLS and a signed JWT for real traffic, tiers locked until you configure them. <b>Secure defaults you didn't have to ask for.</b></div>
-<div class="say"><b>This is a sliver of it.</b> One product surface, in one bank. But it's the sliver you can pick up this afternoon.</div>
-</div>
-</div>`},
-
-/* 13 */ {html:`
-<div class="eyebrow">OFF THE FORECOURT</div>
-<h2>Three tiers,<br>in <em>order</em></h2>
-<div class="bays" style="grid-template-columns:repeat(3,1fr)">
-  <div class="baycard"><span class="no">01</span><span class="nm">Local Mock</span><span class="api">offline · no keys</span><span class="d">In-browser MSW. Everything you've seen today. Clone and run it now.</span></div>
-  <div class="baycard"><span class="no">02</span><span class="nm">JPMC Mock</span><span class="api">OAuth2 · client creds</span><span class="d">Our hosted mock. A client_id and secret from the developer portal. No certificates.</span></div>
-  <div class="baycard"><span class="no">03</span><span class="nm">JPMC CAT</span><span class="api">mTLS · signed JWT</span><span class="d">Real integration testing against the sandbox.</span></div>
-</div>
-<div class="say">The two JPMC tiers stay <b>greyed out until you configure them</b>, so nobody hits a silent auth error and assumes the demo is broken. Secrets sit server-side in the proxy and never reach the browser.</div>`},
+<div class="say">One API. <b>You name the profile, you decide what comes back.</b></div>`},
 
 /* 14 */ {html:`
 <div class="eyebrow">BRING YOUR OWN CAR</div>
@@ -453,6 +608,21 @@ providerResponse: {
 </div>
 </div>`},
 
+/* 15 */ {html:`
+<div class="eyebrow">SAME PLACE YOU STARTED</div>
+<h1>Back to<br>Open Source.</h1>
+<div class="rule"></div>
+<div class="say">Unicorn Finance was one repo. <b>There's a lot more at github.com/jpmorgan-payments.</b></div>
+<div class="bays" style="grid-template-columns:repeat(4,1fr)">
+  <div class="baycard"><span class="no">01</span><span class="nm">Unicorn Finance</span><span class="d">What you saw today. The three beats, live.</span></div>
+  <div class="baycard"><span class="no">02</span><span class="nm">ai</span><span class="d">Agent Skills that teach Copilot, Claude Code and Cursor our OAuth flow and API contracts.</span></div>
+  <div class="baycard"><span class="no">03</span><span class="nm">embedded-finance</span><span class="d">React components and a showcase app for Embedded Finance - onboarding, payments, accounts.</span></div>
+  <div class="baycard"><span class="no">04</span><span class="nm">api-collections</span><span class="d">A Bruno collection for every call in this demo - Global Payments, Track Payment, Account Validation. Ready to run.</span></div>
+</div>
+<div style="display:flex;justify-content:center;margin-top:clamp(16px,2.4vh,26px)">
+  <div class="qr-big"><img src="assets/org-qr.svg" alt="QR code to github.com/jpmorgan-payments"><span>github.com/jpmorgan-payments</span></div>
+</div>`},
+
 ];
 
 const deck=document.getElementById("deck"),trip=document.getElementById("trip"),
@@ -463,7 +633,7 @@ const els=[...document.querySelectorAll(".slide")];
 function show(n){
   i=Math.max(0,Math.min(S.length-1,n));
   els.forEach((el,x)=>el.classList.toggle("on",x===i));
-  trip.innerHTML = S[i].bay ? TRIP : "";
+  trip.innerHTML = TRIPS[S[i].bay] ?? "";
   cnt.textContent="STAGE "+String(i+1).padStart(2,"0")+"/"+S.length;
   prog.style.width=((i+1)/S.length*100)+"%";
   try{localStorage.setItem("garage-slide",i);}catch(e){}

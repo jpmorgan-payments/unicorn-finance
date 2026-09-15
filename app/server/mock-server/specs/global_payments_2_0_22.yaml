@@ -2799,6 +2799,76 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Payment'
+          examples:
+            San Jose to London supplier (£250,000, Reach):
+              value:
+                requestedExecutionDate: '2026-08-20'
+                paymentIdentifiers:
+                  endToEndId: UF1756000001
+                transferType: CREDIT
+                value:
+                  currency: GBP
+                  amount: '250000'
+                paymentType: RTP
+                debtor:
+                  name: Unicorn Finance Inc
+                  account:
+                    accountNumber: '000000010900009'
+                    accountType: DDA
+                    accountCurrency: USD
+                debtorAgent:
+                  name: JPMorgan Chase - San Jose
+                  financialInstitutionIds:
+                    - id: '021000021'
+                      idType: USABA
+                creditor:
+                  name: London Gearworks Ltd
+                  account:
+                    accountNumber: '31926819'
+                creditorAgent:
+                  name: Barclays Bank UK PLC
+                  financialInstitutionIds:
+                    - id: '20-00-00'
+                      idType: SORT_CODE
+                paymentPurpose:
+                  categoryPurpose: CXBSNS
+                remittanceInformation:
+                  structuredInformation:
+                    - creditReference:
+                        reference: INV-2026-4417
+            San Jose to Palo Alto supplier ($1,000,000, Confidence):
+              value:
+                requestedExecutionDate: '2026-08-20'
+                paymentIdentifiers:
+                  endToEndId: UF1756000002
+                transferType: CREDIT
+                value:
+                  currency: USD
+                  amount: '1000000'
+                paymentType: RTP
+                debtor:
+                  name: Unicorn Finance - San Jose
+                  account:
+                    accountNumber: '000000010900009'
+                    accountType: DDA
+                    accountCurrency: USD
+                debtorAgent:
+                  name: JPMorgan Chase - San Jose
+                  financialInstitutionIds:
+                    - id: '021000021'
+                      idType: USABA
+                creditor:
+                  name: Palo Alto Robotics LLC
+                  account:
+                    accountNumber: '000000010900042'
+                creditorAgent:
+                  financialInstitutionIds:
+                    - id: '121000248'
+                      idType: USABA
+                remittanceInformation:
+                  structuredInformation:
+                    - creditReference:
+                        reference: INV-2026-4417
 x-jpmc-security:
   - MutualTLS: []
 x-jpmc-securityDefinitions:
