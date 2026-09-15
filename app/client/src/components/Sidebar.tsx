@@ -4,7 +4,7 @@ import { Avatar, Image } from "@mantine/core";
 
 // Images
 import ufLogoLarge from "../images/uf-logo.svg";
-import avatar from "../images/avatar.png";
+import unicornMark from "../images/unicorn-mark.svg";
 import github from "../images/github.png";
 
 // Navigation configuration
@@ -85,7 +85,7 @@ export const Sidebar = () => {
           className="flex items-center gap-3 bg-transparent border-0 p-0 cursor-pointer text-left hover:opacity-80 transition-opacity"
           title="Start the presentation"
         >
-          <Avatar src={avatar} alt="Unicorn avatar" size="md" />
+          <Avatar src={unicornMark} alt="Unicorn avatar" size="md" />
           <p className="text-sm font-medium text-gray-900">Business Unicorn</p>
         </button>
       </div>

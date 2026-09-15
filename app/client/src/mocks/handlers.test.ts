@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { selectFXRates, triggeredErrorStatus } from "./handlers";
+import {
+  selectFXRates,
+  triggeredErrorStatus,
+  advancePaymentStatus,
+  assignChaosScenario,
+} from "./handlers";
 import fxRateSheet from "./mockedJson/FXRateSheet.json";
 
 const sheet = fxRateSheet as Array<{ baseCurrency: string }>;
@@ -51,5 +56,51 @@ describe("triggeredErrorStatus (?statusCode= error simulation)", () => {
     expect(triggeredErrorStatus(withTrigger("418"))).toBeNull();
     expect(triggeredErrorStatus(withTrigger("not-a-number"))).toBeNull();
     expect(triggeredErrorStatus(withTrigger(""))).toBeNull();
+  });
+});
+
+describe("advancePaymentStatus (GPI status lifecycle + chaos scenarios)", () => {
+  it("steps a plain payment through RECEIVED -> ACCEPTED -> PROCESSING -> COMPLETED and stays there", () => {
+    const paymentId = "happy-path-payment";
+    expect(advancePaymentStatus(paymentId).paymentStatus).toBe("RECEIVED");
+    expect(advancePaymentStatus(paymentId).paymentStatus).toBe("ACCEPTED");
+    expect(advancePaymentStatus(paymentId).paymentStatus).toBe("PROCESSING");
+    expect(advancePaymentStatus(paymentId).paymentStatus).toBe("COMPLETED");
+    expect(advancePaymentStatus(paymentId).paymentStatus).toBe("COMPLETED");
+  });
+
+  it("still reaches COMPLETED for the operational hiccup scenario, via one extra transient step", () => {
+    const paymentId = "operational-hiccup-payment";
+    assignChaosScenario(paymentId, "operational");
+    expect(advancePaymentStatus(paymentId).paymentStatus).toBe("RECEIVED");
+    expect(advancePaymentStatus(paymentId).paymentStatus).toBe("ACCEPTED");
+    expect(advancePaymentStatus(paymentId).paymentStatus).toBe("PROCESSING");
+    const hiccup = advancePaymentStatus(paymentId);
+    expect(hiccup.paymentStatus).toBe("PROCESSING");
+    expect(hiccup.paymentSubStatus).toBe("RETRYING_CLEARING_SUBMISSION");
+    expect(hiccup.chaosHandled).toBe(true);
+    expect(advancePaymentStatus(paymentId).paymentStatus).toBe("COMPLETED");
+  });
+
+  it("terminates in REJECTED/FUNDS_CONTROL_FAILED for the funds-control scenario and stays capped there", () => {
+    const paymentId = "funds-control-payment";
+    assignChaosScenario(paymentId, "funds-control");
+    expect(advancePaymentStatus(paymentId).paymentStatus).toBe("RECEIVED");
+    expect(advancePaymentStatus(paymentId).paymentStatus).toBe("ACCEPTED");
+    const rejected = advancePaymentStatus(paymentId);
+    expect(rejected.paymentStatus).toBe("REJECTED");
+    expect(rejected.paymentSubStatus).toBe("FUNDS_CONTROL_FAILED");
+    expect(advancePaymentStatus(paymentId).paymentStatus).toBe("REJECTED");
+  });
+
+  it("terminates in REJECTED/FRAUD_HOLD for the fraud-hold scenario and stays capped there", () => {
+    const paymentId = "fraud-hold-payment";
+    assignChaosScenario(paymentId, "fraud-hold");
+    expect(advancePaymentStatus(paymentId).paymentStatus).toBe("RECEIVED");
+    expect(advancePaymentStatus(paymentId).paymentStatus).toBe("ACCEPTED");
+    const rejected = advancePaymentStatus(paymentId);
+    expect(rejected.paymentStatus).toBe("REJECTED");
+    expect(rejected.paymentSubStatus).toBe("FRAUD_HOLD");
+    expect(advancePaymentStatus(paymentId).paymentStatus).toBe("REJECTED");
   });
 });

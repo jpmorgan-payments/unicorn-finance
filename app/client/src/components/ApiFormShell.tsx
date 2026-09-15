@@ -26,6 +26,8 @@ interface ApiFormShellProps {
   idleActions: ReactNode;
   /** The caller's form fields, shown in the idle state. */
   children: ReactNode;
+  /** Optional extra content shown under the JSON result on success (e.g. a follow-up action). */
+  successExtra?: ReactNode;
 }
 
 export const ApiFormShell: React.FC<ApiFormShellProps> = ({
@@ -39,6 +41,7 @@ export const ApiFormShell: React.FC<ApiFormShellProps> = ({
   errorActionLabel = "Try Again",
   idleActions,
   children,
+  successExtra,
 }) => (
   <Box
     component="form"
@@ -81,6 +84,7 @@ export const ApiFormShell: React.FC<ApiFormShellProps> = ({
     {!!data && !isMutating && (
       <Box>
         <Code block>{JSON.stringify(data, null, 2)}</Code>
+        {successExtra}
         <Group justify="space-between" mt="md">
           <PreviewRequestButton onClick={onPreview} disabled={previewDisabled} />
           <Button type="button" variant="filled" onClick={onReset}>

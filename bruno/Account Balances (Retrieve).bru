@@ -1,0 +1,27 @@
+meta {
+  name: Account Balances (Retrieve)
+  type: http
+  seq: 7
+}
+
+post {
+  url: {{baseUrl}}/accessapi/balance
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "relativeDateType": "CURRENT_DAY"
+  }
+}
+
+docs {
+  Shows the San Jose operating account (000000010900009) with enough headroom
+  to cover the $1,000,000 send to Palo Alto. Runs in-app via MSW today; add a
+  Prism spec + Caddy route to serve it from the mock-server.
+}

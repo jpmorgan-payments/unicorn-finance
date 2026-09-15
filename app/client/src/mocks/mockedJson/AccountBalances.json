@@ -1,6 +1,30 @@
 {
     "accountList": [
         {
+            "accountId": "000000010900009",
+            "accountName": "UNICORN FINANCE - SAN JOSE OPERATING",
+            "branchId": "",
+            "bankId": "02100002",
+            "bankName": "JPMORGAN CHASE",
+            "currency": {
+                "code": "USD",
+                "currencySequence": 0,
+                "decimalLocation": 2,
+                "description": "US DOLLAR"
+            },
+            "balanceList": [
+                {
+                    "asOfDate": "2026-08-20",
+                    "recordTimestamp": "2026-08-20T09:00:00Z",
+                    "currentDay": true,
+                    "openingAvailableAmount": 5250000.0,
+                    "openingLedgerAmount": 5250000.0,
+                    "endingAvailableAmount": 4250000.0,
+                    "endingLedgerAmount": 4250000.0
+                }
+            ]
+        },
+        {
             "accountId": "000000004045701",
             "accountName": "TEST ACCOUNT NAME",
             "branchId": "",

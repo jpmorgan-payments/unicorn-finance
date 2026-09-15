@@ -1,5 +1,5 @@
-import React, { useMemo } from "react";
-import { Stack, Button, Group, Box, TextInput } from "@mantine/core";
+import React, { useMemo, useState } from "react";
+import { Stack, Button, Chip, Group, Box, Text, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import UnicornDropdown from "../../components/UnicornDropdown";
 import { ApiFormShell } from "../../components/ApiFormShell";
@@ -17,8 +17,10 @@ import {
   generateGlobalPaymentsRequestData,
   submitGlobalPaymentsRequest,
 } from "./SubmitGlobalPaymentsRequest";
+import { PaymentStatusPanel } from "./PaymentStatusPanel";
+import { CHAOS_SCENARIOS, type ChaosScenario } from "../../mocks/chaosScenarios";
 import useSWRMutation from "swr/mutation";
-import { useEnv } from "../../context/EnvContext";
+import { Environment, useEnv } from "../../context/EnvContext";
 import { useRequestPreview } from "../../context/RequestPreviewContext";
 
 interface GlobalPaymentsFormValues {
@@ -35,8 +37,14 @@ interface GlobalPaymentsInputFormProps {
 const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
   onPaymentComplete,
 }) => {
-  const { url } = useEnv();
+  const { url, environment } = useEnv();
   const { openDrawer } = useRequestPreview();
+  const isLocalMock = environment === Environment.LOCAL_MOCK;
+
+  // Play/Debug tracking mode and Chaos scenario are local-mock-only: the mock
+  // server is what actually steps through (or diverts) the status lifecycle.
+  const [trackingMode, setTrackingMode] = useState<"play" | "debug">("play");
+  const [chaosScenario, setChaosScenario] = useState<ChaosScenario>("none");
 
   const { trigger, data, error, isMutating, reset } = useSWRMutation(
     `${url}/api/digitalSignature/payment/v2/payments`,
@@ -109,7 +117,10 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
     const requestData = getRequestData();
     const requestPayload = requestData.body;
 
-    const response = await trigger({ body: requestPayload });
+    const response = await trigger({
+      body: requestPayload,
+      chaos: isLocalMock ? chaosScenario : undefined,
+    });
 
     // `trigger` rejects on error, so reaching here means the call succeeded
     onPaymentComplete?.({
@@ -143,20 +154,73 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
         form.reset();
       }}
       resultActionLabel="Make another payment"
+      successExtra={
+        data?.response?.paymentId ? (
+          <PaymentStatusPanel
+            url={url}
+            paymentId={data.response.paymentId}
+            mode={isLocalMock ? trackingMode : "debug"}
+            scenario={isLocalMock ? chaosScenario : "none"}
+          />
+        ) : undefined
+      }
       idleActions={
-        <Group>
-          <Button type="button" variant="outline" onClick={() => form.reset()}>
-            Reset
-          </Button>
-          <Button
-            type="submit"
-            variant="filled"
-            disabled={!form.isValid()}
-            onClick={() => handleSubmit(form.values)}
-          >
-            Submit
-          </Button>
-        </Group>
+        <Stack gap="sm">
+          {isLocalMock && (
+            <Stack gap={4}>
+              <Group gap="xs" align="center">
+                <Text size="xs" fw={500}>
+                  Tracking
+                </Text>
+                <Chip.Group
+                  multiple={false}
+                  value={trackingMode}
+                  onChange={(value) => setTrackingMode(value as "play" | "debug")}
+                >
+                  <Group gap={4}>
+                    <Chip value="play" size="xs">
+                      Play
+                    </Chip>
+                    <Chip value="debug" size="xs">
+                      Debug
+                    </Chip>
+                  </Group>
+                </Chip.Group>
+              </Group>
+              <Group gap="xs" align="center">
+                <Text size="xs" fw={500}>
+                  Chaos
+                </Text>
+                <Chip.Group
+                  multiple={false}
+                  value={chaosScenario}
+                  onChange={(value) => setChaosScenario(value as ChaosScenario)}
+                >
+                  <Group gap={4}>
+                    {CHAOS_SCENARIOS.map((scenario) => (
+                      <Chip key={scenario.value} value={scenario.value} size="xs">
+                        {scenario.label}
+                      </Chip>
+                    ))}
+                  </Group>
+                </Chip.Group>
+              </Group>
+            </Stack>
+          )}
+          <Group>
+            <Button type="button" variant="outline" onClick={() => form.reset()}>
+              Reset
+            </Button>
+            <Button
+              type="submit"
+              variant="filled"
+              disabled={!form.isValid()}
+              onClick={() => handleSubmit(form.values)}
+            >
+              Submit
+            </Button>
+          </Group>
+        </Stack>
       }
     >
       <Box>

@@ -1,0 +1,9 @@
+{
+  "name": "Unicorn Finance - Payments Garage",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ],
+  "version": "1"
+}

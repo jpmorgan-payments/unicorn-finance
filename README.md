@@ -109,7 +109,7 @@ See `app/server/README.md` for details.
   deployment (`DEPLOYMENT_GUIDE.md`).
 - `app/server/mock-server` - an optional Prism/Caddy contract mock driven by the OpenAPI
   specs in `specs/` (`docker compose up` there for a server-side mock on :8081).
-- `postman` - a Postman collection with a request per beat.
+- `bruno` - a Bruno collection with a request per beat.
 
 ## Testing
 
