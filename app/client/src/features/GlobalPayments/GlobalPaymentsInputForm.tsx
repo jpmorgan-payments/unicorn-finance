@@ -1,5 +1,14 @@
 import React, { useMemo, useState } from "react";
-import { Stack, Button, Chip, Group, Box, Text, TextInput } from "@mantine/core";
+import {
+  Stack,
+  Button,
+  Chip,
+  Group,
+  Box,
+  Paper,
+  Text,
+  TextInput,
+} from "@mantine/core";
 import { useForm } from "@mantine/form";
 import UnicornDropdown from "../../components/UnicornDropdown";
 import { ApiFormShell } from "../../components/ApiFormShell";
@@ -165,68 +174,25 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
         ) : undefined
       }
       idleActions={
-        <Stack gap="sm">
-          {isLocalMock && (
-            <Stack gap={4}>
-              <Group gap="xs" align="center">
-                <Text size="xs" fw={500}>
-                  Tracking
-                </Text>
-                <Chip.Group
-                  multiple={false}
-                  value={trackingMode}
-                  onChange={(value) => setTrackingMode(value as "play" | "debug")}
-                >
-                  <Group gap={4}>
-                    <Chip value="play" size="xs">
-                      Play
-                    </Chip>
-                    <Chip value="debug" size="xs">
-                      Debug
-                    </Chip>
-                  </Group>
-                </Chip.Group>
-              </Group>
-              <Group gap="xs" align="center">
-                <Text size="xs" fw={500}>
-                  Chaos
-                </Text>
-                <Chip.Group
-                  multiple={false}
-                  value={chaosScenario}
-                  onChange={(value) => setChaosScenario(value as ChaosScenario)}
-                >
-                  <Group gap={4}>
-                    {CHAOS_SCENARIOS.map((scenario) => (
-                      <Chip key={scenario.value} value={scenario.value} size="xs">
-                        {scenario.label}
-                      </Chip>
-                    ))}
-                  </Group>
-                </Chip.Group>
-              </Group>
-            </Stack>
-          )}
-          <Group>
-            <Button type="button" variant="outline" onClick={() => form.reset()}>
-              Reset
-            </Button>
-            <Button
-              type="submit"
-              variant="filled"
-              disabled={!form.isValid()}
-              onClick={() => handleSubmit(form.values)}
-            >
-              Submit
-            </Button>
-          </Group>
-        </Stack>
+        <Group gap="sm">
+          <Button type="button" variant="outline" onClick={() => form.reset()}>
+            Reset
+          </Button>
+          <Button
+            type="submit"
+            variant="filled"
+            disabled={!form.isValid()}
+            onClick={() => handleSubmit(form.values)}
+          >
+            Submit
+          </Button>
+        </Group>
       }
     >
       <Box>
         <label
           htmlFor="paymentType"
-          style={{ fontWeight: 500, marginBottom: "8px", display: "block" }}
+          className="uf-field-label"
         >
           Payment Type *
         </label>
@@ -241,7 +207,7 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
       <Box>
         <label
           htmlFor="debtorAccountDetails"
-          style={{ fontWeight: 500, marginBottom: "8px", display: "block" }}
+          className="uf-field-label"
         >
           Debtor Account * (From account)
         </label>
@@ -266,7 +232,7 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
       <Box>
         <label
           htmlFor="accountNumber"
-          style={{ fontWeight: 500, marginBottom: "8px", display: "block" }}
+          className="uf-field-label"
         >
           Creditor Account * (To account)
         </label>
@@ -291,7 +257,7 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
       <Box>
         <label
           htmlFor="amount"
-          style={{ fontWeight: 500, marginBottom: "8px", display: "block" }}
+          className="uf-field-label"
         >
           Amount *
         </label>
@@ -309,6 +275,52 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
           min="0"
         />
       </Box>
+
+      {isLocalMock && (
+        // Mock-only knobs: how status tracking plays out after submit, and
+        // which chaos scenario the mock server should inject.
+        <Paper className="uf-empty" radius="md" p="sm">
+          <Stack gap={8}>
+            <Group gap="sm" align="flex-start" wrap="nowrap">
+              <Text size="xs" fw={600} w={64} pt={4} style={{ flexShrink: 0 }}>
+                Tracking
+              </Text>
+              <Chip.Group
+                multiple={false}
+                value={trackingMode}
+                onChange={(value) => setTrackingMode(value as "play" | "debug")}
+              >
+                <Group gap={6} style={{ flex: 1 }}>
+                  <Chip value="play" size="xs">
+                    Play
+                  </Chip>
+                  <Chip value="debug" size="xs">
+                    Debug
+                  </Chip>
+                </Group>
+              </Chip.Group>
+            </Group>
+            <Group gap="sm" align="flex-start" wrap="nowrap">
+              <Text size="xs" fw={600} w={64} pt={4} style={{ flexShrink: 0 }}>
+                Chaos
+              </Text>
+              <Chip.Group
+                multiple={false}
+                value={chaosScenario}
+                onChange={(value) => setChaosScenario(value as ChaosScenario)}
+              >
+                <Group gap={6} style={{ flex: 1 }}>
+                  {CHAOS_SCENARIOS.map((scenario) => (
+                    <Chip key={scenario.value} value={scenario.value} size="xs">
+                      {scenario.label}
+                    </Chip>
+                  ))}
+                </Group>
+              </Chip.Group>
+            </Group>
+          </Stack>
+        </Paper>
+      )}
     </ApiFormShell>
   );
 };

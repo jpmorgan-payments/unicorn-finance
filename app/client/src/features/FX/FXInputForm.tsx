@@ -103,7 +103,7 @@ const FXInputForm: React.FC<FXInputFormProps> = ({ onRateSheetComplete }) => {
       <Box>
         <label
           htmlFor="accountId"
-          style={{ fontWeight: 500, marginBottom: "8px", display: "block" }}
+          className="uf-field-label"
         >
           Account *
         </label>
@@ -118,7 +118,7 @@ const FXInputForm: React.FC<FXInputFormProps> = ({ onRateSheetComplete }) => {
       <Box>
         <label
           htmlFor="currency"
-          style={{ fontWeight: 500, marginBottom: "8px", display: "block" }}
+          className="uf-field-label"
         >
           Base Currency *
         </label>

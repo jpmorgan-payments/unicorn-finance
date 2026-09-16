@@ -1,81 +1,87 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 import { ErrorBoundary } from "react-error-boundary";
+import {
+  AppShell,
+  Box,
+  Burger,
+  Button,
+  Container,
+  Group,
+  Text,
+} from "@mantine/core";
+import { useDisclosure } from "@mantine/hooks";
 import { Sidebar } from "./Sidebar";
 import ErrorFallback from "./ErrorFallback";
-import { AppShell, Button, Container, Paper, Text } from "@mantine/core";
-import { useDisclosure } from "@mantine/hooks";
-import { Environment } from "../context/EnvContext";
-import EnvironmentSwitcher from "./EnvironmentSwitcher";
+import { ThemeToggle } from "./ThemeToggle";
 
-const DemoBar = () => (
-  <Paper
-    style={{
-      backgroundColor: "#31A88C",
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      flexWrap: "wrap",
-      gap: "8px",
-    }}
-  >
-    <Text c="white" p="xs" style={{ flex: "1 1 auto", minWidth: "200px" }}>
-      This web application is a demo showcase for J.P.Morgan Payments. This is
-      not a real product.
-    </Text>
-    <Button
-      visibleFrom="md"
-      variant="demo"
-      color="white"
-      size="xs"
-      m="xs"
-      component="a"
-      href="https://developer.payments.jpmorgan.com/"
-      target="_blank"
-      rel="noopener noreferrer"
-      style={{
-        whiteSpace: "normal",
-        wordWrap: "break-word",
-        textAlign: "center",
-        minWidth: "120px",
-        height: "auto",
-        lineHeight: "1.2",
-        flex: "0 0 auto",
-      }}
-    >
-      Payments Developer Portal →
-    </Button>
-  </Paper>
-);
+// Fixed shell sizes. The header is taller on phones so the demo notice can
+// wrap to two lines next to the burger and theme toggle.
+const HEADER_HEIGHT = { base: 76, sm: 56 };
+const NAVBAR_WIDTH = { sm: 240, xl: 264 };
+
 function Layout() {
-  const [mobileOpened] = useDisclosure();
-  const [desktopOpened] = useDisclosure(true);
+  const [navOpened, { toggle: toggleNav, close: closeNav }] = useDisclosure();
+
   return (
     <AppShell
-      padding="md"
+      padding={{ base: "md", md: "lg", xl: "xl" }}
       layout="default"
-      header={{ height: 50 }}
+      header={{ height: HEADER_HEIGHT }}
       navbar={{
-        width: 200,
+        width: NAVBAR_WIDTH,
         breakpoint: "sm",
-        collapsed: { mobile: mobileOpened, desktop: !desktopOpened },
+        collapsed: { mobile: !navOpened },
       }}
     >
-      <AppShell.Header style={{ backgroundColor: "#31A88C" }} mb={20}>
-        <DemoBar />
+      <AppShell.Header className="uf-header">
+        <Group h="100%" px={{ base: "sm", sm: "md" }} gap="sm" wrap="nowrap">
+          <Burger
+            opened={navOpened}
+            onClick={toggleNav}
+            hiddenFrom="sm"
+            size="sm"
+            color="#fff"
+            aria-label="Toggle navigation"
+          />
+          <Text
+            c="white"
+            fw={500}
+            fz={{ base: "xs", sm: "sm" }}
+            lh={1.35}
+            style={{ flex: 1, minWidth: 0 }}
+          >
+            This web application is a demo showcase for J.P.Morgan Payments.
+            This is not a real product.
+          </Text>
+          <Group gap="xs" wrap="nowrap">
+            <Button
+              visibleFrom="md"
+              variant="demo"
+              size="xs"
+              component="a"
+              href="https://developer.payments.jpmorgan.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Payments Developer Portal →
+            </Button>
+            <ThemeToggle />
+          </Group>
+        </Group>
       </AppShell.Header>
 
-      <AppShell.Navbar p="xs" visibleFrom="md">
-        <EnvironmentSwitcher />
-        <Sidebar />
+      <AppShell.Navbar className="uf-navbar">
+        <Sidebar onNavigate={closeNav} />
       </AppShell.Navbar>
+
       <AppShell.Main>
         <ErrorBoundary FallbackComponent={ErrorFallback}>
-          <Container hiddenFrom="md">
-            <Sidebar />
-            <EnvironmentSwitcher />
+          <Container size={1600} px={0}>
+            <Box component="section">
+              <Outlet />
+            </Box>
           </Container>
-          <Outlet />
         </ErrorBoundary>
       </AppShell.Main>
     </AppShell>

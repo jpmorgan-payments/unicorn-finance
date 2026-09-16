@@ -121,7 +121,7 @@ const ValidationServicesInputForm: React.FC<
       <Box>
         <label
           htmlFor="validationType"
-          style={{ fontWeight: 500, marginBottom: "8px", display: "block" }}
+          className="uf-field-label"
         >
           Validation Type *
         </label>
@@ -138,7 +138,7 @@ const ValidationServicesInputForm: React.FC<
       <Box>
         <label
           htmlFor="accountNumber"
-          style={{ fontWeight: 500, marginBottom: "8px", display: "block" }}
+          className="uf-field-label"
         >
           Account Number *
         </label>
