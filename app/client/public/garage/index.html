@@ -266,6 +266,7 @@ const S=[
   <div class="bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>unicorn-finance</span></div>
   <div class="body">
     <div class="cmd">git clone github.com/jpmorgan-payments/unicorn-finance</div>
+    <div class="cmd">cd unicorn-finance</div>
     <div class="cmd">docker compose up</div>
     <div class="out">building client…</div>
     <div class="out">mock service worker registered</div>
@@ -518,6 +519,22 @@ const S=[
 <h1>Let's add<br><em>chaos</em>.</h1>
 <div class="rule"></div>
 <div class="say">Flip Chaos. Send it again. Watch it wobble.</div>`},
+
+/* 6a */ {bay:2, html:`
+<div class="eyebrow"><span class="bay">BAY 02</span> CHAOS &nbsp;·&nbsp; WHOA</div>
+<h2>It didn't just fail.<br><em>It told you why.</em></h2>
+<div class="bays" style="grid-template-columns:repeat(3,1fr)">
+  <div class="baycard"><span class="no">01</span><span class="nm">Operational hiccup</span><span class="api">RETRYING_CLEARING_SUBMISSION</span><span class="d">It wobbles, retries, lands. The track shows the retry - it never quietly pretends nothing happened.</span></div>
+  <div class="baycard"><span class="no">02</span><span class="nm">Funds check failed</span><span class="api">FUNDS_CONTROL_FAILED</span><span class="d">Rejected, with the reason attached. Not a timeout you're left to go guess at.</span></div>
+  <div class="baycard"><span class="no">03</span><span class="nm">Fraud hold</span><span class="api">FRAUD_HOLD</span><span class="d">Rejected again - for a completely different reason, in the same shape.</span></div>
+</div>
+<div class="say">Same GPI status track, every time. <b>The failure mode is data, not a support ticket.</b></div>`},
+
+/* 6b */ {bay:2, html:`
+<div class="eyebrow">CHECKPOINT &nbsp;·&nbsp; SHOW ME</div>
+<h1>Whoa …<br>who got some chaos?</h1>
+<div class="rule"></div>
+<div class="say">Flip it, send it again. If your payment just came back rejected on purpose, hold it up.</div>`},
 
 /* 3d */ {html:`
 <div class="eyebrow">STAGE SELECT &nbsp;·&nbsp; LAST ONE</div>
