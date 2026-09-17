@@ -14,6 +14,7 @@ export const RequestPreviewDrawer: React.FC = () => {
       position="right"
       size="lg"
       overlayProps={{ backgroundOpacity: 0.5, blur: 4 }}
+      styles={{ title: { fontWeight: 600, fontSize: "var(--mantine-font-size-lg)" } }}
     >
       {requestData && (
         <Stack gap="md">

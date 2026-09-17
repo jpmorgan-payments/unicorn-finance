@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import {
+  Anchor,
   Badge,
   Card,
   Group,
@@ -10,6 +11,7 @@ import {
   Title,
 } from "@mantine/core";
 import { KonamiProgress } from "../components/KonamiProgress";
+import { PageHeader } from "../components/PageHeader";
 
 interface BeatCard {
   to: string;
@@ -61,26 +63,26 @@ const HomePage: React.FC = () => {
   return (
     <Stack gap="lg">
       <KonamiProgress />
-      <Stack gap={4}>
-        <Title order={1}>Unicorn Finance</Title>
-        <Text c="dimmed" maw={760}>
-          A sample app showcasing J.P. Morgan Payments APIs. Pick what you are
-          trying to do below - every call runs offline against a built-in mock,
-          and the <strong>Preview Request</strong> drawer shows the exact API
-          call. No keys needed to explore.
-        </Text>
-      </Stack>
+      <PageHeader
+        title="Unicorn Finance"
+        description={
+          <>
+            A sample app showcasing J.P. Morgan Payments APIs. Pick what you
+            are trying to do below - every call runs offline against a built-in
+            mock, and the <strong>Preview Request</strong> drawer shows the
+            exact API call. No keys needed to explore.
+          </>
+        }
+      />
 
       <Title order={4}>What are you trying to do?</Title>
 
-      <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
+      <SimpleGrid cols={{ base: 1, sm: 2, xl: 4 }} spacing="lg">
         {BEATS.map((b) => (
           <Card
             key={b.to}
-            shadow="sm"
             padding="lg"
-            radius="md"
-            withBorder
+            radius="lg"
             style={{ cursor: "pointer" }}
             onClick={() => navigate(b.to)}
             role="link"
@@ -89,23 +91,25 @@ const HomePage: React.FC = () => {
               if (e.key === "Enter" || e.key === " ") navigate(b.to);
             }}
           >
-            <Group justify="space-between" mb="xs" wrap="nowrap">
-              <Text fw={600} size="lg">
-                {b.api}
+            <Stack gap="xs" h="100%">
+              <Group justify="space-between" wrap="nowrap" align="flex-start">
+                <Text fw={600} size="lg" lh={1.3}>
+                  {b.api}
+                </Text>
+                <Badge variant="light" color="pink" size="sm">
+                  {b.beat}
+                </Badge>
+              </Group>
+              <Text size="sm" fw={500}>
+                For: {b.persona}
               </Text>
-              <Badge className="!bg-pink-100 !text-pink-500 !border-pink-500">
-                {b.beat}
-              </Badge>
-            </Group>
-            <Text size="sm" fw={500} mb={4}>
-              For: {b.persona}
-            </Text>
-            <Text size="sm" c="dimmed">
-              {b.description}
-            </Text>
-            <Text size="sm" c="pink" mt="md" fw={500}>
-              Try it →
-            </Text>
+              <Text size="sm" c="dimmed">
+                {b.description}
+              </Text>
+              <Text size="sm" c="pink" fw={600} mt="auto" pt="sm">
+                Try it →
+              </Text>
+            </Stack>
           </Card>
         ))}
       </SimpleGrid>
@@ -113,14 +117,16 @@ const HomePage: React.FC = () => {
       <Text size="sm" c="dimmed" maw={760}>
         Everything here runs on <strong>Local Mock</strong> (offline, in this
         app). When you are ready, onboard at{" "}
-        <a
+        <Anchor
           href="https://developer.payments.jpmorgan.com"
           target="_blank"
           rel="noopener noreferrer"
-          style={{ color: "var(--mantine-color-pink-6)" }}
+          size="sm"
+          c="pink"
+          fw={500}
         >
           developer.payments.jpmorgan.com
-        </a>{" "}
+        </Anchor>{" "}
         and switch the environment (top-left) to JPMC Mock or JPMC CAT.
       </Text>
     </Stack>

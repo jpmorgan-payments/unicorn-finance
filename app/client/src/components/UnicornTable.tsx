@@ -38,11 +38,7 @@ export const UnicornTable: React.FC<UnicornTableProps> = ({
               <Table.Tr
                 key={rowIndex}
                 onClick={() => onRowClick(rowIndex)}
-                style={{
-                  cursor: "pointer",
-                  transition: "background-color 0.15s ease",
-                }}
-                className="hover:bg-gray-50 active:bg-gray-100"
+                data-clickable
               >
                 {row.map((cell, cellIndex) => (
                   <Table.Td key={cellIndex}>{cell}</Table.Td>

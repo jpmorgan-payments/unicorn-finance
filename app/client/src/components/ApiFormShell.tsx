@@ -52,7 +52,7 @@ export const ApiFormShell: React.FC<ApiFormShellProps> = ({
     <LoadingOverlay
       visible={isMutating}
       zIndex={1000}
-      overlayProps={{ radius: "sm", blur: 2 }}
+      overlayProps={{ radius: "md", blur: 2 }}
       loaderProps={{ color: "pink", type: "bars" }}
     />
 
@@ -70,42 +70,40 @@ export const ApiFormShell: React.FC<ApiFormShellProps> = ({
     )}
 
     {!data && !error && !isMutating && (
-      <Box>
-        <Stack gap="md">
-          {children}
-          <Group justify="space-between" mt="md">
-            <PreviewRequestButton onClick={onPreview} disabled={previewDisabled} />
-            {idleActions}
-          </Group>
-        </Stack>
-      </Box>
+      <Stack gap="md">
+        {children}
+        <Group justify="space-between" mt="sm" gap="sm">
+          <PreviewRequestButton onClick={onPreview} disabled={previewDisabled} />
+          {idleActions}
+        </Group>
+      </Stack>
     )}
 
     {!!data && !isMutating && (
-      <Box>
+      <Stack gap="md">
         <Code block>{JSON.stringify(data, null, 2)}</Code>
         {successExtra}
-        <Group justify="space-between" mt="md">
+        <Group justify="space-between" mt="sm" gap="sm">
           <PreviewRequestButton onClick={onPreview} disabled={previewDisabled} />
           <Button type="button" variant="filled" onClick={onReset}>
             {resultActionLabel}
           </Button>
         </Group>
-      </Box>
+      </Stack>
     )}
 
     {!!error && !isMutating && (
-      <Box>
-        <Code block>
+      <Stack gap="md">
+        <Code block c="red">
           {`Error: ${(error as Error).message || "An unknown error occurred"}`}
         </Code>
-        <Group justify="space-between" mt="md">
+        <Group justify="space-between" mt="sm" gap="sm">
           <PreviewRequestButton onClick={onPreview} disabled={previewDisabled} />
           <Button type="button" variant="outline" onClick={onReset}>
             {errorActionLabel}
           </Button>
         </Group>
-      </Box>
+      </Stack>
     )}
   </Box>
 );

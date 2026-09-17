@@ -1,7 +1,8 @@
 import React from "react";
-import { Box, Container, LoadingOverlay, Stack, Text } from "@mantine/core";
+import { Box, LoadingOverlay, Stack, Text } from "@mantine/core";
 import useSWR from "swr";
 import { UnicornTable } from "../../components/UnicornTable";
+import { EmptyState } from "../../components/EmptyState";
 import type { Transaction, TransactionsResponse } from "./TransactionsTypes";
 import {
   submitTransactionsRequest,
@@ -42,7 +43,7 @@ const TransactionsDisplay: React.FC = () => {
         <LoadingOverlay
           visible={isLoading}
           zIndex={1000}
-          overlayProps={{ radius: "sm", blur: 2 }}
+          overlayProps={{ radius: "md", blur: 2 }}
           loaderProps={{ color: "pink", type: "bars" }}
         />
         {isLoading && (
@@ -58,9 +59,9 @@ const TransactionsDisplay: React.FC = () => {
           </Box>
         )}
         {error && (
-          <Container size="xl" py="md">
-            <Text c="red">Error fetching transactions</Text>
-          </Container>
+          <Text c="red" py="md">
+            Error fetching transactions
+          </Text>
         )}
         {!error && !isLoading && transactions.length > 0 && (
           <UnicornTable
@@ -70,11 +71,7 @@ const TransactionsDisplay: React.FC = () => {
           />
         )}
         {!error && !isLoading && transactions.length === 0 && (
-          <Box p="md" style={{ backgroundColor: "#f8f9fa", borderRadius: "4px" }}>
-            <p className="text-sm text-gray-500 text-center">
-              No transactions to display.
-            </p>
-          </Box>
+          <EmptyState>No transactions to display.</EmptyState>
         )}
       </Stack>
     </Box>

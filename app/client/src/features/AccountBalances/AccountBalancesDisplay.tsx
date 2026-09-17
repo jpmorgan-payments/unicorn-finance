@@ -1,13 +1,14 @@
 import React from "react";
 import {
-  Card,
   Text,
   Group,
   Badge,
   Stack,
-  Container,
   Box,
   LoadingOverlay,
+  Paper,
+  ScrollArea,
+  SimpleGrid,
 } from "@mantine/core";
 import type { Account, AccountBalances } from "./AccountBalancesTypes";
 import { submitAccountBalancesRequest } from "./SubmitAccountBalancesRequest";
@@ -19,40 +20,45 @@ const AccountBalanceCard: React.FC<{
   account: Account;
   onClick: () => void;
 }> = ({ account, onClick }) => {
+  const balance = account.balanceList?.[0];
   return (
-    <Card
-      shadow="sm"
-      padding="lg"
+    <Paper
+      className="uf-card-link"
       radius="md"
-      withBorder
+      p="md"
       onClick={onClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") onClick();
+      }}
       style={{ cursor: "pointer" }}
     >
-      <Card.Section>
-        <Group justify="space-between" mt="md" mb="xs" px="lg">
-          <Text fw={500} size="lg">
-            {account.accountName
-              ? `${account.accountName} - ${account.accountId}`
-              : account.accountId}
+      {/* One row per account: name + id on the left, currency + balance on
+          the right, so dozens of accounts scan like a ledger. */}
+      <Group justify="space-between" wrap="nowrap" align="center" gap="md">
+        <Stack gap={2} style={{ minWidth: 0, flex: 1 }}>
+          <Text size="sm" fw={600} lh={1.3} style={{ overflowWrap: "anywhere" }}>
+            {account.accountName || account.accountId}
           </Text>
-          <Badge
-            className="!bg-pink-100 !text-pink-500 !border-pink-500"
-            variant="light"
-          >
+          {account.accountName && (
+            <Text size="xs" c="dimmed" ff="monospace" style={{ overflowWrap: "anywhere" }}>
+              {account.accountId}
+            </Text>
+          )}
+        </Stack>
+        <Stack gap={4} align="flex-end" style={{ flexShrink: 0 }}>
+          <Badge variant="light" color="pink" size="sm">
             {account.currency.code}
           </Badge>
-        </Group>
-      </Card.Section>
-      {!account.errors &&
-        account.balanceList &&
-        account.balanceList.length > 0 && (
-          <Card.Section>
-            <Text size="xl" mt="md" mb="xs" px="lg" fw={700}>
-              ${account.balanceList[0].endingAvailableAmount.toFixed(2)}
+          {!account.errors && balance && (
+            <Text size="lg" fw={700} lh={1.2} style={{ whiteSpace: "nowrap" }}>
+              ${balance.endingAvailableAmount.toFixed(2)}
             </Text>
-          </Card.Section>
-        )}
-    </Card>
+          )}
+        </Stack>
+      </Group>
+    </Paper>
   );
 };
 const AccountBalancesDisplay: React.FC = () => {
@@ -87,40 +93,49 @@ const AccountBalancesDisplay: React.FC = () => {
 
   return (
     <Box flex={1} pos={"relative"}>
-      <Stack align="stretch">
-        <LoadingOverlay
-          visible={isLoading}
-          zIndex={1000}
-          overlayProps={{ radius: "sm", blur: 2 }}
-          loaderProps={{ color: "pink", type: "bars" }}
-        />
-        {isLoading && (
-          <Box
-            style={{
-              minHeight: "200px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <div>Loading...</div>
-          </Box>
-        )}
-        {error && !accountBalanceData && (
-          <Container size="xl" py="md">
-            <Text c="red">Error fetching account balances</Text>
-          </Container>
-        )}
-        {!error &&
-          accountBalanceData &&
-          accountBalanceData.accountList.map((account) => (
-            <AccountBalanceCard
-              key={account.accountId}
-              account={account}
-              onClick={() => handleClickOnAccount(account.accountId)}
-            />
-          ))}
-      </Stack>
+      <LoadingOverlay
+        visible={isLoading}
+        zIndex={1000}
+        overlayProps={{ radius: "md", blur: 2 }}
+        loaderProps={{ color: "pink", type: "bars" }}
+      />
+      {isLoading && (
+        <Box
+          style={{
+            minHeight: "200px",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <div>Loading...</div>
+        </Box>
+      )}
+      {error && !accountBalanceData && (
+        <Text c="red" py="md">
+          Error fetching account balances
+        </Text>
+      )}
+      {!error && accountBalanceData && (
+        // The list is long (dozens of accounts), so it scrolls inside the panel
+        // and keeps the Transactions panel on screen next to it.
+        <ScrollArea.Autosize
+          mah={{ base: 560, md: "calc(100vh - 340px)" }}
+          type="auto"
+          scrollbars="y"
+          offsetScrollbars
+        >
+          <SimpleGrid cols={{ base: 1, sm: 2, md: 1 }} spacing="sm">
+            {accountBalanceData.accountList.map((account) => (
+              <AccountBalanceCard
+                key={account.accountId}
+                account={account}
+                onClick={() => handleClickOnAccount(account.accountId)}
+              />
+            ))}
+          </SimpleGrid>
+        </ScrollArea.Autosize>
+      )}
     </Box>
   );
 };
