@@ -20,13 +20,13 @@ const AccountsPage: React.FC = () => {
       />
 
       <Grid gutter="lg" align="stretch">
-        <Grid.Col span={{ base: 12, md: 5, xl: 4 }}>
+        <Grid.Col span={{ base: 12, md: 5 }}>
           <Panel title="Today's Balances">
             <AccountBalancesDisplay />
           </Panel>
         </Grid.Col>
 
-        <Grid.Col span={{ base: 12, md: 7, xl: 8 }}>
+        <Grid.Col span={{ base: 12, md: 7 }}>
           <Panel title="Transaction History">
             <TransactionsDisplay />
           </Panel>

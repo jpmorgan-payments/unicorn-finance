@@ -1,6 +1,7 @@
 import React, { ReactNode } from "react";
-import { Box, Stack, Group, LoadingOverlay, Code, Button } from "@mantine/core";
+import { Box, Stack, Group, LoadingOverlay, Button, Paper } from "@mantine/core";
 import { PreviewRequestButton } from "./PreviewRequestButton";
+import { JsonView } from "./JsonView";
 
 /**
  * Shared three-state shell for the feature forms (Payments, Validations, FX,
@@ -81,8 +82,12 @@ export const ApiFormShell: React.FC<ApiFormShellProps> = ({
 
     {!!data && !isMutating && (
       <Stack gap="md">
-        <Code block>{JSON.stringify(data, null, 2)}</Code>
-        {successExtra}
+        <JsonView title="Response" data={data} />
+        {successExtra && (
+          <Paper className="uf-empty" radius="md" p="md">
+            {successExtra}
+          </Paper>
+        )}
         <Group justify="space-between" mt="sm" gap="sm">
           <PreviewRequestButton onClick={onPreview} disabled={previewDisabled} />
           <Button type="button" variant="filled" onClick={onReset}>
@@ -94,9 +99,11 @@ export const ApiFormShell: React.FC<ApiFormShellProps> = ({
 
     {!!error && !isMutating && (
       <Stack gap="md">
-        <Code block c="red">
-          {`Error: ${(error as Error).message || "An unknown error occurred"}`}
-        </Code>
+        <JsonView
+          title="Error"
+          tone="error"
+          data={`Error: ${(error as Error).message || "An unknown error occurred"}`}
+        />
         <Group justify="space-between" mt="sm" gap="sm">
           <PreviewRequestButton onClick={onPreview} disabled={previewDisabled} />
           <Button type="button" variant="outline" onClick={onReset}>
