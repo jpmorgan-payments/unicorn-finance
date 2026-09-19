@@ -1,5 +1,9 @@
 # Unicorn Finance
 
+[![CI](https://github.com/jpmorgan-payments/unicorn-finance/actions/workflows/ci.yml/badge.svg)](https://github.com/jpmorgan-payments/unicorn-finance/actions/workflows/ci.yml)
+
+**Live demo:** https://main.d1gwlo1sitsayb.amplifyapp.com/
+
 A sample application showcasing J.P. Morgan Payments core external APIs. It is a
 clone-and-run demo: every call runs offline against a built-in mock, and the same code
 hits the real J.P. Morgan sandbox once you drop in your credentials.
