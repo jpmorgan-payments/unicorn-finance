@@ -2,13 +2,11 @@ import React from "react";
 import {
   Text,
   Group,
-  Badge,
   Stack,
   Box,
   LoadingOverlay,
-  Paper,
   ScrollArea,
-  SimpleGrid,
+  UnstyledButton,
 } from "@mantine/core";
 import type { Account, AccountBalances } from "./AccountBalancesTypes";
 import { submitAccountBalancesRequest } from "./SubmitAccountBalancesRequest";
@@ -16,51 +14,68 @@ import { useRequestPreview } from "../../context/RequestPreviewContext";
 import { useEnv } from "../../context/EnvContext";
 import useSWR from "swr";
 
-const AccountBalanceCard: React.FC<{
+// "$4,250,000.00" / "-$15,480,165.59" - grouped digits and a leading sign so a
+// long column of balances scans like a statement.
+const formatAmount = (amount: number, currency: string) => {
+  try {
+    return new Intl.NumberFormat("en-US", {
+      style: "currency",
+      currency,
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(amount);
+  } catch {
+    return `${currency} ${amount.toFixed(2)}`;
+  }
+};
+
+const AccountBalanceRow: React.FC<{
   account: Account;
   onClick: () => void;
 }> = ({ account, onClick }) => {
   const balance = account.balanceList?.[0];
+  const hasBalance = !account.errors && !!balance;
+  const negative = hasBalance && balance.endingAvailableAmount < 0;
+
   return (
-    <Paper
-      className="uf-card-link"
-      radius="md"
-      p="md"
-      onClick={onClick}
-      role="button"
-      tabIndex={0}
-      onKeyDown={(e) => {
-        if (e.key === "Enter" || e.key === " ") onClick();
-      }}
-      style={{ cursor: "pointer" }}
-    >
-      {/* One row per account: name + id on the left, currency + balance on
-          the right, so dozens of accounts scan like a ledger. */}
-      <Group justify="space-between" wrap="nowrap" align="center" gap="md">
-        <Stack gap={2} style={{ minWidth: 0, flex: 1 }}>
-          <Text size="sm" fw={600} lh={1.3} style={{ overflowWrap: "anywhere" }}>
-            {account.accountName || account.accountId}
+    <UnstyledButton className="uf-ledger-row" onClick={onClick}>
+      <Stack gap={2} style={{ minWidth: 0, flex: 1 }}>
+        <Text size="sm" fw={600} lh={1.3} truncate>
+          {account.accountName || account.accountId}
+        </Text>
+        {account.accountName && (
+          <Text size="xs" c="dimmed" ff="monospace" lh={1.3}>
+            {account.accountId}
           </Text>
-          {account.accountName && (
-            <Text size="xs" c="dimmed" ff="monospace" style={{ overflowWrap: "anywhere" }}>
-              {account.accountId}
-            </Text>
-          )}
-        </Stack>
-        <Stack gap={4} align="flex-end" style={{ flexShrink: 0 }}>
-          <Badge variant="light" color="pink" size="sm">
-            {account.currency.code}
-          </Badge>
-          {!account.errors && balance && (
-            <Text size="lg" fw={700} lh={1.2} style={{ whiteSpace: "nowrap" }}>
-              ${balance.endingAvailableAmount.toFixed(2)}
-            </Text>
-          )}
-        </Stack>
+        )}
+      </Stack>
+      <Group gap="xs" wrap="nowrap" align="baseline" style={{ flexShrink: 0 }}>
+        {hasBalance ? (
+          <Text
+            size="sm"
+            fw={600}
+            lh={1.3}
+            className="uf-ledger-amount"
+            c={negative ? "red" : undefined}
+          >
+            {formatAmount(balance.endingAvailableAmount, account.currency.code)}
+          </Text>
+        ) : (
+          <Text size="sm" c="dimmed" lh={1.3}>
+            {account.errors?.errorMsg ?? "—"}
+          </Text>
+        )}
+        <Text size="xs" c="dimmed" fw={500} className="uf-ledger-ccy">
+          {account.currency.code}
+        </Text>
+        <span className="material-icons-outlined uf-ledger-chevron" aria-hidden>
+          chevron_right
+        </span>
       </Group>
-    </Paper>
+    </UnstyledButton>
   );
 };
+
 const AccountBalancesDisplay: React.FC = () => {
   const { url } = useEnv();
   const { openDrawer } = useRequestPreview();
@@ -91,6 +106,10 @@ const AccountBalancesDisplay: React.FC = () => {
     openDrawer(getRequestData(accountId), response as any);
   };
 
+  const asOf = accountBalanceData?.accountList.find(
+    (a) => a.balanceList?.[0]?.asOfDate,
+  )?.balanceList[0].asOfDate;
+
   return (
     <Box flex={1} pos={"relative"}>
       <LoadingOverlay
@@ -117,24 +136,32 @@ const AccountBalancesDisplay: React.FC = () => {
         </Text>
       )}
       {!error && accountBalanceData && (
-        // The list is long (dozens of accounts), so it scrolls inside the panel
-        // and keeps the Transactions panel on screen next to it.
-        <ScrollArea.Autosize
-          mah={{ base: 560, md: "calc(100vh - 340px)" }}
-          type="auto"
-          scrollbars="y"
-          offsetScrollbars
-        >
-          <SimpleGrid cols={{ base: 1, sm: 2, md: 1 }} spacing="sm">
+        // Statement-style ledger: one hairline row per account, amounts in a
+        // right-aligned tabular column. The list is long (dozens of accounts),
+        // so it scrolls inside the panel with the column header pinned.
+        <Box className="uf-ledger">
+          <div className="uf-ledger-head">
+            <Text size="xs" fw={600} tt="uppercase" c="dimmed" lts="0.04em">
+              Account
+            </Text>
+            <Text size="xs" fw={600} tt="uppercase" c="dimmed" lts="0.04em">
+              {asOf ? `Available · ${asOf}` : "Available"}
+            </Text>
+          </div>
+          <ScrollArea.Autosize
+            mah={{ base: 520, md: "calc(100vh - 380px)" }}
+            type="auto"
+            scrollbars="y"
+          >
             {accountBalanceData.accountList.map((account) => (
-              <AccountBalanceCard
+              <AccountBalanceRow
                 key={account.accountId}
                 account={account}
                 onClick={() => handleClickOnAccount(account.accountId)}
               />
             ))}
-          </SimpleGrid>
-        </ScrollArea.Autosize>
+          </ScrollArea.Autosize>
+        </Box>
       )}
     </Box>
   );

@@ -267,3 +267,160 @@ body {
   line-height: 1;
   vertical-align: middle;
 }
+
+/* --------------------------------------------------------------------------
+   JSON viewer (components/JsonView.tsx)
+   -------------------------------------------------------------------------- */
+:root {
+  --uf-json-bg: #f8f9fb;
+  --uf-json-key: #be185d;     /* signature pink, deep */
+  --uf-json-string: #0f766e;  /* teal */
+  --uf-json-number: #b45309;  /* amber */
+  --uf-json-boolean: #6d28d9; /* violet */
+  --uf-json-null: #6b7280;
+  --uf-json-punct: #6b7280;
+}
+[data-mantine-color-scheme="dark"] {
+  --uf-json-bg: #17181b;
+  --uf-json-key: #f9a8d4;
+  --uf-json-string: #5eead4;
+  --uf-json-number: #fcd34d;
+  --uf-json-boolean: #c4b5fd;
+  --uf-json-null: #9ca3af;
+  --uf-json-punct: #9ca3af;
+}
+.uf-json {
+  border: 1px solid var(--uf-panel-border);
+  border-radius: var(--mantine-radius-md);
+  background: var(--uf-json-bg);
+  overflow: hidden;
+}
+.uf-json[data-tone="error"] {
+  border-color: var(--mantine-color-red-4);
+}
+.uf-json-bar {
+  border-bottom: 1px solid var(--uf-panel-border);
+  background: var(--uf-panel-bg);
+}
+.uf-json-pre {
+  margin: 0;
+  padding: var(--mantine-spacing-sm) var(--mantine-spacing-md);
+  font-family: var(--mantine-font-family-monospace);
+  font-size: 13px;
+  line-height: 1.55;
+  white-space: pre;
+  color: var(--mantine-color-text);
+}
+.uf-json[data-tone="error"] .uf-json-pre {
+  color: var(--mantine-color-red-7);
+  white-space: pre-wrap;
+}
+[data-mantine-color-scheme="dark"] .uf-json[data-tone="error"] .uf-json-pre {
+  color: var(--mantine-color-red-4);
+}
+.uf-json-key { color: var(--uf-json-key); font-weight: 600; }
+.uf-json-string { color: var(--uf-json-string); }
+.uf-json-number { color: var(--uf-json-number); }
+.uf-json-boolean { color: var(--uf-json-boolean); font-weight: 600; }
+.uf-json-null { color: var(--uf-json-null); font-style: italic; }
+.uf-json-punct { color: var(--uf-json-punct); }
+
+/* --------------------------------------------------------------------------
+   Dropdown (components/UnicornDropdown.tsx)
+   -------------------------------------------------------------------------- */
+/* The trigger is a <button>; keep its value on one line with an ellipsis so a
+   long "NAME - ACCOUNT" never wraps out of the control. */
+.uf-dropdown-input {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  text-align: left;
+}
+.uf-dropdown-value {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.uf-dropdown-value > span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.uf-dropdown-value-desc {
+  flex-shrink: 0;
+  font-size: var(--mantine-font-size-xs);
+  font-family: var(--mantine-font-family-monospace);
+  color: var(--uf-muted);
+}
+.uf-dropdown-option {
+  padding: 8px 12px;
+  border-radius: var(--mantine-radius-sm);
+}
+.uf-dropdown-option[data-combobox-selected],
+.uf-dropdown-option:hover {
+  background: var(--uf-pink-tint);
+}
+
+/* --------------------------------------------------------------------------
+   Balances ledger (features/AccountBalances)
+   -------------------------------------------------------------------------- */
+.uf-ledger {
+  border: 1px solid var(--uf-panel-border);
+  border-radius: var(--mantine-radius-md);
+  overflow: hidden;
+  background: var(--uf-panel-bg);
+}
+.uf-ledger-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--uf-panel-border);
+  background: var(--uf-app-bg);
+}
+.uf-ledger-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mantine-spacing-md);
+  width: 100%;
+  min-height: 52px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--uf-panel-border);
+  transition: background-color 120ms ease;
+}
+.uf-ledger-row:last-child {
+  border-bottom: 0;
+}
+.uf-ledger-row:hover,
+.uf-ledger-row:focus-visible {
+  background: var(--uf-pink-tint);
+  outline: none;
+}
+.uf-ledger-amount {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.uf-ledger-ccy {
+  width: 30px;
+  text-align: right;
+}
+.uf-ledger-chevron {
+  font-size: 18px;
+  color: var(--uf-panel-border);
+  transition: color 120ms ease, transform 120ms ease;
+}
+.uf-ledger-row:hover .uf-ledger-chevron {
+  color: var(--uf-pink);
+  transform: translateX(2px);
+}
+/* ScrollArea's content wrapper has min-width: min-content, which lets long
+   account names widen the rows past the panel on phones instead of
+   truncating. The ledger only scrolls vertically, so pin it to the viewport. */
+.uf-ledger .mantine-ScrollArea-content {
+  min-width: 0 !important;
+  width: 100%;
+}

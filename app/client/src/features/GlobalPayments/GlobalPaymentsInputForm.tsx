@@ -99,12 +99,14 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
   }, [availableDebtorAccounts]);
 
   const debtorAccountOptions = availableDebtorAccounts.map((account) => ({
-    label: account.account.name + " - " + account.account.account.accountNumber,
+    label: account.account.name,
+    description: account.account.account.accountNumber,
     value: JSON.stringify(account),
   }));
 
   const creditorAccountOptions = availableCreditorAccounts.map((account) => ({
-    label: account.name + " - " + account.account.accountNumber,
+    label: account.name,
+    description: account.account.accountNumber,
     value: JSON.stringify(account),
   }));
 
