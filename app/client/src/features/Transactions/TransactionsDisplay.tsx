@@ -10,9 +10,10 @@ import {
 } from "./SubmitTransactionsRequest";
 import { useEnv } from "../../context/EnvContext";
 import { useRequestPreview } from "../../context/RequestPreviewContext";
+import { MockTierNotice } from "../../components/MockTierNotice";
 
 const TransactionsDisplay: React.FC = () => {
-  const { url } = useEnv();
+  const { url, environment } = useEnv();
   const { openDrawer } = useRequestPreview();
 
   const { data, error, isLoading } = useSWR<TransactionsResponse, Error>(
@@ -39,6 +40,7 @@ const TransactionsDisplay: React.FC = () => {
   return (
     <Box flex={1} pos={"relative"}>
       <Stack align="stretch">
+        <MockTierNotice environment={environment} />
         <LoadingOverlay
           visible={isLoading}
           zIndex={1000}

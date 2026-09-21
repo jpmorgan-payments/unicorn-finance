@@ -51,8 +51,10 @@ introduces the app and points you to the right API for what you're building.
 
 - **Environment switch** (left navbar): three tiers in graduation order - **Local Mock**
   (in-app, offline, no keys - the default), **JPMC Mock** (PDP's hosted Mock env, via
-  OAuth2), and **JPMC CAT** (real integration, mTLS certs). The two JPMC tiers stay
-  disabled until you configure them (see below), so nobody hits silent errors.
+  OAuth2), and **JPMC CAT** (real integration, mTLS certs). Both JPMC tiers stay
+  disabled until you configure them (see below), so nobody hits silent errors. On the
+  Mock tier, Global Payments hits the real `api-mock` contract; the other three beats
+  show an in-form notice since they don't have a Mock adapter yet.
 - **Request Preview drawer**: every form has a **Preview Request** button, and clicking a
   history row re-opens it - this is the "what API am I actually hitting" view, showing the
   exact endpoint, method, headers and body.
@@ -94,12 +96,14 @@ docker compose --profile real up   # or: cd app/server && pnpm install && pnpm s
 
 See `app/server/README.md` for details.
 
-> Status: **Local Mock** is the offline default. **JPMC Mock** now has its server-side
-> OAuth2 client-credentials token exchange + `api-mock` Bearer proxy wired (gated behind
-> `VITE_ENABLE_JPMC` + your PDP creds); each beat's exact `api-mock` path/contract still
-> needs confirming per PDP product (today's paths mirror the CAT/gateway shapes, and
-> payments on CAT use a signed JWT rather than the Bearer+JSON the Mock tier expects).
-> **JPMC CAT** (mTLS certs + signed JWT) is wired.
+> Status: **Local Mock** is the offline default. **JPMC Mock** is selectable behind
+> `VITE_ENABLE_JPMC` + your PDP creds - its server-side OAuth2 client-credentials token
+> exchange + `api-mock` Bearer proxy are wired, and **Global Payments** now sends the real
+> `/payment/v2/payments` request there (same contract as CAT, minus the signed JWT - the
+> proxy attaches the Bearer instead). Account Validation, FX, Transactions and Balances
+> don't have a Mock-tier adapter yet and say so in the UI when you switch tiers. No live
+> smoke test against `api-mock.payments.jpmorgan.com` has been run (no creds/connectivity
+> in dev) - see `docs/NEXT-STEPS.md`. **JPMC CAT** (mTLS certs + signed JWT) is wired.
 
 ## What's in this repo
 

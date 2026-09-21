@@ -2,9 +2,11 @@ import React, { useEffect, useRef, useState } from "react";
 import { Badge, Box, Button, Group, Stack, Text } from "@mantine/core";
 import { fetchPaymentStatus } from "./SubmitGlobalPaymentsRequest";
 import { CHAOS_TRACKS, type ChaosScenario, type Stage } from "../../mocks/chaosScenarios";
+import type { Environment } from "../../context/EnvContext";
 
 interface PaymentStatusPanelProps {
   url: string;
+  environment: Environment;
   paymentId: string;
   /**
    * "play" auto-advances on an interval until a terminal status is reached.
@@ -106,6 +108,7 @@ const StageTrack: React.FC<{ track: Stage[]; stepIndex: number }> = ({
  */
 export const PaymentStatusPanel: React.FC<PaymentStatusPanelProps> = ({
   url,
+  environment,
   paymentId,
   mode,
   scenario,
@@ -122,7 +125,7 @@ export const PaymentStatusPanel: React.FC<PaymentStatusPanelProps> = ({
     setLoading(true);
     setError(null);
     try {
-      setStatus(await fetchPaymentStatus(url, paymentId));
+      setStatus(await fetchPaymentStatus(url, paymentId, environment));
       setStepIndex((i) => i + 1);
     } catch (err) {
       setError(
@@ -145,7 +148,7 @@ export const PaymentStatusPanel: React.FC<PaymentStatusPanelProps> = ({
     const tick = async () => {
       if (cancelled || isTerminalRef.current) return;
       try {
-        const next = await fetchPaymentStatus(url, paymentId);
+        const next = await fetchPaymentStatus(url, paymentId, environment);
         if (!cancelled) setStatus(next);
       } catch (err) {
         if (!cancelled) {
@@ -172,7 +175,7 @@ export const PaymentStatusPanel: React.FC<PaymentStatusPanelProps> = ({
       clearInterval(interval);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps -- rerun only when the tracked payment/mode changes
-  }, [mode, url, paymentId]);
+  }, [mode, url, paymentId, environment]);
 
   if (error) {
     return (

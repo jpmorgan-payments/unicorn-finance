@@ -15,6 +15,7 @@ import {
 } from "./GlobalPaymentsConfig";
 import {
   generateGlobalPaymentsRequestData,
+  getGlobalPaymentsEndpoint,
   submitGlobalPaymentsRequest,
 } from "./SubmitGlobalPaymentsRequest";
 import { PaymentStatusPanel } from "./PaymentStatusPanel";
@@ -47,7 +48,7 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
   const [chaosScenario, setChaosScenario] = useState<ChaosScenario>("none");
 
   const { trigger, data, error, isMutating, reset } = useSWRMutation(
-    `${url}/api/digitalSignature/payment/v2/payments`,
+    getGlobalPaymentsEndpoint(url, environment),
     submitGlobalPaymentsRequest,
   );
 
@@ -102,6 +103,7 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
   const getRequestData = () => {
     return generateGlobalPaymentsRequestData(
       url,
+      environment,
       form.values.amount,
       form.values.paymentType,
       form.values.debtorAccountDetails as AccountDetails,
@@ -158,6 +160,7 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
         data?.response?.paymentId ? (
           <PaymentStatusPanel
             url={url}
+            environment={environment}
             paymentId={data.response.paymentId}
             mode={isLocalMock ? trackingMode : "debug"}
             scenario={isLocalMock ? chaosScenario : "none"}

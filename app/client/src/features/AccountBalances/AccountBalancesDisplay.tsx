@@ -13,6 +13,7 @@ import type { Account, AccountBalances } from "./AccountBalancesTypes";
 import { submitAccountBalancesRequest } from "./SubmitAccountBalancesRequest";
 import { useRequestPreview } from "../../context/RequestPreviewContext";
 import { useEnv } from "../../context/EnvContext";
+import { MockTierNotice } from "../../components/MockTierNotice";
 import useSWR from "swr";
 
 const AccountBalanceCard: React.FC<{
@@ -56,7 +57,7 @@ const AccountBalanceCard: React.FC<{
   );
 };
 const AccountBalancesDisplay: React.FC = () => {
-  const { url } = useEnv();
+  const { url, environment } = useEnv();
   const { openDrawer } = useRequestPreview();
   const { data, error, isLoading } = useSWR<any, Error>(
     `${url}/api/accessapi/balance`,
@@ -88,6 +89,7 @@ const AccountBalancesDisplay: React.FC = () => {
   return (
     <Box flex={1} pos={"relative"}>
       <Stack align="stretch">
+        <MockTierNotice environment={environment} />
         <LoadingOverlay
           visible={isLoading}
           zIndex={1000}

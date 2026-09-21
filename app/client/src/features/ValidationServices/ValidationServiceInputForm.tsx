@@ -19,6 +19,7 @@ import {
 } from "./SubmitValidationServicesRequest";
 import { useEnv } from "../../context/EnvContext";
 import { useRequestPreview } from "../../context/RequestPreviewContext";
+import { MockTierNotice } from "../../components/MockTierNotice";
 import useSWRMutation from "swr/mutation";
 
 interface ValidationFormValues {
@@ -34,7 +35,7 @@ interface ValidationServicesInputFormProps {
 const ValidationServicesInputForm: React.FC<
   ValidationServicesInputFormProps
 > = ({ exampleAccounts = EXAMPLE_ACCOUNTS, onValidationComplete }) => {
-  const { url } = useEnv();
+  const { url, environment } = useEnv();
   const { openDrawer } = useRequestPreview();
 
   const { trigger, data, error, isMutating, reset } = useSWRMutation(
@@ -91,7 +92,9 @@ const ValidationServicesInputForm: React.FC<
   };
 
   return (
-    <ApiFormShell
+    <>
+      <MockTierNotice environment={environment} />
+      <ApiFormShell
       isMutating={isMutating}
       data={data}
       error={error}
@@ -158,7 +161,8 @@ const ValidationServicesInputForm: React.FC<
           error={form.errors.accountDetails}
         />
       </Box>
-    </ApiFormShell>
+      </ApiFormShell>
+    </>
   );
 };
 

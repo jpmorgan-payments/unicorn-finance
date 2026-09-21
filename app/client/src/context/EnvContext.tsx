@@ -4,7 +4,8 @@ import React, { createContext, useContext, useState, ReactNode } from "react";
 // PDP-aligned environment tiers, in graduation order:
 //   Local Mock - in-app MSW mock; offline, no credentials (the demo default)
 //   JPMC Mock  - PDP's hosted "Mock" environment (api-mock.payments.jpmorgan.com),
-//                reached with an OAuth2 client-credentials Bearer token
+//                reached with an OAuth2 client-credentials Bearer token. Global
+//                Payments has a Mock-shaped adapter; other beats don't yet.
 //   JPMC CAT   - Client Acceptance Testing; real integration via mTLS + signed JWT
 export enum Environment {
   LOCAL_MOCK = "LOCAL_MOCK",
@@ -28,7 +29,7 @@ export const ENVIRONMENT_META: Record<
   },
   [Environment.JPMC_MOCK]: {
     label: "JPMC Mock",
-    hint: "PDP Mock environment (api-mock) via OAuth2 client credentials. Not yet available - beats need a Mock-specific adapter first (see docs/NEXT-STEPS.md).",
+    hint: "PDP Mock environment (api-mock) via OAuth2 client credentials. Global Payments maps to /payment/v2/payments (Bearer added by the server proxy); other beats aren't wired up yet - see docs/NEXT-STEPS.md.",
   },
   [Environment.JPMC_CAT]: {
     label: "JPMC CAT",
@@ -41,15 +42,8 @@ export const ENVIRONMENT_META: Record<
 // setup in .env) to make them selectable.
 export const jpmcEnvsEnabled = import.meta.env.VITE_ENABLE_JPMC === "true";
 
-// JPMC Mock stays unavailable even with VITE_ENABLE_JPMC=true: the beats send
-// CAT-shaped requests (e.g. Global Payments' signed-body-JWT
-// /digitalSignature/payment/v2/payments) that api-mock's contract doesn't
-// accept (it expects plain-Bearer POST /api/v2/payments) - see
-// docs/NEXT-STEPS.md. Re-enable per beat once it has a Mock-specific adapter
-// and an end-to-end smoke test.
 export const isEnvSelectable = (env: Environment): boolean => {
   if (env === Environment.LOCAL_MOCK) return true;
-  if (env === Environment.JPMC_MOCK) return false;
   return jpmcEnvsEnabled;
 };
 
