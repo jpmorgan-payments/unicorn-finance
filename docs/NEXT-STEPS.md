@@ -13,15 +13,12 @@ per-beat contract detail lives in [`pdp-skills-mcp-gaps.md`](pdp-skills-mcp-gaps
       (`global_payments_2_0_22.yaml`), not Online Payments (card). `isEnvSelectable` no
       longer force-disables `JPMC_MOCK`; the other four beats show an in-UI
       `MockTierNotice` since they don't have a Mock adapter yet.
-- [ ] **End-to-end smoke test of JPMC Mock** once creds + connectivity are available:
-      1. Set `PDP_CLIENT_ID`/`PDP_CLIENT_SECRET` in `.env`, `VITE_ENABLE_JPMC=true`.
-      2. Run `app/server` (or `docker compose up`) and the client.
-      3. Switch to the JPMC Mock chip, submit a Global Payments payment.
-      4. Expect a real response from `api-mock.payments.jpmorgan.com` - confirms the
-         OAuth2 client-credentials -> Bearer -> api-mock round trip and the
-         `/payment/v2/payments` path/body.
-      5. If step 4 404s specifically on path, double check whether api-mock also serves
-         this at a different mount than the public gateway spec implies.
+- [x] **End-to-end smoke test of JPMC Mock** - confirmed: OAuth2 client-credentials ->
+      Bearer -> `POST /payment/v2/payments` on `api-mock.payments.jpmorgan.com` returns a
+      real `201 Created` with a `paymentId`. On a network requiring a corporate egress
+      proxy, this also needed a fix in `app/server` (see `app/server/README.md`'s
+      "mandatory corporate egress proxy" section + `app.js`) - opt-in via
+      `HTTP_PROXY`/`HTTPS_PROXY` env vars, no-op otherwise.
 - [ ] **Real `docker compose up`** on a network where Docker Hub is reachable (blocked on
       the JPMC network here; verified indirectly via the production build + SPA serve).
 - [ ] **Per-beat api-mock paths/shapes** for the remaining JPMC Mock beats (Account
