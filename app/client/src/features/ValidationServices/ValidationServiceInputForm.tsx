@@ -19,7 +19,6 @@ import {
 } from "./SubmitValidationServicesRequest";
 import { useEnv } from "../../context/EnvContext";
 import { useRequestPreview } from "../../context/RequestPreviewContext";
-import { MockTierNotice } from "../../components/MockTierNotice";
 import useSWRMutation from "swr/mutation";
 
 interface ValidationFormValues {
@@ -59,6 +58,7 @@ const ValidationServicesInputForm: React.FC<
   const getRequestData = () => {
     return generateAVSRequestData(
       url,
+      environment,
       form.values.validationType,
       form.values.accountDetails as AVSAccountDetails,
       false, // Use masked headers for preview
@@ -78,7 +78,11 @@ const ValidationServicesInputForm: React.FC<
     const requestData = getRequestData();
     const requestPayload = requestData.body;
 
-    const response = await trigger({ body: requestPayload });
+    const response = await trigger({
+      body: requestPayload,
+      environment,
+      profileName: values.validationType,
+    });
 
     // `trigger` rejects on error, so reaching here means the call succeeded
     onValidationComplete?.({
@@ -92,9 +96,7 @@ const ValidationServicesInputForm: React.FC<
   };
 
   return (
-    <>
-      <MockTierNotice environment={environment} />
-      <ApiFormShell
+    <ApiFormShell
       isMutating={isMutating}
       data={data}
       error={error}
@@ -161,8 +163,7 @@ const ValidationServicesInputForm: React.FC<
           error={form.errors.accountDetails}
         />
       </Box>
-      </ApiFormShell>
-    </>
+    </ApiFormShell>
   );
 };
 

@@ -19,14 +19,32 @@ per-beat contract detail lives in [`pdp-skills-mcp-gaps.md`](pdp-skills-mcp-gaps
       proxy, this also needed a fix in `app/server` (see `app/server/README.md`'s
       "mandatory corporate egress proxy" section + `app.js`) - opt-in via
       `HTTP_PROXY`/`HTTPS_PROXY` env vars, no-op otherwise.
+- [x] **Account Validation Mock-tier adapter**: confirmed live against `api-mock` -
+      `POST /tsapi/v2/validations/accounts` works, but the Mock tier's differentiator is
+      the `x-program-id` header (`VERIAUTH` vs `VERIAUTHUS`), not the `profileName` body
+      field CAT uses. `SubmitValidationServicesRequest.ts` now branches on `environment`
+      for headers; `x-client-id: CLIENTID` / `x-program-id-type: AVS` are the spec's own
+      public sandbox constants, not credentials. `MockTierNotice` dropped from this beat.
 - [ ] **Real `docker compose up`** on a network where Docker Hub is reachable (blocked on
       the JPMC network here; verified indirectly via the production build + SPA serve).
-- [ ] **Per-beat api-mock paths/shapes** for the remaining JPMC Mock beats (Account
-      Validation, FX, Transactions, Balances) - still CAT/gateway-shaped; each now shows an
-      explicit "not wired up" notice in the UI instead of silently 404ing.
-- [ ] **Confirm inferred contracts** with owners: FX Rate Sheet path/schema
-      (`/fxapi/v1/rate-sheets` vs `/fx/rate-sheet`; with the FX API owners) and
-      the public **Account Validation** path/schema.
+- [x] **FX Rate Sheet on JPMC Mock - confirmed unavailable.** The published spec
+      (`developer.payments.jpmorgan.com`) lists only PRODUCTION and CLIENT TESTING
+      (OAuth/MTLS) servers - no `MOCK` server entry at all, and both guessed Mock paths
+      (`/fxapi/v1/rate-sheets`, `/fx/rate-sheet`) 404 with "path...does not exist in the
+      specification". The real path is `GET /accounts/{accountId}/ratesheets/current`
+      (CAT/production only) - worth fixing in the CAT adapter later, but no Mock work
+      possible here. Leave `MockTierNotice` on this beat.
+- [x] **Account Balances on JPMC Mock - confirmed unavailable.** Same story: the
+      published spec lists no `MOCK` server (PRODUCTION/CLIENT TESTING OAuth+MTLS only),
+      and `POST /accessapi/balance` 404s the same way against `api-mock`. Leave
+      `MockTierNotice` on this beat. (This 404 was also masking a real client bug -
+      `SubmitAccountBalancesRequest.ts` didn't check `res.ok`, so this 404 rendered as
+      success data and crashed the whole app via the ErrorBoundary - fixed separately.)
+- [ ] **Transactions on JPMC Mock** - `GET /tsapi/v3/transactions` also 404s against
+      `api-mock` ("path...does not exist in the specification"), consistent with FX/
+      Balances, but no official spec checked yet to confirm there's truly no Mock server
+      (unlike FX/Balances, where the spec itself confirms it). Worth a quick check before
+      writing this off for good.
 - [ ] **Modernise JPMC CAT auth**: move from mTLS + body-signed JWT to the IDAnywhere
       signed-JWT client-assertion -> Bearer flow (align with the `jpm-oauth` skill).
 - [ ] **ESLint flat-config migration** - `pnpm lint` is broken on ESLint 9 (legacy
