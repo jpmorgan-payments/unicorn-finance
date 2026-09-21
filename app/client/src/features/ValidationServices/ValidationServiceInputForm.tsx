@@ -70,7 +70,7 @@ const ValidationServicesInputForm: React.FC<
   };
 
   const accountNumberOptions = exampleAccounts.map((example) => ({
-    label: `${example.label} (…${example.account.accountNumber}) — ${example.expectedOutcome}`,
+    label: `${example.label} (#${example.account.accountNumber}) — ${example.expectedOutcome}`,
     value: JSON.stringify(example.account),
   }));
 

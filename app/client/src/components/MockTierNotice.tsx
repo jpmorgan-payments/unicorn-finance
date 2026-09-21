@@ -3,10 +3,10 @@ import { Alert } from "@mantine/core";
 import { Environment } from "../context/EnvContext";
 
 /**
- * Shown on beats that don't have a JPMC Mock-tier request adapter yet (only
- * Global Payments does, mapped to /payment/v2/payments - see
- * docs/NEXT-STEPS.md). Without this, switching to JPMC Mock would silently
- * send these beats' CAT/gateway-shaped requests against api-mock and 404.
+ * Shown on beats with no JPMC Mock-tier adapter. Global Payments and Account
+ * Validation both have one now; FX doesn't because PDP offers no Mock server
+ * for it at all (confirmed via its own published spec - see
+ * docs/NEXT-STEPS.md), not because it's merely unwired.
  */
 export const MockTierNotice: React.FC<{ environment: Environment }> = ({
   environment,
@@ -15,8 +15,8 @@ export const MockTierNotice: React.FC<{ environment: Environment }> = ({
 
   return (
     <Alert color="yellow" variant="light" mb="md">
-      No JPMC Mock adapter for this beat yet - see docs/NEXT-STEPS.md. Use
-      Local Mock, or JPMC CAT if onboarded.
+      No JPMC Mock tier for this beat - see docs/NEXT-STEPS.md. Use Local
+      Mock instead.
     </Alert>
   );
 };

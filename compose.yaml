@@ -2,8 +2,8 @@
 #
 # Tier 1 (default) - offline, no credentials:
 #     docker compose up
-#   Serves the app at http://localhost:3000. All four beats (Global Payments,
-#   FX, Validation, Accounts/Transactions) run against the in-browser MSW mock.
+#   Serves the app at http://localhost:3000. All three beats (Global Payments,
+#   FX, Validation) run against the in-browser MSW mock.
 #
 # Tier 2 (++ real) - hit the real JPMorgan CAT/Mock sandbox (advanced):
 #     docker compose --profile real up
