@@ -93,7 +93,8 @@ const HomePage: React.FC = () => {
 
       <Text size="sm" c="dimmed" maw={760}>
         Everything here runs on <strong>Local Mock</strong> (offline, in this
-        app). When you are ready, onboard at{" "}
+        app) by default. When you're ready, it takes a few minutes to onboard
+        at{" "}
         <a
           href="https://developer.payments.jpmorgan.com"
           target="_blank"
@@ -102,7 +103,8 @@ const HomePage: React.FC = () => {
         >
           developer.payments.jpmorgan.com
         </a>{" "}
-        and switch the environment (top-left) to JPMC Mock or JPMC CAT.
+        and get your own keys - then switch the environment (top-left) to
+        JPMC Mock.
       </Text>
     </Stack>
   );
