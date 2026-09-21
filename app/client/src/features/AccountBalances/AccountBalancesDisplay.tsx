@@ -114,8 +114,7 @@ const AccountBalancesDisplay: React.FC = () => {
           </Container>
         )}
         {!error &&
-          accountBalanceData &&
-          accountBalanceData.accountList.map((account) => (
+          accountBalanceData?.accountList?.map((account) => (
             <AccountBalanceCard
               key={account.accountId}
               account={account}

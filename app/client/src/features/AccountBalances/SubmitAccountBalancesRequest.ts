@@ -1,3 +1,5 @@
+import { parseJsonResponse } from "../../utils/parseJsonResponse";
+
 export async function submitAccountBalancesRequest(url: string) {
   const res = await fetch(url, {
     method: "POST",
@@ -7,5 +9,5 @@ export async function submitAccountBalancesRequest(url: string) {
     },
   });
 
-  return res.json();
+  return parseJsonResponse(res, "Account balances request");
 }
