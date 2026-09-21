@@ -5,8 +5,10 @@ import React, { createContext, useContext, useState, ReactNode } from "react";
 //   Local Mock - in-app MSW mock; offline, no credentials (the demo default)
 //   JPMC Mock  - PDP's hosted "Mock" environment (api-mock.payments.jpmorgan.com),
 //                reached with an OAuth2 client-credentials Bearer token. Global
-//                Payments has a Mock-shaped adapter; other beats don't yet.
-//   JPMC CAT   - Client Acceptance Testing; real integration via mTLS + signed JWT
+//                Payments and Account Validation have a Mock-shaped adapter; FX
+//                doesn't (no Mock tier exists for it, per PDP's own spec).
+//   JPMC CAT   - Client Acceptance Testing; the last step before production,
+//                real integration via mTLS + signed JWT. Disabled for now.
 export enum Environment {
   LOCAL_MOCK = "LOCAL_MOCK",
   JPMC_MOCK = "JPMC_MOCK",
@@ -29,11 +31,11 @@ export const ENVIRONMENT_META: Record<
   },
   [Environment.JPMC_MOCK]: {
     label: "JPMC Mock",
-    hint: "PDP Mock environment (api-mock) via OAuth2 client credentials. Global Payments maps to /payment/v2/payments (Bearer added by the server proxy); other beats aren't wired up yet - see docs/NEXT-STEPS.md.",
+    hint: "PDP Mock environment (api-mock) via OAuth2 client credentials. Global Payments and Account Validation are wired up; FX isn't - PDP doesn't offer a Mock tier for it.",
   },
   [Environment.JPMC_CAT]: {
     label: "JPMC CAT",
-    hint: "Client Acceptance Testing - real integration via mTLS certs + signed JWT. Needs onboarding + the server.",
+    hint: "Client Acceptance Testing - the step between Mock and production, real integration via mTLS certs + signed JWT. Needs onboarding + the server. Disabled for now.",
   },
 };
 

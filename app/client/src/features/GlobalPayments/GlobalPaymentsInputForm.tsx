@@ -57,7 +57,7 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
       paymentType: paymentTypes[0].value as PaymentType,
       debtorAccountDetails: null,
       creditorAccountDetails: null,
-      amount: "100",
+      amount: "100000",
     },
     validate: {
       paymentType: (value) => (value ? null : "Please select a payment type"),

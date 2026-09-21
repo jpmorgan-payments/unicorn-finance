@@ -29,7 +29,7 @@ an app bug, just a first-load race with the service worker.
    only - not options in this form.)
 3. Debtor account: **UNICORN FINANCE - SAN JOSE**.
 4. Creditor account: **PALO ALTO ROBOTICS LLC**.
-5. Amount: defaults to `100` - bump it to `100000` for the story.
+5. Amount: defaults to `100000`, matching the story.
 6. Submit. Open **Preview Request** to show the live `POST
    /payment/v2/payments` body, including the auto-generated `endToEndId`
    (`UF<timestamp>`). There's no remittance/invoice field in this form - the
