@@ -4,7 +4,7 @@ import { useRequestPreview } from "../context/RequestPreviewContext";
 
 /**
  * Shared, environment-scoped API-call history used by the feature pages
- * (Payments, Validations, FX, Transactions). Persists to localStorage under a
+ * (Payments, Validations, FX). Persists to localStorage under a
  * per-environment key, exposes the row data for UnicornTable, and re-opens the
  * request/response drawer on row click.
  *

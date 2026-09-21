@@ -18,7 +18,6 @@ import ValidationsPage from "./pages/ValidationsPage";
 import FxPage from "./pages/FxPage";
 import { RequestPreviewDrawer } from "./components/RequestPreviewDrawer";
 import "@mantine/core/styles.css";
-import AccountsPage from "./pages/AccountPage";
 import { SecretGarageProvider } from "./context/SecretGarageContext";
 
 export const fetcher = (url: string) => fetch(url).then((r) => r.json());
@@ -72,7 +71,6 @@ function App() {
                   <Route path="payments" element={<PaymentsPage />} />
                   <Route path="fx" element={<FxPage />} />
                   <Route path="validations" element={<ValidationsPage />} />
-                  <Route path="accounts" element={<AccountsPage />} />
                 </Route>
               </Routes>
               <RequestPreviewDrawer />

@@ -4,9 +4,7 @@ A sample application showcasing J.P. Morgan Payments core external APIs. It is a
 clone-and-run demo: every call runs offline against a built-in mock, and the same code
 hits the real J.P. Morgan sandbox once you drop in your credentials.
 
-![Screenshot of Unicorn Finance Account page](account.png "Screenshot of Unicorn Finance")
-
-## The four beats
+## The three beats
 
 Each page takes you *behind* one API - what it does and how you call it.
 
@@ -15,7 +13,6 @@ Each page takes you *behind* one API - what it does and how you call it.
 | Reach | Payments | Global Payments 2 | Initiate a payment (RTP / ACH) across rails from one contract |
 | Speed | FX | FX Rate Sheet | Pull a real-time rate sheet - lockable (guaranteed) vs indicative rates |
 | Confidence | Validations | Account Validation | Verify an account before you pay it; confidence codes, not a yes/no |
-| Retrieve | Accounts | Balances + Transactions | The query side - balances and the transactions you've sent/received |
 
 ## Getting started (Tier 1 - offline, no credentials)
 
@@ -51,10 +48,9 @@ introduces the app and points you to the right API for what you're building.
 
 - **Environment switch** (left navbar): three tiers in graduation order - **Local Mock**
   (in-app, offline, no keys - the default), **JPMC Mock** (PDP's hosted Mock env, via
-  OAuth2), and **JPMC CAT** (real integration, mTLS certs). Both JPMC tiers stay
-  disabled until you configure them (see below), so nobody hits silent errors. On the
-  Mock tier, Global Payments hits the real `api-mock` contract; the other three beats
-  show an in-form notice since they don't have a Mock adapter yet.
+  OAuth2), and **JPMC CAT** (disabled for now). On the Mock tier, Global Payments and
+  Account Validation both hit the real `api-mock` contract; FX shows an in-form notice
+  since PDP doesn't offer a Mock tier for it at all.
 - **Request Preview drawer**: every form has a **Preview Request** button, and clicking a
   history row re-opens it - this is the "what API am I actually hitting" view, showing the
   exact endpoint, method, headers and body.
@@ -66,7 +62,7 @@ introduces the app and points you to the right API for what you're building.
 2. **Point your AI agent** (Copilot / Claude Code) at the public **pdp-skills** and
    **pdp-mcp** (github.com/jpmorgan-payments) - they teach it J.P. Morgan's OAuth and API
    contracts so it builds the integration with you. (Today these cover OAuth + Online
-   Payments + Checkout; skills for the four beats here are a tracked gap - see
+   Payments + Checkout; skills for the beats here are a tracked gap - see
    [`docs/pdp-skills-mcp-gaps.md`](docs/pdp-skills-mcp-gaps.md).)
 3. **Get your keys** - onboard at
    [developer.payments.jpmorgan.com](https://developer.payments.jpmorgan.com) and graduate
@@ -97,13 +93,11 @@ docker compose --profile real up   # or: cd app/server && pnpm install && pnpm s
 See `app/server/README.md` for details.
 
 > Status: **Local Mock** is the offline default. **JPMC Mock** is selectable behind
-> `VITE_ENABLE_JPMC` + your PDP creds - its server-side OAuth2 client-credentials token
-> exchange + `api-mock` Bearer proxy are wired, and **Global Payments** now sends the real
-> `/payment/v2/payments` request there (same contract as CAT, minus the signed JWT - the
-> proxy attaches the Bearer instead). Account Validation, FX, Transactions and Balances
-> don't have a Mock-tier adapter yet and say so in the UI when you switch tiers. No live
-> smoke test against `api-mock.payments.jpmorgan.com` has been run (no creds/connectivity
-> in dev) - see `docs/NEXT-STEPS.md`. **JPMC CAT** (mTLS certs + signed JWT) is wired.
+> `VITE_ENABLE_JPMC` + your PDP creds - **Global Payments** (`POST /payment/v2/payments`)
+> and **Account Validation** (`POST /tsapi/v2/validations/accounts`) are both confirmed
+> live against `api-mock.payments.jpmorgan.com`. **FX Rate Sheet** doesn't have a Mock
+> tier at all - PDP's own spec lists no `MOCK` server for it, only production/CAT - and
+> shows an in-UI notice. See `docs/NEXT-STEPS.md`. **JPMC CAT** is disabled for now.
 
 ## What's in this repo
 

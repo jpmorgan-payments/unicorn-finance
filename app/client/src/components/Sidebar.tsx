@@ -25,10 +25,6 @@ const links = [
     to: "/validations",
     label: "Validations",
   },
-  {
-    to: "/accounts",
-    label: "Accounts",
-  },
 ];
 
 export const Sidebar = () => {

@@ -1,11 +1,9 @@
 import { HttpResponse, http } from "msw";
 import { isChaosScenario, CHAOS_TRACKS, type ChaosScenario } from "./chaosScenarios";
-import accountBalanceMockedResponse from "./mockedJson/AccountBalances.json";
 import validationServicesACSResponse from "./mockedJson/ValidationServicesACS.json";
 import validationServicesAuthResponse from "./mockedJson/ValidationServicesAuth.json";
 import globalPaymentsResponse from "./mockedJson/GlobalPayments.json";
 import fxRateSheet from "./mockedJson/FXRateSheet.json";
-import transactionsMock from "./mockedJson/Transactions.json";
 const errorResponse = {
   errors: [
     {
@@ -130,16 +128,6 @@ export function advancePaymentStatus(paymentId: string) {
 
 // Define handlers that catch the corresponding requests and returns the mock data.
 export const handlers = [
-  http.post("/api/accessapi/balance", ({ request }) => {
-    const url = new URL(request.url);
-    const errorStatus = triggeredErrorStatus(url);
-    if (errorStatus !== null) {
-      return new HttpResponse(JSON.stringify(errorResponse), {
-        status: errorStatus,
-      });
-    }
-    return HttpResponse.json(accountBalanceMockedResponse, { status: 200 });
-  }),
   http.post(
     "/api/digitalSignature/payment/v2/payments",
     async ({ request }) => {
@@ -280,19 +268,6 @@ export const handlers = [
         },
         data,
       },
-      { status: 200 },
-    );
-  }),
-  http.get("/api/tsapi/v3/transactions", ({ request }) => {
-    const url = new URL(request.url);
-    const errorStatus = triggeredErrorStatus(url);
-    if (errorStatus !== null) {
-      return new HttpResponse(JSON.stringify(errorResponse), {
-        status: errorStatus,
-      });
-    }
-    return HttpResponse.json(
-      { transactions: transactionsMock },
       { status: 200 },
     );
   }),

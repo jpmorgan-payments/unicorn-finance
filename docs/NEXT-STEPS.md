@@ -11,8 +11,7 @@ per-beat contract detail lives in [`pdp-skills-mcp-gaps.md`](pdp-skills-mcp-gaps
       `/digitalSignature/payment/v2/payments`. Same body/contract on both tiers - this is
       wholesale Global Payments v2, matching the checked-in spec
       (`global_payments_2_0_22.yaml`), not Online Payments (card). `isEnvSelectable` no
-      longer force-disables `JPMC_MOCK`; the other four beats show an in-UI
-      `MockTierNotice` since they don't have a Mock adapter yet.
+      longer force-disables `JPMC_MOCK`.
 - [x] **End-to-end smoke test of JPMC Mock** - confirmed: OAuth2 client-credentials ->
       Bearer -> `POST /payment/v2/payments` on `api-mock.payments.jpmorgan.com` returns a
       real `201 Created` with a `paymentId`. On a network requiring a corporate egress
@@ -34,28 +33,22 @@ per-beat contract detail lives in [`pdp-skills-mcp-gaps.md`](pdp-skills-mcp-gaps
       specification". The real path is `GET /accounts/{accountId}/ratesheets/current`
       (CAT/production only) - worth fixing in the CAT adapter later, but no Mock work
       possible here. Leave `MockTierNotice` on this beat.
-- [x] **Account Balances on JPMC Mock - confirmed unavailable.** Same story: the
-      published spec lists no `MOCK` server (PRODUCTION/CLIENT TESTING OAuth+MTLS only),
-      and `POST /accessapi/balance` 404s the same way against `api-mock`. Leave
-      `MockTierNotice` on this beat. (This 404 was also masking a real client bug -
-      `SubmitAccountBalancesRequest.ts` didn't check `res.ok`, so this 404 rendered as
-      success data and crashed the whole app via the ErrorBoundary - fixed separately.)
-- [ ] **Transactions on JPMC Mock** - `GET /tsapi/v3/transactions` also 404s against
-      `api-mock` ("path...does not exist in the specification"), consistent with FX/
-      Balances, but no official spec checked yet to confirm there's truly no Mock server
-      (unlike FX/Balances, where the spec itself confirms it). Worth a quick check before
-      writing this off for good.
+- [x] **Dropped the Accounts beat (Balances + Transactions) from this app entirely** -
+      neither had a JPMC Mock tier (confirmed via each API's own published spec - no
+      `MOCK` server listed for either, matching the 404s both returned against
+      `api-mock`), and Balances' missing `res.ok` check meant that 404 silently crashed
+      the whole app via the ErrorBoundary. Removed `features/AccountBalances`,
+      `features/Transactions`, `pages/AccountPage.tsx`, the `/accounts` route/nav link/
+      Home tile, and the corresponding mock handlers + fixtures.
 - [ ] **Modernise JPMC CAT auth**: move from mTLS + body-signed JWT to the IDAnywhere
       signed-JWT client-assertion -> Bearer flow (align with the `jpm-oauth` skill).
 - [ ] **ESLint flat-config migration** - `pnpm lint` is broken on ESLint 9 (legacy
       `.eslintrc.js`).
-- [ ] Optional: FX / Transactions / Balances Prism specs + Caddy routes for server-side
-      mock-server parity (today those beats are MSW-only).
+- [ ] Optional: FX Prism spec + Caddy route for server-side mock-server parity (today
+      it's MSW-only).
 
 ### Code cleanups (from the review)
 
-- [ ] Extract a shared retrieve-display component - `TransactionsDisplay` duplicates
-      `AccountBalancesDisplay`'s SWR + loading/error/table scaffold.
 - [ ] Single source of truth for beat metadata (paths/labels) - currently repeated across
       `HomePage`, `Sidebar`, and `App` routes.
 - [ ] FX mock: `selectFXRates` falls back to the full multi-base sheet for an unknown base

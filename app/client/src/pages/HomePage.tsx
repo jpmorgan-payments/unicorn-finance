@@ -39,13 +39,6 @@ const BEATS: BeatCard[] = [
     description:
       "Know the account is right before you pay it - a confidence score, not a yes/no.",
   },
-  {
-    to: "/accounts",
-    api: "Balances & Transactions",
-    persona: "Treasury & ops reconciling what they've sent and received",
-    description:
-      "The query side - retrieve balances and transactions to reconcile activity.",
-  },
 ];
 
 const HomePage: React.FC = () => {
