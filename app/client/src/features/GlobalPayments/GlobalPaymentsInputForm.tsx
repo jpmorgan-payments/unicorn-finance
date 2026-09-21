@@ -1,5 +1,5 @@
-import React, { useMemo, useState } from "react";
-import { Stack, Button, Chip, Group, Box, Text, TextInput } from "@mantine/core";
+import React, { useMemo } from "react";
+import { Button, Group, Box, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import UnicornDropdown from "../../components/UnicornDropdown";
 import { ApiFormShell } from "../../components/ApiFormShell";
@@ -19,10 +19,10 @@ import {
   submitGlobalPaymentsRequest,
 } from "./SubmitGlobalPaymentsRequest";
 import { PaymentStatusPanel } from "./PaymentStatusPanel";
-import { CHAOS_SCENARIOS, type ChaosScenario } from "../../mocks/chaosScenarios";
 import useSWRMutation from "swr/mutation";
 import { Environment, useEnv } from "../../context/EnvContext";
 import { useRequestPreview } from "../../context/RequestPreviewContext";
+import { useDevOptions } from "./DevOptionsContext";
 
 interface GlobalPaymentsFormValues {
   paymentType: PaymentType;
@@ -44,8 +44,8 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
 
   // Play/Debug tracking mode and Chaos scenario are local-mock-only: the mock
   // server is what actually steps through (or diverts) the status lifecycle.
-  const [trackingMode, setTrackingMode] = useState<"play" | "debug">("play");
-  const [chaosScenario, setChaosScenario] = useState<ChaosScenario>("none");
+  // Controlled by the Developer options panel at the top of the page.
+  const { trackingMode, chaosScenario } = useDevOptions();
 
   const { trigger, data, error, isMutating, reset } = useSWRMutation(
     getGlobalPaymentsEndpoint(url, environment),
@@ -152,8 +152,10 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
       onPreview={handlePreviewRequest}
       previewDisabled={!form.isValid()}
       onReset={() => {
+        // "Make another payment" / "Try Again" just clear the result -
+        // keep the form values so a repeat payment doesn't mean re-filling
+        // every field. The idle Reset button (below) still clears the form.
         reset();
-        form.reset();
       }}
       resultActionLabel="Make another payment"
       successExtra={
@@ -168,62 +170,19 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
         ) : undefined
       }
       idleActions={
-        <Stack gap="sm">
-          {isLocalMock && (
-            <Stack gap={4}>
-              <Group gap="xs" align="center">
-                <Text size="xs" fw={500}>
-                  Tracking
-                </Text>
-                <Chip.Group
-                  multiple={false}
-                  value={trackingMode}
-                  onChange={(value) => setTrackingMode(value as "play" | "debug")}
-                >
-                  <Group gap={4}>
-                    <Chip value="play" size="xs">
-                      Play
-                    </Chip>
-                    <Chip value="debug" size="xs">
-                      Debug
-                    </Chip>
-                  </Group>
-                </Chip.Group>
-              </Group>
-              <Group gap="xs" align="center">
-                <Text size="xs" fw={500}>
-                  Chaos
-                </Text>
-                <Chip.Group
-                  multiple={false}
-                  value={chaosScenario}
-                  onChange={(value) => setChaosScenario(value as ChaosScenario)}
-                >
-                  <Group gap={4}>
-                    {CHAOS_SCENARIOS.map((scenario) => (
-                      <Chip key={scenario.value} value={scenario.value} size="xs">
-                        {scenario.label}
-                      </Chip>
-                    ))}
-                  </Group>
-                </Chip.Group>
-              </Group>
-            </Stack>
-          )}
-          <Group>
-            <Button type="button" variant="outline" onClick={() => form.reset()}>
-              Reset
-            </Button>
-            <Button
-              type="submit"
-              variant="filled"
-              disabled={!form.isValid()}
-              onClick={() => handleSubmit(form.values)}
-            >
-              Submit
-            </Button>
-          </Group>
-        </Stack>
+        <Group>
+          <Button type="button" variant="outline" onClick={() => form.reset()}>
+            Reset
+          </Button>
+          <Button
+            type="submit"
+            variant="filled"
+            disabled={!form.isValid()}
+            onClick={() => handleSubmit(form.values)}
+          >
+            Submit
+          </Button>
+        </Group>
       }
     >
       <Box>

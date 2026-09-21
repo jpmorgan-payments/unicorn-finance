@@ -73,7 +73,7 @@ export const ApiFormShell: React.FC<ApiFormShellProps> = ({
       <Box>
         <Stack gap="md">
           {children}
-          <Group justify="space-between" mt="md">
+          <Group justify="space-between" align="center" mt="lg">
             <PreviewRequestButton onClick={onPreview} disabled={previewDisabled} />
             {idleActions}
           </Group>

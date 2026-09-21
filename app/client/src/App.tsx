@@ -2,6 +2,7 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 import { EnvProvider } from "./context/EnvContext";
 import { RequestPreviewProvider } from "./context/RequestPreviewContext";
+import { DeveloperModeProvider } from "./context/DeveloperModeContext";
 import {
   MantineProvider,
   Button,
@@ -26,14 +27,20 @@ const theme = createTheme({
   components: {
     Button: Button.extend({
       classNames: (theme, params) => ({
-        root: `
-          ${params.variant === "filled" ? " !bg-gradient-to-r !from-pink-500 !to-red-500 !text-white !border-pink-500" : ""}
-          ${params.variant === "outline" ? "!border-pink-500  hover:!bg-pink-600 !text-pink-500" : ""}
-          ${params.variant === "light" ? "!bg-pink-50 !text-pink-600 !border-pink-200 hover:!bg-pink-100" : ""}
-          ${params.variant === "demo" ? "  !text-white !border-white !bg-transparent" : ""}
-
-          ${params.disabled ? "!opacity-50 !cursor-not-allowed !bg-gray-300 !text-gray-500 !border-gray-300" : ""}
-        `,
+        // Disabled state is exclusive of the variant colors below - both
+        // used `!important` on the same properties (bg/text/border), and
+        // which one visually won depended on Tailwind's generated stylesheet
+        // order, not this string's order. Emitting only one set at a time
+        // avoids that fight.
+        root: params.disabled
+          ? "!opacity-50 !cursor-not-allowed !bg-gray-300 !text-gray-500 !border-gray-300"
+          : `
+              ${params.variant === "filled" ? " !bg-gradient-to-r !from-pink-500 !to-red-500 !text-white !border-pink-500" : ""}
+              ${params.variant === "outline" ? "!border-pink-500  hover:!bg-pink-600 !text-pink-500" : ""}
+              ${params.variant === "light" ? "!bg-pink-50 !text-pink-600 !border-pink-200 hover:!bg-pink-100" : ""}
+              ${params.variant === "subtle" ? "!text-pink-600 !bg-transparent !border-transparent hover:!bg-pink-50" : ""}
+              ${params.variant === "demo" ? "  !text-white !border-white !bg-transparent" : ""}
+            `,
       }),
       defaultProps: {
         variant: "outline",
@@ -55,22 +62,24 @@ const theme = createTheme({
 function App() {
   return (
     <EnvProvider>
-      <RequestPreviewProvider>
-        <SecretGarageProvider>
-          <MantineProvider theme={theme}>
-            <Routes>
-              <Route path="/" element={<Layout />}>
-                <Route index element={<HomePage />} />
-                <Route path="payments" element={<PaymentsPage />} />
-                <Route path="fx" element={<FxPage />} />
-                <Route path="validations" element={<ValidationsPage />} />
-                <Route path="accounts" element={<AccountsPage />} />
-              </Route>
-            </Routes>
-            <RequestPreviewDrawer />
-          </MantineProvider>
-        </SecretGarageProvider>
-      </RequestPreviewProvider>
+      <DeveloperModeProvider>
+        <RequestPreviewProvider>
+          <SecretGarageProvider>
+            <MantineProvider theme={theme}>
+              <Routes>
+                <Route path="/" element={<Layout />}>
+                  <Route index element={<HomePage />} />
+                  <Route path="payments" element={<PaymentsPage />} />
+                  <Route path="fx" element={<FxPage />} />
+                  <Route path="validations" element={<ValidationsPage />} />
+                  <Route path="accounts" element={<AccountsPage />} />
+                </Route>
+              </Routes>
+              <RequestPreviewDrawer />
+            </MantineProvider>
+          </SecretGarageProvider>
+        </RequestPreviewProvider>
+      </DeveloperModeProvider>
     </EnvProvider>
   );
 }

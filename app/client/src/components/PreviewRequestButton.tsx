@@ -12,7 +12,7 @@ export const PreviewRequestButton = ({
   onClick: () => void;
   disabled?: boolean;
 }) => (
-  <Button variant="light" size="md" onClick={onClick} disabled={disabled}>
+  <Button variant="subtle" size="md" onClick={onClick} disabled={disabled}>
     Preview Request
   </Button>
 );

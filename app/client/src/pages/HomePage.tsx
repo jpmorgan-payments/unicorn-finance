@@ -1,9 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  Badge,
   Card,
-  Group,
   SimpleGrid,
   Stack,
   Text,
@@ -13,7 +11,6 @@ import { KonamiProgress } from "../components/KonamiProgress";
 
 interface BeatCard {
   to: string;
-  beat: string; // the dimension this API owns
   api: string;
   persona: string; // who actually uses it
   description: string;
@@ -23,15 +20,13 @@ interface BeatCard {
 const BEATS: BeatCard[] = [
   {
     to: "/payments",
-    beat: "Reach",
     api: "Global Payments",
-    persona: "Marketplaces paying out, payroll & supplier payments, PSPs embedding payouts",
+    persona: "Treasury desks, marketplaces paying out, payroll & supplier payments, PSPs embedding payouts",
     description:
       "Move money across rails worldwide from one API - RTP, ACH, wires, cross-border.",
   },
   {
     to: "/fx",
-    beat: "Speed",
     api: "FX Rate Sheet",
     persona: "Treasury desks and platforms pricing or settling in local currency",
     description:
@@ -39,7 +34,6 @@ const BEATS: BeatCard[] = [
   },
   {
     to: "/validations",
-    beat: "Confidence",
     api: "Account Validation",
     persona: "AP / procurement onboarding suppliers, Confirmation of Payee",
     description:
@@ -47,7 +41,6 @@ const BEATS: BeatCard[] = [
   },
   {
     to: "/accounts",
-    beat: "Retrieve",
     api: "Balances & Transactions",
     persona: "Treasury & ops reconciling what they've sent and received",
     description:
@@ -89,14 +82,9 @@ const HomePage: React.FC = () => {
               if (e.key === "Enter" || e.key === " ") navigate(b.to);
             }}
           >
-            <Group justify="space-between" mb="xs" wrap="nowrap">
-              <Text fw={600} size="lg">
-                {b.api}
-              </Text>
-              <Badge className="!bg-pink-100 !text-pink-500 !border-pink-500">
-                {b.beat}
-              </Badge>
-            </Group>
+            <Text fw={600} size="lg" mb="xs">
+              {b.api}
+            </Text>
             <Text size="sm" fw={500} mb={4}>
               For: {b.persona}
             </Text>

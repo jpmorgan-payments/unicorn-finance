@@ -44,6 +44,8 @@ export const jpmcEnvsEnabled = import.meta.env.VITE_ENABLE_JPMC === "true";
 
 export const isEnvSelectable = (env: Environment): boolean => {
   if (env === Environment.LOCAL_MOCK) return true;
+  // JPMC CAT disabled for now - re-enable once it's back in scope.
+  if (env === Environment.JPMC_CAT) return false;
   return jpmcEnvsEnabled;
 };
 

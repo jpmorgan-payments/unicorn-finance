@@ -5,6 +5,9 @@ import { UnicornTable } from "../components/UnicornTable";
 import { PaymentHistory } from "../features/GlobalPayments/GlobalPaymentTypes";
 import { PoweredBy } from "../components/PoweredBy";
 import { useApiHistory } from "../hooks/useApiHistory";
+import DeveloperModeToggle from "../components/DeveloperModeToggle";
+import { DevOptionsProvider } from "../features/GlobalPayments/DevOptionsContext";
+import { DevOptionsPanel } from "../features/GlobalPayments/DevOptionsPanel";
 
 const PaymentsPage: React.FC = () => {
   const { history, addEntry, clearHistory, handleRowClick, tableData } =
@@ -16,7 +19,7 @@ const PaymentsPage: React.FC = () => {
     ]);
 
   return (
-    <>
+    <DevOptionsProvider>
       <Group gap="xl" justify="space-between" align="center" wrap="wrap">
         <Title order={1}>Global Payments</Title>
         <PoweredBy
@@ -24,6 +27,8 @@ const PaymentsPage: React.FC = () => {
           apiUrl="https://developer.payments.jpmorgan.com/docs/treasury/global-payments/capabilities/global-payments-2"
         />
       </Group>
+      <DeveloperModeToggle />
+      <DevOptionsPanel />
       <Flex
         m="md"
         w={"100%"}
@@ -73,7 +78,7 @@ const PaymentsPage: React.FC = () => {
           )}
         </Stack>
       </Flex>
-    </>
+    </DevOptionsProvider>
   );
 };
 
