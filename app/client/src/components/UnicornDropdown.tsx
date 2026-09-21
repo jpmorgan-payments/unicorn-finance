@@ -23,7 +23,11 @@ const UnicornDropdown: React.FC<UnicornDropdownProps> = ({
   const combobox = useCombobox({
     onDropdownClose: () => combobox.resetSelectedOption(),
   });
-  const [displayValue, setDisplayValue] = React.useState(value || defaultValue);
+  const initialValue = value ?? defaultValue;
+  const [displayValue, setDisplayValue] = React.useState(
+    options.find((option) => option.value === initialValue)?.label ??
+      initialValue,
+  );
   return (
     <>
       <Combobox
