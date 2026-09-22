@@ -1,11 +1,31 @@
 const express = require('express');
 const fs = require('fs');
 const https = require('https');
+const { HttpsProxyAgent } = require('https-proxy-agent');
 const {
   createProxyMiddleware,
   responseInterceptor,
 } = require('http-proxy-middleware');
 require('dotenv').config();
+
+// NOT a standard requirement for this app - purely opt-in via env vars, for
+// contributors on a network with a mandatory corporate egress proxy (e.g. a
+// locked-down work laptop). On any network with normal internet access this
+// block is a no-op: outboundProxyUrl is null, outboundProxyAgent is
+// undefined, and JPMC Mock's proxy behaves exactly as before.
+//
+// Why it's here: http-proxy-middleware forwards over classic Node http/https
+// agents, which - unlike Node's built-in fetch with --use-env-proxy (see the
+// NODE_OPTIONS in package.json's start scripts) - never look at
+// HTTP_PROXY/HTTPS_PROXY on their own. On a network that requires an egress
+// proxy for the public internet (e.g. api-mock.payments.jpmorgan.com), that
+// silently hangs until the proxy times out rather than erroring. Build an
+// agent from the same env var curl already respects, only when one is set.
+const outboundProxyUrl =
+  process.env.HTTPS_PROXY || process.env.https_proxy || null;
+const outboundProxyAgent = outboundProxyUrl
+  ? new HttpsProxyAgent(outboundProxyUrl)
+  : undefined;
 const { gatherHttpsOptionsAsync } = require('./grabSecret');
 const { generateJWTJose } = require('./digitalSignature');
 
@@ -270,10 +290,8 @@ const getMockAccessToken = async () => {
 const mockProxy = createProxyMiddleware({
   target: PDP.API_MOCK,
   changeOrigin: true,
+  agent: outboundProxyAgent,
   on: {
-    proxyReq: (proxyReq, req) => {
-      proxyReq.setHeader('Authorization', `Bearer ${req.pdpAccessToken}`);
-    },
     proxyRes: (proxyRes) => {
       // api-mock rejected the token (revoked early, or clock skew). Drop it so
       // the next call mints a fresh one rather than reusing it until expiry.
@@ -300,7 +318,12 @@ const routeRequest = (splat) => {
 // /mockapi mount, and we forward <rest> to api-mock with a Bearer token.
 app.use('/mockapi', async (req, res, next) => {
   try {
-    req.pdpAccessToken = await getMockAccessToken();
+    // Set on the incoming request's headers (copied verbatim onto the
+    // outgoing proxy request) rather than in the `proxyReq` event - with the
+    // tunneling `agent` above, that event can fire after headers are already
+    // flushed, which throws ERR_HTTP_HEADERS_SENT.
+    const token = await getMockAccessToken();
+    req.headers.authorization = `Bearer ${token}`;
     mockProxy(req, res, next);
   } catch (error) {
     console.error('JPMC Mock proxy error:', error);

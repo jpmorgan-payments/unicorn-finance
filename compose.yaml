@@ -1,15 +1,16 @@
 # Unicorn Finance - clone-and-run "Payments Garage" demo.
 #
-# Tier 1 (default) - offline, no credentials:
 #     docker compose up
-#   Serves the app at http://localhost:3000. All four beats (Global Payments,
-#   FX, Validation, Accounts/Transactions) run against the in-browser MSW mock.
 #
-# Tier 2 (++ real) - hit the real JPMorgan CAT sandbox (advanced):
-#     docker compose --profile real up
-#   Also starts the express mTLS + signed-JWT proxy. Requires your client
-#   certificates mounted at ./certs and the client rebuilt with your keys in
-#   .env - see .env.example. The UI Mock/CAT switch then routes to the proxy.
+# Serves the app at http://localhost:3000 and starts the express proxy on :8082.
+#
+# Tier 1 (default) - offline, no credentials: nothing else to do. Every beat
+#   runs against the in-browser MSW mock; the proxy container is idle.
+#
+# Tier 2 (++ real) - hit the JPMC Mock sandbox: copy .env.example to .env at the
+#   repo root, set PDP_CLIENT_ID / PDP_CLIENT_SECRET and VITE_ENABLE_JPMC=true, then
+#   `docker compose up --build` (VITE_ENABLE_JPMC is baked into the client bundle).
+#   The JPMC CAT tier additionally needs your client certificates in ./certs.
 services:
   client:
     build:
@@ -27,17 +28,20 @@ services:
       - "3000:80"
 
   server:
-    profiles: ["real"]
     build:
       context: ./app/server
     ports:
       - "8082:8082"
     # .dockerignore excludes .env from the image, so PDP_CLIENT_ID/PDP_CLIENT_SECRET
-    # etc. (see .env.example) must be forwarded at runtime via env_file.
+    # etc. (see .env.example) must be forwarded at runtime via env_file. `required:
+    # false` (Compose 2.24+) keeps a fresh clone with no .env starting cleanly for the
+    # offline demo; the server only reads the credentials when a JPMC request arrives.
     env_file:
-      - .env
+      - path: .env
+        required: false
     environment:
       - NODE_ENV=development
     volumes:
-      # app.js reads certs from ../certs (i.e. /certs when cwd is /app).
+      # app.js reads certs from ../certs (i.e. /certs when cwd is /app). Only the CAT
+      # tier needs them; if ./certs is absent Docker creates an empty (gitignored) one.
       - ./certs:/certs:ro

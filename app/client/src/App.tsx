@@ -2,6 +2,7 @@ import React from "react";
 import { Route, Routes } from "react-router-dom";
 import { EnvProvider } from "./context/EnvContext";
 import { RequestPreviewProvider } from "./context/RequestPreviewContext";
+import { DeveloperModeProvider } from "./context/DeveloperModeContext";
 import {
   MantineProvider,
   Button,
@@ -20,7 +21,6 @@ import ValidationsPage from "./pages/ValidationsPage";
 import FxPage from "./pages/FxPage";
 import { RequestPreviewDrawer } from "./components/RequestPreviewDrawer";
 import "@mantine/core/styles.css";
-import AccountsPage from "./pages/AccountPage";
 import { SecretGarageProvider } from "./context/SecretGarageContext";
 
 export const fetcher = (url: string) => fetch(url).then((r) => r.json());
@@ -107,22 +107,23 @@ const theme = createTheme({
 function App() {
   return (
     <EnvProvider>
-      <RequestPreviewProvider>
-        <SecretGarageProvider>
-          <MantineProvider theme={theme} defaultColorScheme="auto">
-            <Routes>
-              <Route path="/" element={<Layout />}>
-                <Route index element={<HomePage />} />
-                <Route path="payments" element={<PaymentsPage />} />
-                <Route path="fx" element={<FxPage />} />
-                <Route path="validations" element={<ValidationsPage />} />
-                <Route path="accounts" element={<AccountsPage />} />
-              </Route>
-            </Routes>
-            <RequestPreviewDrawer />
-          </MantineProvider>
-        </SecretGarageProvider>
-      </RequestPreviewProvider>
+      <DeveloperModeProvider>
+        <RequestPreviewProvider>
+          <SecretGarageProvider>
+            <MantineProvider theme={theme} defaultColorScheme="auto">
+              <Routes>
+                <Route path="/" element={<Layout />}>
+                  <Route index element={<HomePage />} />
+                  <Route path="payments" element={<PaymentsPage />} />
+                  <Route path="fx" element={<FxPage />} />
+                  <Route path="validations" element={<ValidationsPage />} />
+                </Route>
+              </Routes>
+              <RequestPreviewDrawer />
+            </MantineProvider>
+          </SecretGarageProvider>
+        </RequestPreviewProvider>
+      </DeveloperModeProvider>
     </EnvProvider>
   );
 }

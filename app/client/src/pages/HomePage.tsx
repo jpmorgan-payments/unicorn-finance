@@ -27,7 +27,7 @@ const BEATS: BeatCard[] = [
     to: "/payments",
     beat: "Reach",
     api: "Global Payments",
-    persona: "Marketplaces paying out, payroll & supplier payments, PSPs embedding payouts",
+    persona: "Treasury desks, marketplaces paying out, payroll & supplier payments, PSPs embedding payouts",
     description:
       "Move money across rails worldwide from one API - RTP, ACH, wires, cross-border.",
   },
@@ -46,14 +46,6 @@ const BEATS: BeatCard[] = [
     persona: "AP / procurement onboarding suppliers, Confirmation of Payee",
     description:
       "Know the account is right before you pay it - a confidence score, not a yes/no.",
-  },
-  {
-    to: "/accounts",
-    beat: "Retrieve",
-    api: "Balances & Transactions",
-    persona: "Treasury & ops reconciling what they've sent and received",
-    description:
-      "The query side - retrieve balances and transactions to reconcile activity.",
   },
 ];
 
@@ -116,7 +108,8 @@ const HomePage: React.FC = () => {
 
       <Text size="sm" c="dimmed" maw={760}>
         Everything here runs on <strong>Local Mock</strong> (offline, in this
-        app). When you are ready, onboard at{" "}
+        app) by default. When you're ready, it takes a few minutes to onboard
+        at{" "}
         <Anchor
           href="https://developer.payments.jpmorgan.com"
           target="_blank"
@@ -127,7 +120,8 @@ const HomePage: React.FC = () => {
         >
           developer.payments.jpmorgan.com
         </Anchor>{" "}
-        and switch the environment (top-left) to JPMC Mock or JPMC CAT.
+        and get your own keys - then switch the environment (top-left) to
+        JPMC Mock.
       </Text>
     </Stack>
   );

@@ -1,14 +1,5 @@
-import React, { useMemo, useState } from "react";
-import {
-  Stack,
-  Button,
-  Chip,
-  Group,
-  Box,
-  Paper,
-  Text,
-  TextInput,
-} from "@mantine/core";
+import React, { useMemo } from "react";
+import { Button, Group, Box, TextInput } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import UnicornDropdown from "../../components/UnicornDropdown";
 import { ApiFormShell } from "../../components/ApiFormShell";
@@ -24,13 +15,14 @@ import {
 } from "./GlobalPaymentsConfig";
 import {
   generateGlobalPaymentsRequestData,
+  getGlobalPaymentsEndpoint,
   submitGlobalPaymentsRequest,
 } from "./SubmitGlobalPaymentsRequest";
 import { PaymentStatusPanel } from "./PaymentStatusPanel";
-import { CHAOS_SCENARIOS, type ChaosScenario } from "../../mocks/chaosScenarios";
 import useSWRMutation from "swr/mutation";
 import { Environment, useEnv } from "../../context/EnvContext";
 import { useRequestPreview } from "../../context/RequestPreviewContext";
+import { useDevOptions } from "./DevOptionsContext";
 
 interface GlobalPaymentsFormValues {
   paymentType: PaymentType;
@@ -52,11 +44,11 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
 
   // Play/Debug tracking mode and Chaos scenario are local-mock-only: the mock
   // server is what actually steps through (or diverts) the status lifecycle.
-  const [trackingMode, setTrackingMode] = useState<"play" | "debug">("play");
-  const [chaosScenario, setChaosScenario] = useState<ChaosScenario>("none");
+  // Controlled by the Developer options panel at the top of the page.
+  const { trackingMode, chaosScenario } = useDevOptions();
 
   const { trigger, data, error, isMutating, reset } = useSWRMutation(
-    `${url}/api/digitalSignature/payment/v2/payments`,
+    getGlobalPaymentsEndpoint(url, environment),
     submitGlobalPaymentsRequest,
   );
 
@@ -65,7 +57,7 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
       paymentType: paymentTypes[0].value as PaymentType,
       debtorAccountDetails: null,
       creditorAccountDetails: null,
-      amount: "100",
+      amount: "100000",
     },
     validate: {
       paymentType: (value) => (value ? null : "Please select a payment type"),
@@ -113,6 +105,7 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
   const getRequestData = () => {
     return generateGlobalPaymentsRequestData(
       url,
+      environment,
       form.values.amount,
       form.values.paymentType,
       form.values.debtorAccountDetails as AccountDetails,
@@ -161,14 +154,17 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
       onPreview={handlePreviewRequest}
       previewDisabled={!form.isValid()}
       onReset={() => {
+        // "Make another payment" / "Try Again" just clear the result -
+        // keep the form values so a repeat payment doesn't mean re-filling
+        // every field. The idle Reset button (below) still clears the form.
         reset();
-        form.reset();
       }}
       resultActionLabel="Make another payment"
       successExtra={
         data?.response?.paymentId ? (
           <PaymentStatusPanel
             url={url}
+            environment={environment}
             paymentId={data.response.paymentId}
             mode={isLocalMock ? trackingMode : "debug"}
             scenario={isLocalMock ? chaosScenario : "none"}
@@ -192,10 +188,7 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
       }
     >
       <Box>
-        <label
-          htmlFor="paymentType"
-          className="uf-field-label"
-        >
+        <label htmlFor="paymentType" className="uf-field-label">
           Payment Type *
         </label>
         <UnicornDropdown
@@ -207,10 +200,7 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
       </Box>
 
       <Box>
-        <label
-          htmlFor="debtorAccountDetails"
-          className="uf-field-label"
-        >
+        <label htmlFor="debtorAccountDetails" className="uf-field-label">
           Debtor Account * (From account)
         </label>
         <UnicornDropdown
@@ -232,10 +222,7 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
       </Box>
 
       <Box>
-        <label
-          htmlFor="accountNumber"
-          className="uf-field-label"
-        >
+        <label htmlFor="accountNumber" className="uf-field-label">
           Creditor Account * (To account)
         </label>
         <UnicornDropdown
@@ -257,10 +244,7 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
       </Box>
 
       <Box>
-        <label
-          htmlFor="amount"
-          className="uf-field-label"
-        >
+        <label htmlFor="amount" className="uf-field-label">
           Amount *
         </label>
         <TextInput
@@ -277,52 +261,6 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
           min="0"
         />
       </Box>
-
-      {isLocalMock && (
-        // Mock-only knobs: how status tracking plays out after submit, and
-        // which chaos scenario the mock server should inject.
-        <Paper className="uf-empty" radius="md" p="sm">
-          <Stack gap={8}>
-            <Group gap="sm" align="flex-start" wrap="nowrap">
-              <Text size="xs" fw={600} w={64} pt={4} style={{ flexShrink: 0 }}>
-                Tracking
-              </Text>
-              <Chip.Group
-                multiple={false}
-                value={trackingMode}
-                onChange={(value) => setTrackingMode(value as "play" | "debug")}
-              >
-                <Group gap={6} style={{ flex: 1 }}>
-                  <Chip value="play" size="xs">
-                    Play
-                  </Chip>
-                  <Chip value="debug" size="xs">
-                    Debug
-                  </Chip>
-                </Group>
-              </Chip.Group>
-            </Group>
-            <Group gap="sm" align="flex-start" wrap="nowrap">
-              <Text size="xs" fw={600} w={64} pt={4} style={{ flexShrink: 0 }}>
-                Chaos
-              </Text>
-              <Chip.Group
-                multiple={false}
-                value={chaosScenario}
-                onChange={(value) => setChaosScenario(value as ChaosScenario)}
-              >
-                <Group gap={6} style={{ flex: 1 }}>
-                  {CHAOS_SCENARIOS.map((scenario) => (
-                    <Chip key={scenario.value} value={scenario.value} size="xs">
-                      {scenario.label}
-                    </Chip>
-                  ))}
-                </Group>
-              </Chip.Group>
-            </Group>
-          </Stack>
-        </Paper>
-      )}
     </ApiFormShell>
   );
 };

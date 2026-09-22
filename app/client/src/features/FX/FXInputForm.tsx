@@ -12,6 +12,7 @@ import {
 } from "./SubmitFXRequest";
 import { useEnv } from "../../context/EnvContext";
 import { useRequestPreview } from "../../context/RequestPreviewContext";
+import { MockTierNotice } from "../../components/MockTierNotice";
 import useSWRMutation from "swr/mutation";
 
 interface FXFormValues {
@@ -24,7 +25,7 @@ interface FXInputFormProps {
 }
 
 const FXInputForm: React.FC<FXInputFormProps> = ({ onRateSheetComplete }) => {
-  const { url } = useEnv();
+  const { url, environment } = useEnv();
   const { openDrawer } = useRequestPreview();
 
   const { trigger, data, error, isMutating, reset } = useSWRMutation(
@@ -73,7 +74,9 @@ const FXInputForm: React.FC<FXInputFormProps> = ({ onRateSheetComplete }) => {
   };
 
   return (
-    <ApiFormShell
+    <>
+      <MockTierNotice environment={environment} />
+      <ApiFormShell
       isMutating={isMutating}
       data={data}
       error={error}
@@ -129,7 +132,8 @@ const FXInputForm: React.FC<FXInputFormProps> = ({ onRateSheetComplete }) => {
           error={form.errors.currency}
         />
       </Box>
-    </ApiFormShell>
+      </ApiFormShell>
+    </>
   );
 };
 

@@ -28,7 +28,6 @@ const links = [
   { to: "/payments", label: "Payments", icon: "payments" },
   { to: "/fx", label: "FX", icon: "currency_exchange" },
   { to: "/validations", label: "Validations", icon: "verified_user" },
-  { to: "/accounts", label: "Accounts", icon: "account_balance" },
 ];
 
 const NavIcon = ({ name }: { name: string }) => (

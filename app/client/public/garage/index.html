@@ -63,7 +63,7 @@
   .qr-big{background:#fff;border-radius:14px;padding:clamp(18px,2.6vw,26px) clamp(18px,2.6vw,26px) clamp(14px,2vw,20px);
     display:flex;flex-direction:column;align-items:center;gap:12px;
     box-shadow:0 16px 50px rgba(0,0,0,.55);}
-  .qr-big img{width:clamp(210px,27vw,320px);height:clamp(210px,27vw,320px);display:block;}
+  .qr-big img{width:clamp(80px,13vh,110px);height:clamp(80px,13vh,110px);display:block;}
   .qr-big span{font-family:"JetBrains Mono",monospace;font-weight:600;font-size:clamp(12px,1.15vw,15px);
     color:#160B2E;white-space:nowrap;}
 
@@ -593,41 +593,39 @@ providerResponse: { score: <span class="n">628</span>, <span class="hl">rag: "GR
 <div class="say">Verification: is it open and valid. Authentication: is it really theirs. <b>A boolean can't say "real, but not theirs" - that's why there isn't one.</b></div>`},
 
 /* 9b */ {bay:3, html:`
-<div class="eyebrow">BEHIND THE API &nbsp;·&nbsp; CONFIGURABLE PROFILES</div>
-<h2>Name your<br>own <em>profile</em>.</h2>
-<div class="bays" style="grid-template-columns:repeat(2,1fr)">
+<div class="eyebrow">BEHIND THE API &nbsp;·&nbsp; TIERED PROVIDERS</div>
+<h2>One call,<br>a stack of <em>providers</em>.</h2>
+<div class="bays" style="grid-template-columns:repeat(3,1fr)">
   <div class="baycard">
-    <span class="no">01</span><span class="nm">My High Value Profile</span>
-    <span class="d"><code>profileName: "MyHighValueProfile"</code></span>
-    <span class="d">Returns: verification + authentication + accountScore.</span>
+    <span class="no">01</span><span class="nm">Verification</span>
+    <span class="d">Is the account open and live. <code>provider: "JPMC_ACH"</code></span>
   </div>
   <div class="baycard">
-    <span class="no">02</span><span class="nm">My Low Value Profile</span>
-    <span class="d"><code>profileName: "MyLowValueProfile"</code></span>
-    <span class="d">Returns: verification only.</span>
+    <span class="no">02</span><span class="nm">Authentication</span>
+    <span class="d">Is it really theirs - a different provider weighs in. <code>provider: "EWS"</code></span>
+  </div>
+  <div class="baycard">
+    <span class="no">03</span><span class="nm">Confidence</span>
+    <span class="d">Not sure either way? A score, not a yes/no. <code>provider: "JPMC_BENE"</code></span>
   </div>
 </div>
-<div class="say">One API. <b>You name the profile, you decide what comes back.</b></div>`},
+<div class="say">Same request. <b>Verification, authentication, confidence - three questions, each with its own tier of providers behind it.</b></div>`},
 
-/* 14 */ {html:`
-<div class="eyebrow">BRING YOUR OWN CAR</div>
-<h2>Take it <em>home</em></h2>
-<div class="cols">
-<ul class="pts">
-<li><strong>Run the container.</strong> <code>docker compose up</code>, then localhost:3000. Real request and response shapes, no keys, no VPN.</li>
-<li><strong>Point your agent at pdp-skills and pdp-mcp.</strong> They teach Copilot or Claude Code our OAuth flow and API contracts, so it builds the integration alongside you.</li>
-<li><strong>Get your keys.</strong> developer.payments.jpmorgan.com, and graduate to tier two.</li>
-</ul>
-<div>
-<div class="say">Today the public skills cover OAuth, Online Payments and Checkout. Skills for these four bays are a tracked gap, written up in the repo.</div>
-<div class="say" style="margin-top:16px"><span class="uf">github.com/jpmorgan-payments</span></div>
-<div class="chequer"></div>
-</div>
-</div>`},
+/* 9c */ {bay:3, html:`
+<div class="eyebrow">ENOUGH SLIDES</div>
+<h1>Let's validate,<br><em>live</em>.</h1>
+<div class="rule"></div>
+<div class="say">Pick a profile, pick an account, send it. One of them comes back a real No Match.</div>`},
+
+/* 9d */ {bay:3, html:`
+<div class="eyebrow">CHECKPOINT &nbsp;·&nbsp; SHOW ME</div>
+<h1>Whoa …<br>who validated?</h1>
+<div class="rule"></div>
+<div class="say">Any profile, any account. If you've got codes back on your screen, hold it up.</div>`},
 
 /* 15 */ {html:`
 <div class="eyebrow">SAME PLACE YOU STARTED</div>
-<h1>Back to<br>Open Source.</h1>
+<h1 style="font-size:clamp(32px,5.5vw,72px)">Back to<br>Open Source.</h1>
 <div class="rule"></div>
 <div class="say">Unicorn Finance was one repo. <b>There's a lot more at github.com/jpmorgan-payments.</b></div>
 <div class="bays" style="grid-template-columns:repeat(4,1fr)">
@@ -638,6 +636,24 @@ providerResponse: { score: <span class="n">628</span>, <span class="hl">rag: "GR
 </div>
 <div style="display:flex;justify-content:center;margin-top:clamp(16px,2.4vh,26px)">
   <div class="qr-big"><img src="assets/org-qr.svg" alt="QR code to github.com/jpmorgan-payments"><span>github.com/jpmorgan-payments</span></div>
+</div>
+<div class="say" style="margin-top:16px">One more coin in the slot - <b>hit next for an extra life.</b></div>`},
+
+/* 16 */ {html:`
+<div class="eyebrow">BONUS STAGE &nbsp;·&nbsp; EXTRA LIFE</div>
+<h1>Get your<br>keys!</h1>
+<div class="rule"></div>
+<div class="say">Local Mock was the whole demo. For the real deal: <span class="uf">developer.payments.jpmorgan.com</span> - a client_id and client_secret, no certificates, and the same code now hits our hosted Mock sandbox.</div>
+<div class="term">
+  <div class="bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>unicorn-finance</span></div>
+  <div class="body">
+    <div class="cmd">cp .env.example .env</div>
+    <div class="out"># add PDP_CLIENT_ID / PDP_CLIENT_SECRET from the developer portal</div>
+    <div class="out"># set VITE_ENABLE_JPMC=true</div>
+    <div class="cmd">docker compose up --build</div>
+    <div class="out">building client…</div>
+    <div class="ok">✓ JPMC Mock unlocked at <span class="url">http://localhost:3000</span><span class="cur"></span></div>
+  </div>
 </div>`},
 
 ];

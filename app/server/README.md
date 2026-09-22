@@ -39,11 +39,24 @@ ask your technical implementation manager). Then:
 3. Run the client (`cd app/client && pnpm start`) and flip the UI switch to **CAT** - the
    client's `/cat-api` calls proxy to this server.
 
-Or run it in a container as the `real` profile (mounts `./certs` at `/certs`):
+Or run it in a container - it starts with a plain `docker compose up` (reads the root
+`.env`, mounts `./certs` at `/certs`):
 
 ```sh
-docker compose --profile real up
+docker compose up --build
 ```
+
+### On a network with a mandatory corporate egress proxy
+
+Not a standard requirement for this app - only relevant if outbound HTTPS from your
+machine has to go through a proxy (e.g. a locked-down corporate laptop) rather than
+straight to the internet. If that's you, and JPMC Mock/CAT calls hang until a timeout
+instead of erroring, it's because `HTTP_PROXY`/`HTTPS_PROXY` are set in your shell (curl
+respects them automatically) but Node's `fetch` and `http-proxy-middleware` don't by
+default. `app.js` and the `start`/`start:local` scripts already handle this for you when
+those env vars are present (`NODE_OPTIONS='--use-env-proxy'` for the OAuth token fetch,
+an explicit `HttpsProxyAgent` for the JPMC Mock proxy) - it's a no-op on any network
+without a proxy configured, so nothing to change if this doesn't apply to you.
 
 ## Deploying
 

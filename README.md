@@ -19,9 +19,7 @@ A sample application showcasing J.P. Morgan Payments core external APIs. It is a
 clone-and-run demo: every call runs offline against a built-in mock, and the same code
 hits the real J.P. Morgan sandbox once you drop in your credentials.
 
-![Screenshot of Unicorn Finance Account page](account.png "Screenshot of Unicorn Finance")
-
-## The four beats
+## The three beats
 
 Each page takes you *behind* one API - what it does and how you call it.
 
@@ -30,7 +28,6 @@ Each page takes you *behind* one API - what it does and how you call it.
 | Reach | Payments | Global Payments 2 | Initiate a payment (RTP / ACH) across rails from one contract |
 | Speed | FX | FX Rate Sheet | Pull a real-time rate sheet - lockable (guaranteed) vs indicative rates |
 | Confidence | Validations | Account Validation | Verify an account before you pay it; confidence codes, not a yes/no |
-| Retrieve | Accounts | Balances + Transactions | The query side - balances and the transactions you've sent/received |
 
 ## Getting started (Tier 1 - offline, no credentials)
 
@@ -57,17 +54,23 @@ pnpm install
 pnpm start
 ```
 
-That's the whole demo - all four beats work offline. It opens on a home screen that
+That's the whole demo - every beat works offline. It opens on a home screen that
 introduces the app and points you to the right API for what you're building.
 
 > Port 3000 already in use? Stop the other process or run `pnpm start -- --port 3001`.
+
+> **Bonus stage - get your keys!** Ready to leave the mock behind? Create a project at
+> [developer.payments.jpmorgan.com](https://developer.payments.jpmorgan.com) to get a
+> **client_id** and **client_secret**, then follow the checklist under **Tiers 2 & 3**
+> below to plug them in and switch the app onto the real JPMC Mock sandbox.
 
 ## Finding your way around
 
 - **Environment switch** (left navbar): three tiers in graduation order - **Local Mock**
   (in-app, offline, no keys - the default), **JPMC Mock** (PDP's hosted Mock env, via
-  OAuth2), and **JPMC CAT** (real integration, mTLS certs). The two JPMC tiers stay
-  disabled until you configure them (see below), so nobody hits silent errors.
+  OAuth2), and **JPMC CAT** (disabled for now). On the Mock tier, Global Payments and
+  Account Validation both hit the real `api-mock` contract; FX shows an in-form notice
+  since PDP doesn't offer a Mock tier for it at all.
 - **Request Preview drawer**: every form has a **Preview Request** button, and clicking a
   history row re-opens it - this is the "what API am I actually hitting" view, showing the
   exact endpoint, method, headers and body.
@@ -79,7 +82,7 @@ introduces the app and points you to the right API for what you're building.
 2. **Point your AI agent** (Copilot / Claude Code) at the public **pdp-skills** and
    **pdp-mcp** (github.com/jpmorgan-payments) - they teach it J.P. Morgan's OAuth and API
    contracts so it builds the integration with you. (Today these cover OAuth + Online
-   Payments + Checkout; skills for the four beats here are a tracked gap - see
+   Payments + Checkout; skills for the beats here are a tracked gap - see
    [`docs/pdp-skills-mcp-gaps.md`](docs/pdp-skills-mcp-gaps.md).)
 3. **Get your keys** - onboard at
    [developer.payments.jpmorgan.com](https://developer.payments.jpmorgan.com) and graduate
@@ -87,34 +90,50 @@ introduces the app and points you to the right API for what you're building.
 
 ## Tiers 2 & 3 (++ hit real JPMorgan APIs)
 
-Both JPMC tiers run through the express proxy in `app/server`, keep their secrets
-server-side, and stay **gated off in the UI until you set `VITE_ENABLE_JPMC=true`** (and
-rebuild the client). Copy `.env.example` to `.env` first.
+Both JPMC tiers run through the express proxy in `app/server` and keep their secrets
+server-side. To turn one on:
 
-- **JPMC Mock** - PDP's hosted Mock environment (`api-mock.payments.jpmorgan.com`).
-  Create a project on the [developer portal](https://developer.payments.jpmorgan.com), add
-  an API, and put its **client_id / client_secret** in `.env` (`PDP_CLIENT_ID` /
-  `PDP_CLIENT_SECRET`). The server exchanges them for an OAuth2 Bearer token
-  (`scope=jpm:payments:sandbox`) - no certificates, and the secret never reaches the
-  browser.
-- **JPMC CAT** - real Client Acceptance Testing via **mTLS certificates + a signed JWT**.
-  Put your certs in `./certs` (gitignored): `jpmc.key`, `jpmc.crt`,
-  `digital-signature/key.key`, plus your client/program IDs in `.env`.
+1. `cp .env.example .env` at the repo root.
+2. Set **`VITE_ENABLE_JPMC=true`** in `.env`. This is what unlocks JPMC Mock / JPMC CAT
+   in the environment switch - without it, both stay greyed out no matter what else you
+   configure.
+3. Add that tier's credentials to `.env`:
+   - **JPMC Mock** - PDP's hosted Mock environment (`api-mock.payments.jpmorgan.com`).
+     Create a project on the [developer portal](https://developer.payments.jpmorgan.com),
+     add an API, and put its **client_id / client_secret** in `.env` (`PDP_CLIENT_ID` /
+     `PDP_CLIENT_SECRET`). The server exchanges them for an OAuth2 Bearer token
+     (`scope=jpm:payments:sandbox`) - no certificates, and the secret never reaches the
+     browser.
+   - **JPMC CAT** - real Client Acceptance Testing via **mTLS certificates + a signed
+     JWT**. Put your certs in `./certs` (gitignored): `jpmc.key`, `jpmc.crt`,
+     `digital-signature/key.key`, plus your client/program IDs in `.env`.
+4. Rebuild and start everything:
 
-Then run the proxy alongside the client and pick the tier in the switch:
+   ```sh
+   docker compose up --build   # or: cd app/server && pnpm install && pnpm start:local
+   ```
 
-```sh
-docker compose --profile real up   # or: cd app/server && pnpm install && pnpm start:local
-```
+   `docker compose up` always starts the proxy (`server`, :8082) next to the client;
+   without a `.env` it just sits idle. `--build` matters here because `VITE_ENABLE_JPMC`
+   is baked into the client bundle at build time - skip it and the switch stays disabled
+   even with everything else set correctly. This needs Docker Compose 2.24+ (the `.env`
+   is optional).
+
+> **JPMC Mock is selectable but every request fails** with `"error": "JPMC Mock
+> unavailable", "message": "Mock tier not configured"`? `VITE_ENABLE_JPMC=true` made it
+> into the bundle, but `PDP_CLIENT_ID`/`PDP_CLIENT_SECRET` are missing or wrong - the
+> server only reads them when a JPMC Mock request comes in. Unlike the client flag,
+> credentials are read at container start, not baked into an image, so after editing
+> `.env` you only need `docker compose up -d` (no `--build`) to pick them up.
 
 See `app/server/README.md` for details.
 
-> Status: **Local Mock** is the offline default. **JPMC Mock** now has its server-side
-> OAuth2 client-credentials token exchange + `api-mock` Bearer proxy wired (gated behind
-> `VITE_ENABLE_JPMC` + your PDP creds); each beat's exact `api-mock` path/contract still
-> needs confirming per PDP product (today's paths mirror the CAT/gateway shapes, and
-> payments on CAT use a signed JWT rather than the Bearer+JSON the Mock tier expects).
-> **JPMC CAT** (mTLS certs + signed JWT) is wired.
+> Status: **Local Mock** is the offline default. **JPMC Mock** is selectable behind
+> `VITE_ENABLE_JPMC` + your PDP creds - **Global Payments** (`POST /payment/v2/payments`)
+> and **Account Validation** (`POST /tsapi/v2/validations/accounts`) are both confirmed
+> live against `api-mock.payments.jpmorgan.com`. **FX Rate Sheet** doesn't have a Mock
+> tier at all - PDP's own spec lists no `MOCK` server for it, only production/CAT - and
+> shows an in-UI notice. See `docs/NEXT-STEPS.md`. **JPMC CAT** is disabled for now.
 
 ## What's in this repo
 

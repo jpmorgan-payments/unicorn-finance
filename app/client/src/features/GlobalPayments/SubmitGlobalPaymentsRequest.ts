@@ -1,5 +1,20 @@
 import type { PartyDetails, AccountDetails } from "./GlobalPaymentTypes";
 import { parseJsonResponse } from "../../utils/parseJsonResponse";
+import { Environment } from "../../context/EnvContext";
+
+// JPMC CAT signs the request body and routes it through the digital-signature
+// service; JPMC Mock has no certs, so it hits the plain Global Payments v2
+// path directly and gets its Bearer token attached server-side (see the
+// /mockapi proxy in app/server/app.js) - same contract, same body, just no
+// signature wrapping.
+export function getGlobalPaymentsEndpoint(
+  url: string,
+  environment: Environment,
+) {
+  return environment === Environment.JPMC_MOCK
+    ? `${url}/api/payment/v2/payments`
+    : `${url}/api/digitalSignature/payment/v2/payments`;
+}
 
 function generateGlobalPaymentsRequestBody(
   amount: string,
@@ -27,6 +42,7 @@ function generateGlobalPaymentsRequestBody(
 
 export const generateGlobalPaymentsRequestData = (
   url: string,
+  environment: Environment,
   amount: string,
   paymentType: string,
   debtorDetails: AccountDetails,
@@ -37,7 +53,7 @@ export const generateGlobalPaymentsRequestData = (
   };
 
   return {
-    endpoint: `${url}/api/digitalSignature/payment/v2/payments`,
+    endpoint: getGlobalPaymentsEndpoint(url, environment),
     method: "POST",
     headers,
     body: generateGlobalPaymentsRequestBody(
@@ -80,9 +96,13 @@ export async function submitGlobalPaymentsRequest(
 }
 
 // GPI Payment Status Track and Trace - GET /payments/{paymentId}/status.
-export async function fetchPaymentStatus(baseUrl: string, paymentId: string) {
+export async function fetchPaymentStatus(
+  baseUrl: string,
+  paymentId: string,
+  environment: Environment,
+) {
   const res = await fetch(
-    `${baseUrl}/api/digitalSignature/payment/v2/payments/${paymentId}/status`,
+    `${getGlobalPaymentsEndpoint(baseUrl, environment)}/${paymentId}/status`,
   );
   return parseJsonResponse(res, "Payment status request");
 }

@@ -4,8 +4,8 @@ import { PreviewRequestButton } from "./PreviewRequestButton";
 import { JsonView } from "./JsonView";
 
 /**
- * Shared three-state shell for the feature forms (Payments, Validations, FX,
- * Transactions). Renders the loading overlay, the idle form (the caller's
+ * Shared three-state shell for the feature forms (Payments, Validations, FX).
+ * Renders the loading overlay, the idle form (the caller's
  * fields + a Preview button and the caller's action buttons), the success
  * result as pretty-printed JSON, and the error state - so every beat behaves
  * and looks identical and a new beat only supplies its fields.
