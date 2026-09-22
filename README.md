@@ -39,7 +39,7 @@ pnpm install
 pnpm start
 ```
 
-That's the whole demo - all four beats work offline. It opens on a home screen that
+That's the whole demo - every beat works offline. It opens on a home screen that
 introduces the app and points you to the right API for what you're building.
 
 > Port 3000 already in use? Stop the other process or run `pnpm start -- --port 3001`.

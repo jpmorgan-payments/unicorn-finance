@@ -607,7 +607,19 @@ providerResponse: { score: <span class="n">628</span>, <span class="hl">rag: "GR
     <span class="d">Returns: verification only.</span>
   </div>
 </div>
-<div class="say">One API. <b>You name the profile, you decide what comes back.</b></div>`},
+<div class="say">On your own onboarded account, <b>you name the profile, you decide what comes back.</b> This demo ships five ready-made ones - let's send one.</div>`},
+
+/* 9c */ {bay:3, html:`
+<div class="eyebrow">ENOUGH SLIDES</div>
+<h1>Let's validate,<br><em>live</em>.</h1>
+<div class="rule"></div>
+<div class="say">Pick a profile, pick an account, send it. One of them comes back a real No Match.</div>`},
+
+/* 9d */ {bay:3, html:`
+<div class="eyebrow">CHECKPOINT &nbsp;·&nbsp; SHOW ME</div>
+<h1>Whoa …<br>who validated?</h1>
+<div class="rule"></div>
+<div class="say">Any profile, any account. If you've got codes back on your screen, hold it up.</div>`},
 
 /* 14 */ {html:`
 <div class="eyebrow">BRING YOUR OWN CAR</div>
@@ -619,7 +631,7 @@ providerResponse: { score: <span class="n">628</span>, <span class="hl">rag: "GR
 <li><strong>Get your keys.</strong> developer.payments.jpmorgan.com, and graduate to tier two.</li>
 </ul>
 <div>
-<div class="say">Today the public skills cover OAuth, Online Payments and Checkout. Skills for these four bays are a tracked gap, written up in the repo.</div>
+<div class="say">Today the public skills cover OAuth, Online Payments and Checkout. Skills for these bays are a tracked gap, written up in the repo.</div>
 <div class="say" style="margin-top:16px"><span class="uf">github.com/jpmorgan-payments</span></div>
 <div class="chequer"></div>
 </div>
@@ -638,6 +650,23 @@ providerResponse: { score: <span class="n">628</span>, <span class="hl">rag: "GR
 </div>
 <div style="display:flex;justify-content:center;margin-top:clamp(16px,2.4vh,26px)">
   <div class="qr-big"><img src="assets/org-qr.svg" alt="QR code to github.com/jpmorgan-payments"><span>github.com/jpmorgan-payments</span></div>
+</div>`},
+
+/* 16 */ {html:`
+<div class="eyebrow">BONUS STAGE &nbsp;·&nbsp; EXTRA LIFE</div>
+<h1>Get your<br>keys!</h1>
+<div class="rule"></div>
+<div class="say">Local Mock was the whole demo. For the real deal: <span class="uf">developer.payments.jpmorgan.com</span> - a client_id and client_secret, no certificates, and the same code now hits our hosted Mock sandbox.</div>
+<div class="term">
+  <div class="bar"><i class="r"></i><i class="y"></i><i class="g"></i><span>unicorn-finance</span></div>
+  <div class="body">
+    <div class="cmd">cp .env.example .env</div>
+    <div class="out"># add PDP_CLIENT_ID / PDP_CLIENT_SECRET from the developer portal</div>
+    <div class="out"># set VITE_ENABLE_JPMC=true</div>
+    <div class="cmd">docker compose up --build</div>
+    <div class="out">building client…</div>
+    <div class="ok">✓ JPMC Mock unlocked at <span class="url">http://localhost:3000</span><span class="cur"></span></div>
+  </div>
 </div>`},
 
 ];
