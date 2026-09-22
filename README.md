@@ -84,11 +84,16 @@ rebuild the client). Copy `.env.example` to `.env` first.
   Put your certs in `./certs` (gitignored): `jpmc.key`, `jpmc.crt`,
   `digital-signature/key.key`, plus your client/program IDs in `.env`.
 
-Then run the proxy alongside the client and pick the tier in the switch:
+Then rebuild and start everything, and pick the tier in the switch:
 
 ```sh
-docker compose --profile real up   # or: cd app/server && pnpm install && pnpm start:local
+docker compose up --build   # or: cd app/server && pnpm install && pnpm start:local
 ```
+
+`docker compose up` always starts the proxy (`server`, :8082) next to the client; without
+a `.env` it just sits idle. `--build` matters the first time you set `VITE_ENABLE_JPMC`,
+because it is baked into the client bundle. This needs Docker Compose 2.24+ (the `.env`
+is optional).
 
 See `app/server/README.md` for details.
 

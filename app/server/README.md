@@ -39,10 +39,11 @@ ask your technical implementation manager). Then:
 3. Run the client (`cd app/client && pnpm start`) and flip the UI switch to **CAT** - the
    client's `/cat-api` calls proxy to this server.
 
-Or run it in a container as the `real` profile (mounts `./certs` at `/certs`):
+Or run it in a container - it starts with a plain `docker compose up` (reads the root
+`.env`, mounts `./certs` at `/certs`):
 
 ```sh
-docker compose --profile real up
+docker compose up --build
 ```
 
 ### On a network with a mandatory corporate egress proxy
