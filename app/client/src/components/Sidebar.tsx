@@ -1,90 +1,133 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
-import { Avatar, Image } from "@mantine/core";
+import { NavLink as RouterNavLink, useLocation } from "react-router-dom";
+import {
+  Anchor,
+  Avatar,
+  Box,
+  Divider,
+  Group,
+  Image,
+  NavLink,
+  ScrollArea,
+  Stack,
+  Text,
+  UnstyledButton,
+  useComputedColorScheme,
+} from "@mantine/core";
+import EnvironmentSwitcher from "./EnvironmentSwitcher";
 
 // Images
 import ufLogoLarge from "../images/uf-logo.svg";
+import ufLogoLargeDark from "../images/uf-logo-dark.svg";
 import unicornMark from "../images/unicorn-mark.svg";
 import github from "../images/github.png";
 
-// Navigation configuration
+// Navigation configuration (Material Icons Outlined glyph names)
 const links = [
-  {
-    to: "/",
-    label: "Home",
-  },
-  {
-    to: "/payments",
-    label: "Payments",
-  },
-  {
-    to: "/fx",
-    label: "FX",
-  },
-  {
-    to: "/validations",
-    label: "Validations",
-  },
+  { to: "/", label: "Home", icon: "home" },
+  { to: "/payments", label: "Payments", icon: "payments" },
+  { to: "/fx", label: "FX", icon: "currency_exchange" },
+  { to: "/validations", label: "Validations", icon: "verified_user" },
 ];
 
-export const Sidebar = () => {
-  return (
-    <div className="flex w-full flex-row items-center justify-between p-4 lg:flex-col lg:p-6">
-      <NavLink to="/" className="block">
-        <Image
-          src={ufLogoLarge}
-          alt="Unicorn Finance Logo"
-          className="w-20 lg:w-16"
-        />
-      </NavLink>
+const NavIcon = ({ name }: { name: string }) => (
+  <span className="material-icons-outlined" style={{ fontSize: 20 }} aria-hidden>
+    {name}
+  </span>
+);
 
-      {/* Navigation Links */}
-      <ul className="flex flex-row gap-4 lg:flex-col lg:gap-2 lg:mt-8">
-        {links.map((link) => (
-          <li key={link.to}>
+interface SidebarProps {
+  /** Called after a nav link is chosen - lets the mobile drawer close itself. */
+  onNavigate?: () => void;
+}
+
+export const Sidebar: React.FC<SidebarProps> = ({ onNavigate }) => {
+  const { pathname } = useLocation();
+  const colorScheme = useComputedColorScheme("light", {
+    getInitialValueInEffect: true,
+  });
+  const isActive = (to: string) =>
+    to === "/" ? pathname === "/" : pathname.startsWith(to);
+
+  return (
+    <Stack h="100%" gap={0}>
+      <Box px="md" pt="lg" pb="md">
+        <RouterNavLink to="/" onClick={onNavigate} style={{ display: "block" }}>
+          {/* Navy wordmark on light, white wordmark on dark. */}
+          <Image
+            src={colorScheme === "dark" ? ufLogoLargeDark : ufLogoLarge}
+            alt="Unicorn Finance Logo"
+            w={168}
+          />
+        </RouterNavLink>
+      </Box>
+
+      <Box px="md" pb="md">
+        <EnvironmentSwitcher />
+      </Box>
+
+      <Divider color="var(--uf-panel-border)" />
+
+      <ScrollArea style={{ flex: 1 }} py="sm" type="never">
+        <Stack gap={0}>
+          {links.map((link) => (
             <NavLink
+              key={link.to}
+              component={RouterNavLink}
               to={link.to}
               end={link.to === "/"}
-              className={({ isActive }) =>
-                `px-3 py-2 text-sm transition-colors hover:text-gray-900 lg:px-4 lg:py-3 lg:border-l-2 lg:border-transparent rounded-md ${
-                  isActive
-                    ? "text-gray-900 lg:border-pink-500 bg-pink-50 font-medium"
-                    : "text-gray-600 hover:bg-gray-50"
-                }`
-              }
-            >
-              {link.label}
-            </NavLink>
-          </li>
-        ))}
-      </ul>
+              label={link.label}
+              leftSection={<NavIcon name={link.icon} />}
+              active={isActive(link.to)}
+              onClick={onNavigate}
+              className="uf-nav-link"
+              variant="subtle"
+              color="pink"
+            />
+          ))}
+        </Stack>
+      </ScrollArea>
 
-      {/* Profile Section - Desktop Only */}
-      <div className="hidden lg:block lg:mt-auto lg:mb-4  bottom-0 absolute">
-        <a
+      <Divider color="var(--uf-panel-border)" />
+
+      <Stack gap="sm" px="md" py="md">
+        <Anchor
           href="https://github.com/jpmorgan-payments/unicorn-finance"
           target="_blank"
           rel="noreferrer"
-          className="flex items-center gap-2 text-xs text-gray-500 hover:text-gray-700 mb-4"
+          size="xs"
+          c="dimmed"
+          underline="hover"
         >
-          <span>Github</span>
-          <img className="w-5 h-5" src={github} alt="Github" />
-        </a>
+          <Group gap={6} wrap="nowrap">
+            <span>Github</span>
+            <img
+              src={github}
+              alt="Github"
+              width={16}
+              height={16}
+              className="dark:invert"
+            />
+          </Group>
+        </Anchor>
 
         {/* Failsafe: click the unicorn to jump straight to the Payments
             Garage presentation, in case the Konami code isn't landing. */}
-        <button
-          type="button"
+        <UnstyledButton
           onClick={() => {
             window.location.href = "/garage/index.html";
           }}
-          className="flex items-center gap-3 bg-transparent border-0 p-0 cursor-pointer text-left hover:opacity-80 transition-opacity"
           title="Start the presentation"
+          style={{ borderRadius: "var(--mantine-radius-md)" }}
         >
-          <Avatar src={unicornMark} alt="Unicorn avatar" size="md" />
-          <p className="text-sm font-medium text-gray-900">Business Unicorn</p>
-        </button>
-      </div>
-    </div>
+          <Group gap="sm" wrap="nowrap">
+            <Avatar src={unicornMark} alt="Unicorn avatar" size="md" radius="md" />
+            <Text size="sm" fw={600}>
+              Business Unicorn
+            </Text>
+          </Group>
+        </UnstyledButton>
+      </Stack>
+    </Stack>
   );
 };

@@ -1,4 +1,5 @@
 import React from "react";
+import { Anchor, Text } from "@mantine/core";
 
 export const PoweredBy = ({
   apiName,
@@ -7,13 +8,19 @@ export const PoweredBy = ({
   apiName: string;
   apiUrl: string;
 }) => (
-  <a
-    href={apiUrl}
-    target="_blank"
-    rel="noopener noreferrer"
-    className="text-gray-500 text-xs"
-  >
+  <Text size="xs" c="dimmed" style={{ whiteSpace: "nowrap" }}>
     Powered by{" "}
-    <strong style={{ textDecoration: "underline" }}>{apiName}</strong> →
-  </a>
+    <Anchor
+      href={apiUrl}
+      target="_blank"
+      rel="noopener noreferrer"
+      size="xs"
+      fw={600}
+      c="pink"
+      underline="always"
+    >
+      {apiName}
+    </Anchor>{" "}
+    →
+  </Text>
 );

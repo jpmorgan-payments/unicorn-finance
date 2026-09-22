@@ -1,6 +1,15 @@
 import React from "react";
-import { Drawer, Stack, Text, Code } from "@mantine/core";
+import { Badge, Code, Drawer, Group, Stack, Text } from "@mantine/core";
 import { useRequestPreview } from "../context/RequestPreviewContext";
+import { JsonView } from "./JsonView";
+
+const METHOD_COLOR: Record<string, string> = {
+  GET: "teal",
+  POST: "pink",
+  PUT: "orange",
+  PATCH: "orange",
+  DELETE: "red",
+};
 
 export const RequestPreviewDrawer: React.FC = () => {
   const { isDrawerOpen, requestData, responseData, closeDrawer } =
@@ -12,54 +21,59 @@ export const RequestPreviewDrawer: React.FC = () => {
       onClose={closeDrawer}
       title="Request Preview"
       position="right"
-      size="lg"
+      size="xl"
       overlayProps={{ backgroundOpacity: 0.5, blur: 4 }}
+      styles={{
+        title: { fontWeight: 600, fontSize: "var(--mantine-font-size-lg)" },
+        content: { maxWidth: "100vw" },
+      }}
     >
       {requestData && (
-        <Stack gap="md">
+        <Stack gap="lg">
           <div>
-            <Text size="sm" fw={500} mb="xs">
+            <Text size="sm" fw={600} mb={6}>
               API Endpoint:
             </Text>
-            <Code block>
-              {requestData.endpoint.replace("/cat-api", "").replace("/api", "")}
-            </Code>
+            <Group gap="sm" wrap="nowrap" align="flex-start">
+              <Badge
+                variant="light"
+                color={METHOD_COLOR[requestData.method] ?? "gray"}
+                radius="sm"
+                size="lg"
+                style={{ flexShrink: 0 }}
+              >
+                {requestData.method}
+              </Badge>
+              <Code block style={{ flex: 1, minWidth: 0 }}>
+                {requestData.endpoint.replace("/cat-api", "").replace("/api", "")}
+              </Code>
+            </Group>
           </div>
 
           <div>
-            <Text size="sm" fw={500} mb="xs">
+            <Text size="sm" fw={600} mb={6}>
               Request Method:
             </Text>
             <Code>{requestData.method}</Code>
           </div>
 
-          <div>
-            <Text size="sm" fw={500} mb="xs">
-              Headers:
-            </Text>
-            <Code block>{JSON.stringify(requestData.headers, null, 2)}</Code>
-          </div>
+          <JsonView title="Headers" data={requestData.headers} maxHeight={260} />
 
-          <div>
-            <Text size="sm" fw={500} mb="xs">
-              Request Body:
-            </Text>
-            {requestData.body ? (
-              <Code block>{JSON.stringify(requestData.body, null, 2)}</Code>
-            ) : (
+          {requestData.body ? (
+            <JsonView title="Request Body" data={requestData.body} />
+          ) : (
+            <div>
+              <Text size="sm" fw={600} mb={6}>
+                Request Body:
+              </Text>
               <Text c="dimmed" size="sm">
                 No request body available.
               </Text>
-            )}
-          </div>
-          {responseData && (
-            <div>
-              <Text size="sm" fw={500} mb="xs">
-                Response Body:
-              </Text>
-
-              <Code block>{JSON.stringify(responseData, null, 2)}</Code>
             </div>
+          )}
+
+          {responseData && (
+            <JsonView title="Response Body" data={responseData} maxHeight={560} />
           )}
         </Stack>
       )}

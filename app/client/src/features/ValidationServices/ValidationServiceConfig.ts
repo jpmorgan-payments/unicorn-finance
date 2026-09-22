@@ -46,9 +46,11 @@ export const EXAMPLE_ACCOUNTS: NamedExampleAccount[] = [
 ];
 
 // Account dropdown text: the example's name plus the exact account and bank
-// identifier the request will carry, e.g.
-//   "On file · Acct 4417 · ABA 021000021 — Expect: Match · GREEN"
-// `showOutcome` adds the scripted result, which only Local Mock honours.
+// identifier the request will carry, as the dropdown's two lines, e.g.
+//   "On file · Acct 4417 · ABA 021000021"
+//   "Expect: Match · GREEN"
+// `showOutcome` adds the scripted-result second line, which only Local Mock
+// honours (JPMC Mock and the Mock-only types ignore the account entirely).
 export const formatExampleAccountLabel = (
   { label, expectedOutcome, account }: NamedExampleAccount,
   showOutcome: boolean,
@@ -57,18 +59,11 @@ export const formatExampleAccountLabel = (
   const bank = `${clearingSystemId.idType} ${clearingSystemId.id}${
     postalAddress ? ` (${postalAddress.country})` : ""
   }`;
-  return `${label} · Acct ${account.accountNumber} · ${bank}${
-    showOutcome ? ` — ${expectedOutcome}` : ""
-  }`;
+  return {
+    label: `${label} · Acct ${account.accountNumber} · ${bank}`,
+    description: showOutcome ? expectedOutcome : undefined,
+  };
 };
-
-// UnicornDropdown shows the raw value when it matches no option, so only hand it
-// a value the current option list actually offers (e.g. not the US account that
-// was picked before switching to the non-US list).
-export const valueIfOffered = (
-  value: string,
-  options: { value: string }[],
-) => (options.some((o) => o.value === value) ? value : "");
 
 export const VALIDATION_TYPE_OPTIONS = [
   { label: "Verify and authenticate account", value: "authentication" },

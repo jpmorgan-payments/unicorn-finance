@@ -55,7 +55,7 @@ const StageTrack: React.FC<{ track: Stage[]; stepIndex: number }> = ({
     {track.map((stage, idx) => {
       const reached = idx <= stepIndex;
       const isCurrent = idx === stepIndex;
-      const color = reached ? STAGE_KIND_COLOR[stage.kind] : "#D1D5DB";
+      const color = reached ? STAGE_KIND_COLOR[stage.kind] : "var(--uf-panel-border)";
       return (
         <React.Fragment key={`${stage.paymentStatus}-${stage.paymentSubStatus}`}>
           {idx > 0 && (
@@ -64,7 +64,7 @@ const StageTrack: React.FC<{ track: Stage[]; stepIndex: number }> = ({
                 flex: 1,
                 height: 2,
                 marginTop: 7,
-                background: idx <= stepIndex ? STAGE_KIND_COLOR[track[idx - 1].kind] : "#E5E7EB",
+                background: idx <= stepIndex ? STAGE_KIND_COLOR[track[idx - 1].kind] : "var(--uf-panel-border)",
               }}
             />
           )}
@@ -74,7 +74,7 @@ const StageTrack: React.FC<{ track: Stage[]; stepIndex: number }> = ({
                 width: 16,
                 height: 16,
                 borderRadius: "50%",
-                background: reached ? color : "#fff",
+                background: reached ? color : "var(--uf-panel-bg)",
                 border: `2px solid ${color}`,
                 boxShadow: isCurrent ? `0 0 0 4px ${color}33` : undefined,
                 transition: "background .2s, border-color .2s",

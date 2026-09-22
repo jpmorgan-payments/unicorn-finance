@@ -14,7 +14,6 @@ import {
   formatExampleAccountLabel,
   getValidationTypeOptions,
   isMockOnlyValidationType,
-  valueIfOffered,
   ValidationType,
 } from "./ValidationServiceConfig";
 import {
@@ -103,7 +102,7 @@ const ValidationServicesInputForm: React.FC<
   const accountNumberOptions = (
     accountKind === "non-us" ? NON_US_EXAMPLE_ACCOUNTS : exampleAccounts
   ).map((example) => ({
-    label: formatExampleAccountLabel(example, showOutcome),
+    ...formatExampleAccountLabel(example, showOutcome),
     value: JSON.stringify(example.account),
   }));
 
@@ -159,16 +158,16 @@ const ValidationServicesInputForm: React.FC<
       <Box>
         <label
           htmlFor="validationType"
-          style={{ fontWeight: 500, marginBottom: "8px", display: "block" }}
+          className="uf-field-label"
         >
           Validation Type *
         </label>
         <UnicornDropdown
-          // UnicornDropdown keeps its own displayed label, so remount it when
-          // the environment (and with it the option list) changes.
+          // Remount on environment change so the combobox's own open/closed
+          // state resets along with the option list.
           key={environment}
           options={validationTypeOptions}
-          value={valueIfOffered(form.values.validationType, validationTypeOptions)}
+          value={form.values.validationType}
           onChange={(value) =>
             form.setFieldValue("validationType", value as ValidationType)
           }
@@ -179,21 +178,20 @@ const ValidationServicesInputForm: React.FC<
       <Box>
         <label
           htmlFor="accountNumber"
-          style={{ fontWeight: 500, marginBottom: "8px", display: "block" }}
+          className="uf-field-label"
         >
           Account to validate *
         </label>
         <UnicornDropdown
-          // Remount so the displayed label follows the swapped account list and
-          // the show/hide of the "Expect:" hint.
+          // Remount when the account list or "Expect:" visibility changes so
+          // the combobox's own open/closed state resets along with them.
           key={`${accountKind}-${showOutcome}`}
           options={accountNumberOptions}
-          value={valueIfOffered(
+          value={
             form.values.accountDetails
               ? JSON.stringify(form.values.accountDetails)
-              : "",
-            accountNumberOptions,
-          )}
+              : ""
+          }
           onChange={(value) => {
             const selectedAccount = value
               ? (JSON.parse(value) as AVSAccountDetails)

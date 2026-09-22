@@ -1,9 +1,12 @@
 import React from "react";
-import { Box, Flex, Group, Stack, Title } from "@mantine/core";
+import { Button, Grid, Stack } from "@mantine/core";
 import GlobalPaymentsInputForm from "../features/GlobalPayments/GlobalPaymentsInputForm";
 import { UnicornTable } from "../components/UnicornTable";
 import { PaymentHistory } from "../features/GlobalPayments/GlobalPaymentTypes";
 import { PoweredBy } from "../components/PoweredBy";
+import { PageHeader } from "../components/PageHeader";
+import { Panel } from "../components/Panel";
+import { EmptyState } from "../components/EmptyState";
 import { useApiHistory } from "../hooks/useApiHistory";
 import DeveloperModeToggle from "../components/DeveloperModeToggle";
 import { DevOptionsProvider } from "../features/GlobalPayments/DevOptionsContext";
@@ -20,64 +23,57 @@ const PaymentsPage: React.FC = () => {
 
   return (
     <DevOptionsProvider>
-      <Group gap="xl" justify="space-between" align="center" wrap="wrap">
-        <Title order={1}>Global Payments</Title>
-        <PoweredBy
-          apiName="Global Payments 2 API"
-          apiUrl="https://developer.payments.jpmorgan.com/docs/treasury/global-payments/capabilities/global-payments-2"
-        />
-      </Group>
-      <DeveloperModeToggle />
-      <DevOptionsPanel />
-      <Flex
-        m="md"
-        w={"100%"}
-        gap="md"
-        justify="space-between"
-        align="flex-start"
-        direction={{ base: "column", sm: "row" }}
-      >
-        <Stack align="stretch" justify="flex-start" flex={1}>
-          <Title order={4}>Submit a Payment</Title>
-          <GlobalPaymentsInputForm onPaymentComplete={addEntry} />
-        </Stack>
-
-        <Stack
-          className="lg:w-1/2"
-          justify="flex-start"
-          flex={1}
-          align="stretch"
-          mr={"md"}
-        >
-          <Group justify="space-between" mb="md">
-            <Title order={4}>Payment History</Title>
-            {history.length > 0 && (
-              <button
-                onClick={clearHistory}
-                className="text-sm text-gray-500 hover:text-gray-700"
-              >
-                Clear History
-              </button>
-            )}
-          </Group>
-          {history.length > 0 ? (
-            <UnicornTable
-              columns={["Request ID", "Account Number", "Payment Type", "Status"]}
-              data={tableData}
-              onRowClick={handleRowClick}
+      <Stack gap="lg">
+        <PageHeader
+          title="Global Payments"
+          aside={
+            <PoweredBy
+              apiName="Global Payments 2 API"
+              apiUrl="https://developer.payments.jpmorgan.com/docs/treasury/global-payments/capabilities/global-payments-2"
             />
-          ) : (
-            <Box
-              p="md"
-              style={{ backgroundColor: "#f8f9fa", borderRadius: "4px" }}
+          }
+        />
+        <DeveloperModeToggle />
+        <DevOptionsPanel />
+
+        <Grid gutter="lg" align="stretch">
+          <Grid.Col span={{ base: 12, md: 5 }}>
+            <Panel title="Submit a Payment">
+              <GlobalPaymentsInputForm onPaymentComplete={addEntry} />
+            </Panel>
+          </Grid.Col>
+
+          <Grid.Col span={{ base: 12, md: 7 }}>
+            <Panel
+              title="Payment History"
+              action={
+                history.length > 0 && (
+                  <Button
+                    variant="subtle"
+                    color="gray"
+                    size="compact-sm"
+                    onClick={clearHistory}
+                  >
+                    Clear History
+                  </Button>
+                )
+              }
             >
-              <p className="text-sm text-gray-500 text-center">
-                No payment requests yet. Submit a payment to see history here.
-              </p>
-            </Box>
-          )}
-        </Stack>
-      </Flex>
+              {history.length > 0 ? (
+                <UnicornTable
+                  columns={["Request ID", "Account Number", "Payment Type", "Status"]}
+                  data={tableData}
+                  onRowClick={handleRowClick}
+                />
+              ) : (
+                <EmptyState>
+                  No payment requests yet. Submit a payment to see history here.
+                </EmptyState>
+              )}
+            </Panel>
+          </Grid.Col>
+        </Grid>
+      </Stack>
     </DevOptionsProvider>
   );
 };

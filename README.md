@@ -1,5 +1,20 @@
 # Unicorn Finance
 
+## Disclaimer
+⚠️ Warning: Use at Your Own Risk ⚠️
+
+The code and instructions provided in this repository are intended for reference
+purposes only. The maintainers of this repository do not assume any responsibility
+for any issues, damages, or losses that may arise from the use of this code or
+instructions. By using this repository, you acknowledge that:
+
+* The code may not be stable or functional.
+* There are no guarantees regarding the performance, reliability, or suitability of
+  the code for any particular purpose.
+* You are solely responsible for any consequences resulting from the use of this code.
+* Please proceed with caution and ensure you understand the implications of using
+  this code in your projects.
+
 A sample application showcasing J.P. Morgan Payments core external APIs. It is a
 clone-and-run demo: every call runs offline against a built-in mock, and the same code
 hits the real J.P. Morgan sandbox once you drop in your credentials.

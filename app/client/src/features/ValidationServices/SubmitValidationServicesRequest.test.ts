@@ -10,7 +10,6 @@ import {
   isMockOnlyValidationType,
   MOCK_ONLY_VALIDATION_TYPES,
   NON_US_EXAMPLE_ACCOUNTS,
-  valueIfOffered,
   VALIDATION_TYPE_OPTIONS,
 } from "./ValidationServiceConfig";
 import { Environment } from "../../context/EnvContext";
@@ -160,46 +159,26 @@ describe("dropdown labels", () => {
     }
   });
 
-  it("account label shows the exact account and bank id that will be sent", () => {
-    expect(formatExampleAccountLabel(EXAMPLE_ACCOUNTS[0], false)).toBe(
-      "On file · Acct 4417 · ABA 021000021",
-    );
+  it("account label shows the exact account and bank id that will be sent, with no description by default", () => {
+    expect(formatExampleAccountLabel(EXAMPLE_ACCOUNTS[0], false)).toEqual({
+      label: "On file · Acct 4417 · ABA 021000021",
+      description: undefined,
+    });
   });
 
-  it("appends the scripted outcome only when asked (Local Mock)", () => {
-    expect(formatExampleAccountLabel(EXAMPLE_ACCOUNTS[0], true)).toBe(
-      "On file · Acct 4417 · ABA 021000021 — Expect: Match · GREEN",
-    );
-    expect(formatExampleAccountLabel(EXAMPLE_ACCOUNTS[1], true)).toContain(
+  it("adds the scripted outcome as a description only when asked (Local Mock)", () => {
+    expect(formatExampleAccountLabel(EXAMPLE_ACCOUNTS[0], true)).toEqual({
+      label: "On file · Acct 4417 · ABA 021000021",
+      description: "Expect: Match · GREEN",
+    });
+    expect(formatExampleAccountLabel(EXAMPLE_ACCOUNTS[1], true).description).toBe(
       "Expect: No Match · RED",
     );
   });
 
   it("names the SWIFT id and country for the non-US example", () => {
-    expect(formatExampleAccountLabel(NON_US_EXAMPLE_ACCOUNTS[0], false)).toBe(
+    expect(formatExampleAccountLabel(NON_US_EXAMPLE_ACCOUNTS[0], false).label).toBe(
       "Austria (IBAN) · Acct 12345 · SWIFT PARBDEFFZZZ (AT)",
     );
-  });
-});
-
-describe("valueIfOffered (regression: stale pick showed as raw JSON after switching to non-US)", () => {
-  const usValue = JSON.stringify(EXAMPLE_ACCOUNTS[0].account);
-  const nonUsOptions = NON_US_EXAMPLE_ACCOUNTS.map((e) => ({
-    value: JSON.stringify(e.account),
-  }));
-  const usOptions = EXAMPLE_ACCOUNTS.map((e) => ({
-    value: JSON.stringify(e.account),
-  }));
-
-  it("blanks a value the new option list does not offer", () => {
-    expect(valueIfOffered(usValue, nonUsOptions)).toBe("");
-  });
-
-  it("keeps a value that is still offered", () => {
-    expect(valueIfOffered(usValue, usOptions)).toBe(usValue);
-  });
-
-  it("passes an empty value through", () => {
-    expect(valueIfOffered("", usOptions)).toBe("");
   });
 });

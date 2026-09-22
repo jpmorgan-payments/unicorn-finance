@@ -91,12 +91,14 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
   }, [availableDebtorAccounts]);
 
   const debtorAccountOptions = availableDebtorAccounts.map((account) => ({
-    label: account.account.name + " - " + account.account.account.accountNumber,
+    label: account.account.name,
+    description: account.account.account.accountNumber,
     value: JSON.stringify(account),
   }));
 
   const creditorAccountOptions = availableCreditorAccounts.map((account) => ({
-    label: account.name + " - " + account.account.accountNumber,
+    label: account.name,
+    description: account.account.accountNumber,
     value: JSON.stringify(account),
   }));
 
@@ -170,7 +172,7 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
         ) : undefined
       }
       idleActions={
-        <Group>
+        <Group gap="sm">
           <Button type="button" variant="outline" onClick={() => form.reset()}>
             Reset
           </Button>
@@ -186,10 +188,7 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
       }
     >
       <Box>
-        <label
-          htmlFor="paymentType"
-          style={{ fontWeight: 500, marginBottom: "8px", display: "block" }}
-        >
+        <label htmlFor="paymentType" className="uf-field-label">
           Payment Type *
         </label>
         <UnicornDropdown
@@ -201,10 +200,7 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
       </Box>
 
       <Box>
-        <label
-          htmlFor="debtorAccountDetails"
-          style={{ fontWeight: 500, marginBottom: "8px", display: "block" }}
-        >
+        <label htmlFor="debtorAccountDetails" className="uf-field-label">
           Debtor Account * (From account)
         </label>
         <UnicornDropdown
@@ -226,10 +222,7 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
       </Box>
 
       <Box>
-        <label
-          htmlFor="accountNumber"
-          style={{ fontWeight: 500, marginBottom: "8px", display: "block" }}
-        >
+        <label htmlFor="accountNumber" className="uf-field-label">
           Creditor Account * (To account)
         </label>
         <UnicornDropdown
@@ -251,10 +244,7 @@ const GlobalPaymentsInputForm: React.FC<GlobalPaymentsInputFormProps> = ({
       </Box>
 
       <Box>
-        <label
-          htmlFor="amount"
-          style={{ fontWeight: 500, marginBottom: "8px", display: "block" }}
-        >
+        <label htmlFor="amount" className="uf-field-label">
           Amount *
         </label>
         <TextInput
