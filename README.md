@@ -70,30 +70,41 @@ introduces the app and points you to the right API for what you're building.
 
 ## Tiers 2 & 3 (++ hit real JPMorgan APIs)
 
-Both JPMC tiers run through the express proxy in `app/server`, keep their secrets
-server-side, and stay **gated off in the UI until you set `VITE_ENABLE_JPMC=true`** (and
-rebuild the client). Copy `.env.example` to `.env` first.
+Both JPMC tiers run through the express proxy in `app/server` and keep their secrets
+server-side. To turn one on:
 
-- **JPMC Mock** - PDP's hosted Mock environment (`api-mock.payments.jpmorgan.com`).
-  Create a project on the [developer portal](https://developer.payments.jpmorgan.com), add
-  an API, and put its **client_id / client_secret** in `.env` (`PDP_CLIENT_ID` /
-  `PDP_CLIENT_SECRET`). The server exchanges them for an OAuth2 Bearer token
-  (`scope=jpm:payments:sandbox`) - no certificates, and the secret never reaches the
-  browser.
-- **JPMC CAT** - real Client Acceptance Testing via **mTLS certificates + a signed JWT**.
-  Put your certs in `./certs` (gitignored): `jpmc.key`, `jpmc.crt`,
-  `digital-signature/key.key`, plus your client/program IDs in `.env`.
+1. `cp .env.example .env` at the repo root.
+2. Set **`VITE_ENABLE_JPMC=true`** in `.env`. This is what unlocks JPMC Mock / JPMC CAT
+   in the environment switch - without it, both stay greyed out no matter what else you
+   configure.
+3. Add that tier's credentials to `.env`:
+   - **JPMC Mock** - PDP's hosted Mock environment (`api-mock.payments.jpmorgan.com`).
+     Create a project on the [developer portal](https://developer.payments.jpmorgan.com),
+     add an API, and put its **client_id / client_secret** in `.env` (`PDP_CLIENT_ID` /
+     `PDP_CLIENT_SECRET`). The server exchanges them for an OAuth2 Bearer token
+     (`scope=jpm:payments:sandbox`) - no certificates, and the secret never reaches the
+     browser.
+   - **JPMC CAT** - real Client Acceptance Testing via **mTLS certificates + a signed
+     JWT**. Put your certs in `./certs` (gitignored): `jpmc.key`, `jpmc.crt`,
+     `digital-signature/key.key`, plus your client/program IDs in `.env`.
+4. Rebuild and start everything:
 
-Then rebuild and start everything, and pick the tier in the switch:
+   ```sh
+   docker compose up --build   # or: cd app/server && pnpm install && pnpm start:local
+   ```
 
-```sh
-docker compose up --build   # or: cd app/server && pnpm install && pnpm start:local
-```
+   `docker compose up` always starts the proxy (`server`, :8082) next to the client;
+   without a `.env` it just sits idle. `--build` matters here because `VITE_ENABLE_JPMC`
+   is baked into the client bundle at build time - skip it and the switch stays disabled
+   even with everything else set correctly. This needs Docker Compose 2.24+ (the `.env`
+   is optional).
 
-`docker compose up` always starts the proxy (`server`, :8082) next to the client; without
-a `.env` it just sits idle. `--build` matters the first time you set `VITE_ENABLE_JPMC`,
-because it is baked into the client bundle. This needs Docker Compose 2.24+ (the `.env`
-is optional).
+> **JPMC Mock is selectable but every request fails** with `"error": "JPMC Mock
+> unavailable", "message": "Mock tier not configured"`? `VITE_ENABLE_JPMC=true` made it
+> into the bundle, but `PDP_CLIENT_ID`/`PDP_CLIENT_SECRET` are missing or wrong - the
+> server only reads them when a JPMC Mock request comes in. Unlike the client flag,
+> credentials are read at container start, not baked into an image, so after editing
+> `.env` you only need `docker compose up -d` (no `--build`) to pick them up.
 
 See `app/server/README.md` for details.
 
