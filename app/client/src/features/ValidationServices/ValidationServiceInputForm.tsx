@@ -14,6 +14,7 @@ import {
   formatExampleAccountLabel,
   getValidationTypeOptions,
   isMockOnlyValidationType,
+  valueIfOffered,
   ValidationType,
 } from "./ValidationServiceConfig";
 import {
@@ -167,7 +168,7 @@ const ValidationServicesInputForm: React.FC<
           // the environment (and with it the option list) changes.
           key={environment}
           options={validationTypeOptions}
-          value={form.values.validationType}
+          value={valueIfOffered(form.values.validationType, validationTypeOptions)}
           onChange={(value) =>
             form.setFieldValue("validationType", value as ValidationType)
           }
@@ -187,11 +188,12 @@ const ValidationServicesInputForm: React.FC<
           // the show/hide of the "Expect:" hint.
           key={`${accountKind}-${showOutcome}`}
           options={accountNumberOptions}
-          value={
+          value={valueIfOffered(
             form.values.accountDetails
               ? JSON.stringify(form.values.accountDetails)
-              : ""
-          }
+              : "",
+            accountNumberOptions,
+          )}
           onChange={(value) => {
             const selectedAccount = value
               ? (JSON.parse(value) as AVSAccountDetails)

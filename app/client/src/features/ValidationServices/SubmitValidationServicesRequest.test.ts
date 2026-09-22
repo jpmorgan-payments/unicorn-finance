@@ -10,6 +10,7 @@ import {
   isMockOnlyValidationType,
   MOCK_ONLY_VALIDATION_TYPES,
   NON_US_EXAMPLE_ACCOUNTS,
+  valueIfOffered,
   VALIDATION_TYPE_OPTIONS,
 } from "./ValidationServiceConfig";
 import { Environment } from "../../context/EnvContext";
@@ -178,5 +179,27 @@ describe("dropdown labels", () => {
     expect(formatExampleAccountLabel(NON_US_EXAMPLE_ACCOUNTS[0], false)).toBe(
       "Austria (IBAN) · Acct 12345 · SWIFT PARBDEFFZZZ (AT)",
     );
+  });
+});
+
+describe("valueIfOffered (regression: stale pick showed as raw JSON after switching to non-US)", () => {
+  const usValue = JSON.stringify(EXAMPLE_ACCOUNTS[0].account);
+  const nonUsOptions = NON_US_EXAMPLE_ACCOUNTS.map((e) => ({
+    value: JSON.stringify(e.account),
+  }));
+  const usOptions = EXAMPLE_ACCOUNTS.map((e) => ({
+    value: JSON.stringify(e.account),
+  }));
+
+  it("blanks a value the new option list does not offer", () => {
+    expect(valueIfOffered(usValue, nonUsOptions)).toBe("");
+  });
+
+  it("keeps a value that is still offered", () => {
+    expect(valueIfOffered(usValue, usOptions)).toBe(usValue);
+  });
+
+  it("passes an empty value through", () => {
+    expect(valueIfOffered("", usOptions)).toBe("");
   });
 });

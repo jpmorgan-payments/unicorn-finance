@@ -62,6 +62,14 @@ export const formatExampleAccountLabel = (
   }`;
 };
 
+// UnicornDropdown shows the raw value when it matches no option, so only hand it
+// a value the current option list actually offers (e.g. not the US account that
+// was picked before switching to the non-US list).
+export const valueIfOffered = (
+  value: string,
+  options: { value: string }[],
+) => (options.some((o) => o.value === value) ? value : "");
+
 export const VALIDATION_TYPE_OPTIONS = [
   { label: "Verify and authenticate account", value: "authentication" },
   { label: "Account Confidence Score", value: "acs" },
