@@ -2,6 +2,7 @@ import { HttpResponse, http } from "msw";
 import { isChaosScenario, CHAOS_TRACKS, type ChaosScenario } from "./chaosScenarios";
 import validationServicesACSResponse from "./mockedJson/ValidationServicesACS.json";
 import validationServicesAuthResponse from "./mockedJson/ValidationServicesAuth.json";
+import validationServicesProgramResponses from "./mockedJson/ValidationServicesPrograms.json";
 import globalPaymentsResponse from "./mockedJson/GlobalPayments.json";
 import fxRateSheet from "./mockedJson/FXRateSheet.json";
 const errorResponse = {
@@ -20,6 +21,36 @@ const NAMED_VALIDATION_OUTCOMES: Record<string, { authIndex: number; acsIndex: n
   "4417|021000021": { authIndex: 0, acsIndex: 0 }, // "On file" - Ownership Match / GREEN
   "8825|121000248": { authIndex: 1, acsIndex: 1 }, // "Recent email" / "Today's invoice" - No Match / RED
 };
+
+/**
+ * Replay of what api-mock returns for the Mock-only validation programs, which it
+ * selects by the x-program-id header alone (the account you send is ignored).
+ * Returns null for any other program id so the account-driven handling below
+ * still applies. Pure + exported so it can be unit-tested.
+ */
+export type ValidationProgramResponse = {
+  requestId: string;
+  responses: Array<{
+    provider: string;
+    codes: Record<string, { code: number; message: string }>;
+    details?: unknown;
+  }>;
+};
+
+export function selectValidationProgramResponse(
+  programId: string | null,
+  requestId: string,
+): ValidationProgramResponse | null {
+  const canned = programId
+    ? (
+        validationServicesProgramResponses as unknown as Record<
+          string,
+          ValidationProgramResponse
+        >
+      )[programId]
+    : undefined;
+  return canned ? { ...canned, requestId } : null;
+}
 
 type FXRateRow = { baseCurrency: string; [key: string]: unknown };
 
@@ -214,6 +245,14 @@ export const handlers = [
       ? `${account.accountNumber}|${account.financialInstitutionId?.clearingSystemId?.id}`
       : "";
     const namedOutcome = NAMED_VALIDATION_OUTCOMES[accountKey];
+
+    const programResponse = selectValidationProgramResponse(
+      request.headers.get("x-program-id"),
+      requestId,
+    );
+    if (programResponse) {
+      return HttpResponse.json({ response: programResponse }, { status: 200 });
+    }
 
     if (isAuthProfile) {
       response = (

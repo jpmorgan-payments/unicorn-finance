@@ -4,8 +4,10 @@ import {
   triggeredErrorStatus,
   advancePaymentStatus,
   assignChaosScenario,
+  selectValidationProgramResponse,
 } from "./handlers";
 import fxRateSheet from "./mockedJson/FXRateSheet.json";
+import { MOCK_ONLY_VALIDATION_TYPES } from "../features/ValidationServices/ValidationServiceConfig";
 
 const sheet = fxRateSheet as Array<{ baseCurrency: string }>;
 
@@ -102,5 +104,40 @@ describe("advancePaymentStatus (GPI status lifecycle + chaos scenarios)", () => 
     expect(rejected.paymentStatus).toBe("REJECTED");
     expect(rejected.paymentSubStatus).toBe("FRAUD_HOLD");
     expect(advancePaymentStatus(paymentId).paymentStatus).toBe("REJECTED");
+  });
+});
+
+describe("selectValidationProgramResponse (Mock-only validation programs)", () => {
+  it("has a Local Mock response for every Mock-only program the UI offers", () => {
+    for (const { programId } of MOCK_ONLY_VALIDATION_TYPES) {
+      expect(selectValidationProgramResponse(programId, "r1")).not.toBeNull();
+    }
+  });
+
+  it("replays the codes api-mock returns for each program", () => {
+    const codes = (programId: string) =>
+      selectValidationProgramResponse(programId, "r1")?.responses.map((r) => [
+        r.provider,
+        ...Object.values(r.codes).map((c) => c.code),
+      ]);
+    expect(codes("VERIAUTHMULTI")).toEqual([
+      ["JPMC_ACH", 1001],
+      ["EWS", 6002],
+    ]);
+    expect(codes("VERIAUTHNONUS")).toEqual([["JPMC_LIINK_CONFIRM", 8904, 8904]]);
+    expect(codes("PROGRAMID")).toEqual([["MICRODEPOSITS", 8906]]);
+  });
+
+  it("stamps each call's requestId without mutating the shared fixture", () => {
+    const a = selectValidationProgramResponse("PROGRAMID", "first");
+    const b = selectValidationProgramResponse("PROGRAMID", "second");
+    expect(a?.requestId).toBe("first");
+    expect(b?.requestId).toBe("second");
+  });
+
+  it("returns null for other programs so account-driven handling still applies", () => {
+    expect(selectValidationProgramResponse("VERIAUTH", "r1")).toBeNull();
+    expect(selectValidationProgramResponse("VERIAUTHUS", "r1")).toBeNull();
+    expect(selectValidationProgramResponse(null, "r1")).toBeNull();
   });
 });

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Button, Group, Box } from "@mantine/core";
 import { useForm } from "@mantine/form";
 import UnicornDropdown from "../../components/UnicornDropdown";
@@ -10,14 +10,17 @@ import type {
 import type { NamedExampleAccount } from "./ValidationServiceConfig";
 import {
   EXAMPLE_ACCOUNTS,
-  VALIDATION_TYPE_OPTIONS,
+  NON_US_EXAMPLE_ACCOUNTS,
+  formatExampleAccountLabel,
+  getValidationTypeOptions,
+  isMockOnlyValidationType,
   ValidationType,
 } from "./ValidationServiceConfig";
 import {
   submitValidationServicesRequest,
   generateAVSRequestData,
 } from "./SubmitValidationServicesRequest";
-import { useEnv } from "../../context/EnvContext";
+import { Environment, useEnv } from "../../context/EnvContext";
 import { useRequestPreview } from "../../context/RequestPreviewContext";
 import useSWRMutation from "swr/mutation";
 
@@ -55,6 +58,27 @@ const ValidationServicesInputForm: React.FC<
     },
   });
 
+  // The type list depends on the environment (some types are mock-only), so drop
+  // a selection the new environment doesn't offer instead of sending it there.
+  const validationTypeOptions = getValidationTypeOptions(environment);
+  useEffect(() => {
+    if (
+      form.values.validationType &&
+      !validationTypeOptions.some((o) => o.value === form.values.validationType)
+    ) {
+      form.setFieldValue("validationType", "");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- rerun only when the environment changes
+  }, [environment]);
+
+  // Non-US validation needs an IBAN/SWIFT account, not the US ABA examples; swap
+  // the account list (and clear a now-invalid pick) when the type crosses over.
+  const accountKind = form.values.validationType === "non-us" ? "non-us" : "us";
+  useEffect(() => {
+    form.setFieldValue("accountDetails", null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- reset only when the list of accounts changes
+  }, [accountKind]);
+
   const getRequestData = () => {
     return generateAVSRequestData(
       url,
@@ -69,8 +93,16 @@ const ValidationServicesInputForm: React.FC<
     openDrawer(getRequestData(), null);
   };
 
-  const accountNumberOptions = exampleAccounts.map((example) => ({
-    label: `${example.label} (#${example.account.accountNumber}) — ${example.expectedOutcome}`,
+  // The "Expect:" result is scripted per account by Local Mock only. JPMC Mock
+  // ignores the account (its reply is keyed by the validation type), and the
+  // Mock-only types return a fixed response too, so a hint would mislead there.
+  const showOutcome =
+    environment === Environment.LOCAL_MOCK &&
+    !isMockOnlyValidationType(form.values.validationType);
+  const accountNumberOptions = (
+    accountKind === "non-us" ? NON_US_EXAMPLE_ACCOUNTS : exampleAccounts
+  ).map((example) => ({
+    label: formatExampleAccountLabel(example, showOutcome),
     value: JSON.stringify(example.account),
   }));
 
@@ -131,7 +163,10 @@ const ValidationServicesInputForm: React.FC<
           Validation Type *
         </label>
         <UnicornDropdown
-          options={VALIDATION_TYPE_OPTIONS}
+          // UnicornDropdown keeps its own displayed label, so remount it when
+          // the environment (and with it the option list) changes.
+          key={environment}
+          options={validationTypeOptions}
           value={form.values.validationType}
           onChange={(value) =>
             form.setFieldValue("validationType", value as ValidationType)
@@ -145,9 +180,12 @@ const ValidationServicesInputForm: React.FC<
           htmlFor="accountNumber"
           style={{ fontWeight: 500, marginBottom: "8px", display: "block" }}
         >
-          Account Number *
+          Account to validate *
         </label>
         <UnicornDropdown
+          // Remount so the displayed label follows the swapped account list and
+          // the show/hide of the "Expect:" hint.
+          key={`${accountKind}-${showOutcome}`}
           options={accountNumberOptions}
           value={
             form.values.accountDetails
