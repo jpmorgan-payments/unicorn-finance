@@ -44,6 +44,11 @@ introduces the app and points you to the right API for what you're building.
 
 > Port 3000 already in use? Stop the other process or run `pnpm start -- --port 3001`.
 
+> **Bonus stage - get your keys!** Ready to leave the mock behind? Create a project at
+> [developer.payments.jpmorgan.com](https://developer.payments.jpmorgan.com) to get a
+> **client_id** and **client_secret**, then follow the checklist under **Tiers 2 & 3**
+> below to plug them in and switch the app onto the real JPMC Mock sandbox.
+
 ## Finding your way around
 
 - **Environment switch** (left navbar): three tiers in graduation order - **Local Mock**
