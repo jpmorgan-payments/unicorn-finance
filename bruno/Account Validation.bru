@@ -1,5 +1,5 @@
 meta {
-  name: Account Validation (Trust)
+  name: Account Validation
   type: http
   seq: 4
 }
@@ -20,13 +20,10 @@ body:json {
       "requestId": "UF1756000001",
       "profileName": "authentication",
       "account": {
-        "accountNumber": "XXXX9821",
+        "accountNumber": "8825",
         "financialInstitutionId": {
           "clearingSystemId": { "id": "121000248", "idType": "ABA" }
         }
-      },
-      "entity": {
-        "organization": { "name": "Palo Alto Robotics LLC" }
       }
     }
   ]
@@ -37,7 +34,9 @@ docs {
   $1,000,000 payment goes out. Verification and authentication are asked as
   two separate questions - an account can be real (verification: Open Valid)
   without belonging to who you think (authentication: Ownership No Match).
-  See `app/client/src/mocks/mockedJson/ValidationServicesAuth.json` for both
-  the genuine-match and no-match Palo Alto-supplier examples this collection's
-  mock server returns.
+  This is the "Recent email" example from the Payments Garage deck's "same
+  supplier name, three accounts, only one matches" moment - see
+  `ValidationServiceConfig.ts`'s `EXAMPLE_ACCOUNTS` and
+  `app/client/src/mocks/mockedJson/ValidationServicesAuth.json` for the
+  genuine-match and no-match responses this collection's mock server returns.
 }

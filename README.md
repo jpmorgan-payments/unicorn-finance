@@ -23,11 +23,11 @@ hits the real J.P. Morgan sandbox once you drop in your credentials.
 
 Each page takes you *behind* one API - what it does and how you call it.
 
-| Beat | Page | API | What it shows |
-|---|---|---|---|
-| Reach | Payments | Global Payments 2 | Initiate a payment (RTP / ACH) across rails from one contract |
-| Speed | FX | FX Rate Sheet | Pull a real-time rate sheet - lockable (guaranteed) vs indicative rates |
-| Confidence | Validations | Account Validation | Verify an account before you pay it; confidence codes, not a yes/no |
+| Page | API | What it shows |
+|---|---|---|
+| Payments | Global Payments 2 | Initiate a payment (RTP / ACH) across rails from one contract |
+| FX | FX Rate Sheet | Pull a real-time rate sheet - lockable (guaranteed) vs indicative rates |
+| Validations | Account Validation | Verify an account before you pay it; confidence codes, not a yes/no |
 
 ## Getting started (Tier 1 - offline, no credentials)
 
@@ -58,6 +58,23 @@ That's the whole demo - every beat works offline. It opens on a home screen that
 introduces the app and points you to the right API for what you're building.
 
 > Port 3000 already in use? Stop the other process or run `pnpm start -- --port 3001`.
+
+### Run in a Docker Sandbox (experimental)
+
+`sbx-kit/` is a [Docker Sandboxes kit](https://docs.docker.com/ai/sandboxes/customize/kits/)
+that runs the same stack as `compose.yaml` inside an agent's sandbox: the client on :3000
+and the express proxy on :8082. From the repo root:
+
+```sh
+sbx run claude --kit ./sbx-kit .
+sbx ports <sandbox> --publish 3000:3000   # optional - sbx picks a host port otherwise
+```
+
+Tier 2 settings come from the same repo-root `.env`, or pass
+`--kit-arg enable_jpmc=true`. Build logs are in `/tmp/unicorn-finance-*.log` inside the
+sandbox. `sbx` needs Apple silicon on macOS, Linux with KVM, or Windows 11. See
+[Install Docker Sandboxes](https://docs.docker.com/ai/sandboxes/install/). This kit hasn't
+been tested against a live `sbx` yet, so issues and fixes are welcome.
 
 > **Bonus stage - get your keys!** Ready to leave the mock behind? Create a project at
 > [developer.payments.jpmorgan.com](https://developer.payments.jpmorgan.com) to get a
