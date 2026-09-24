@@ -23,11 +23,11 @@ hits the real J.P. Morgan sandbox once you drop in your credentials.
 
 Each page takes you *behind* one API - what it does and how you call it.
 
-| Beat | Page | API | What it shows |
-|---|---|---|---|
-| Reach | Payments | Global Payments 2 | Initiate a payment (RTP / ACH) across rails from one contract |
-| Speed | FX | FX Rate Sheet | Pull a real-time rate sheet - lockable (guaranteed) vs indicative rates |
-| Confidence | Validations | Account Validation | Verify an account before you pay it; confidence codes, not a yes/no |
+| Page | API | What it shows |
+|---|---|---|
+| Payments | Global Payments 2 | Initiate a payment (RTP / ACH) across rails from one contract |
+| FX | FX Rate Sheet | Pull a real-time rate sheet - lockable (guaranteed) vs indicative rates |
+| Validations | Account Validation | Verify an account before you pay it; confidence codes, not a yes/no |
 
 ## Getting started (Tier 1 - offline, no credentials)
 
