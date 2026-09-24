@@ -1,0 +1,34 @@
+# Unicorn Finance - Docker Sandboxes environment. The sbx equivalent of `docker compose up`.
+#
+#     sbx env run -d .                        # Tier 1: offline, in-browser MSW mock
+#     sbx env run -d . --env-arg jpmc=true    # Tier 2: unlock the JPMC Mock / CAT tiers
+#     sbx env exec . -- tail -f /tmp/unicorn-finance-client.log
+#     sbx env rm .
+#
+# Serves the client on http://localhost:3000 and the express proxy on :8082, like compose.
+# Build, startup and the network allow-list live in ./sbx-kit/spec.yaml. Tier 2 credentials
+# still come from the repo-root .env (see .env.example), exactly as compose reads them.
+schemaVersion: "1"
+name: unicorn-finance
+# No AI agent needed to serve the demo; swap for `claude` to work on the code in the sandbox.
+agent: shell
+workspace: .
+
+args:
+  jpmc:
+    # Empty falls through to VITE_ENABLE_JPMC in the repo-root .env, then false.
+    default: ""
+    pattern: "(true|false)?"
+    description: Unlock the JPMC Mock / JPMC CAT tiers (compose's VITE_ENABLE_JPMC)
+
+kits:
+  - source: ./sbx-kit
+    args:
+      enable_jpmc: ${{ env.args.jpmc }}
+
+# compose `ports`
+ports:
+  - sandbox: 3000
+    host: 3000
+  - sandbox: 8082
+    host: 8082
