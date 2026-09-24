@@ -59,6 +59,23 @@ introduces the app and points you to the right API for what you're building.
 
 > Port 3000 already in use? Stop the other process or run `pnpm start -- --port 3001`.
 
+### Run in a Docker Sandbox (experimental)
+
+`sbx-kit/` is a [Docker Sandboxes kit](https://docs.docker.com/ai/sandboxes/customize/kits/)
+that runs the same stack as `compose.yaml` inside an agent's sandbox: the client on :3000
+and the express proxy on :8082. From the repo root:
+
+```sh
+sbx run claude --kit ./sbx-kit .
+sbx ports <sandbox> --publish 3000:3000   # optional - sbx picks a host port otherwise
+```
+
+Tier 2 settings come from the same repo-root `.env`, or pass
+`--kit-arg enable_jpmc=true`. Build logs are in `/tmp/unicorn-finance-*.log` inside the
+sandbox. `sbx` needs Apple silicon on macOS, Linux with KVM, or Windows 11. See
+[Install Docker Sandboxes](https://docs.docker.com/ai/sandboxes/install/). This kit hasn't
+been tested against a live `sbx` yet, so issues and fixes are welcome.
+
 > **Bonus stage - get your keys!** Ready to leave the mock behind? Create a project at
 > [developer.payments.jpmorgan.com](https://developer.payments.jpmorgan.com) to get a
 > **client_id** and **client_secret**, then follow the checklist under **Tiers 2 & 3**
