@@ -1,8 +1,0 @@
-tailwind.config.js
-node_modules
-cypress
-cypress.config.js
-build
-env.d.ts
-dist/
-.eslintrc.js

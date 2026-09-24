@@ -71,5 +71,10 @@
     "workerDirectory": [
       "public"
     ]
+  },
+  "pnpm": {
+    "overrides": {
+      "minimatch@9.0.3": "^9.0.9"
+    }
   }
 }
