@@ -1,0 +1,33 @@
+# Dependencies
+node_modules
+
+
+# Testing
+coverage
+
+# Misc
+.DS_Store
+.eslintcache
+
+# Editors
+.idea
+*.iml
+.vscode
+*.icloud
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+dist
+.env.*
+.env
+!.env.example
+build
+certs
+archive.zip
+body.js
+*.zip
+lambda-function
+lambda-layer

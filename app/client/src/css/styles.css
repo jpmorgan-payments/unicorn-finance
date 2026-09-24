@@ -1,0 +1,426 @@
+@import "tailwindcss";
+
+/* Let Tailwind's `dark:` variant follow Mantine's color-scheme attribute
+   instead of the OS media query, so the header toggle drives both. */
+@custom-variant dark (&:where([data-mantine-color-scheme="dark"], [data-mantine-color-scheme="dark"] *));
+
+/* ---------------------------------------------------------------------------
+   Unicorn Finance design tokens
+   The signature pink (#ec4899 -> #ef4444 gradient) is the brand accent and is
+   the same in both schemes. Everything else is a neutral surface token that
+   flips under [data-mantine-color-scheme="dark"].
+   ------------------------------------------------------------------------- */
+:root {
+  --uf-pink: #ec4899;
+  --uf-pink-deep: #db2777;
+  --uf-red: #ef4444;
+  --uf-gradient: linear-gradient(90deg, var(--uf-pink) 0%, var(--uf-red) 100%);
+  --uf-navy: #0b1f3a; /* from the logo mark */
+
+  /* Demo banner - a deeper teal than before for AA contrast with white text */
+  --uf-demo-bg: #14846c;
+  --uf-demo-bg-end: #1a9a7e;
+
+  --uf-app-bg: #f6f7f9;
+  --uf-panel-bg: #ffffff;
+  --uf-panel-border: var(--mantine-color-gray-2);
+  --uf-pink-tint: #fdf2f8;
+  --uf-pink-tint-strong: #fce7f3;
+  --uf-muted: var(--mantine-color-gray-6);
+  --uf-shadow: 0 1px 2px rgba(11, 31, 58, 0.04), 0 4px 16px rgba(11, 31, 58, 0.06);
+  --uf-shadow-hover: 0 2px 4px rgba(11, 31, 58, 0.06), 0 12px 32px rgba(236, 72, 153, 0.12);
+}
+
+[data-mantine-color-scheme="dark"] {
+  --uf-demo-bg: #0f5f4f;
+  --uf-demo-bg-end: #147560;
+
+  --uf-app-bg: #141517;
+  --uf-panel-bg: #1e1f22;
+  --uf-panel-border: #2e3035;
+  --uf-pink-tint: rgba(236, 72, 153, 0.1);
+  --uf-pink-tint-strong: rgba(236, 72, 153, 0.18);
+  --uf-muted: var(--mantine-color-dark-2);
+  --uf-shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 4px 16px rgba(0, 0, 0, 0.25);
+  --uf-shadow-hover: 0 2px 4px rgba(0, 0, 0, 0.3), 0 12px 32px rgba(236, 72, 153, 0.18);
+}
+
+/* Presentation scaling: every Mantine rem() value is multiplied by
+   --mantine-scale, so one variable grows fonts, paddings and gaps together
+   on large displays. The attribute selector out-specifies Mantine's own
+   `:root { --mantine-scale: 1 }`. */
+@media (min-width: 1600px) {
+  :root[data-mantine-color-scheme] {
+    --mantine-scale: 1.1;
+  }
+}
+@media (min-width: 2200px) {
+  :root[data-mantine-color-scheme] {
+    --mantine-scale: 1.25;
+  }
+}
+
+html,
+body {
+  height: 100%;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  background: var(--uf-app-bg);
+}
+
+/* --------------------------------------------------------------------------
+   Buttons - variant looks are driven through Mantine's CSS variables so the
+   disabled/loading states and focus rings keep working untouched.
+   -------------------------------------------------------------------------- */
+.uf-btn-filled {
+  --button-bg: var(--uf-gradient);
+  --button-hover: linear-gradient(90deg, var(--uf-pink-deep) 0%, #dc2626 100%);
+  --button-color: #fff;
+  --button-bd: 1px solid transparent;
+  box-shadow: 0 4px 12px rgba(236, 72, 153, 0.25);
+}
+
+.uf-btn-outline {
+  --button-bg: transparent;
+  --button-hover: var(--uf-pink-tint);
+  --button-color: var(--uf-pink);
+  --button-bd: 1px solid var(--uf-pink);
+}
+
+.uf-btn-light {
+  --button-bg: var(--uf-pink-tint);
+  --button-hover: var(--uf-pink-tint-strong);
+  --button-color: var(--uf-pink-deep);
+  --button-bd: 1px solid transparent;
+}
+[data-mantine-color-scheme="dark"] .uf-btn-light {
+  --button-color: #f9a8d4;
+}
+
+.uf-btn-demo {
+  --button-bg: rgba(255, 255, 255, 0.08);
+  --button-hover: rgba(255, 255, 255, 0.18);
+  --button-color: #fff;
+  --button-bd: 1px solid rgba(255, 255, 255, 0.55);
+}
+
+.uf-btn-filled[data-disabled],
+.uf-btn-filled:disabled {
+  box-shadow: none;
+}
+
+/* --------------------------------------------------------------------------
+   Surfaces
+   -------------------------------------------------------------------------- */
+.uf-panel {
+  background: var(--uf-panel-bg);
+  border: 1px solid var(--uf-panel-border);
+  box-shadow: var(--uf-shadow);
+}
+
+.uf-card-link {
+  background: var(--uf-panel-bg);
+  border: 1px solid var(--uf-panel-border);
+  box-shadow: var(--uf-shadow);
+  transition:
+    transform 160ms ease,
+    box-shadow 160ms ease,
+    border-color 160ms ease,
+    background-color 160ms ease;
+}
+.uf-card-link:hover,
+.uf-card-link:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: var(--uf-shadow-hover);
+  border-color: var(--uf-pink);
+  background: var(--uf-pink-tint);
+  outline: none;
+}
+
+.uf-empty {
+  border: 1px dashed var(--uf-panel-border);
+  background: transparent;
+}
+
+/* --------------------------------------------------------------------------
+   Header (demo banner)
+   -------------------------------------------------------------------------- */
+.uf-header {
+  background: linear-gradient(90deg, var(--uf-demo-bg) 0%, var(--uf-demo-bg-end) 100%);
+  border-bottom: 0;
+  color: #fff;
+}
+
+.uf-header .uf-header-icon {
+  --ai-bg: rgba(255, 255, 255, 0.1);
+  --ai-hover: rgba(255, 255, 255, 0.22);
+  --ai-color: #fff;
+  --ai-bd: 1px solid rgba(255, 255, 255, 0.45);
+}
+.uf-header .uf-header-icon .material-icons-outlined {
+  color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+   Navbar
+   -------------------------------------------------------------------------- */
+.uf-navbar {
+  background: var(--uf-panel-bg);
+  border-right: 1px solid var(--uf-panel-border);
+}
+
+/* Square, full-bleed rows: the active state is a flat tint plus a 3px pink
+   bar flush with the navbar's left edge. */
+.uf-navbar .uf-nav-link {
+  border-radius: 0;
+  padding: 10px var(--mantine-spacing-md);
+  font-weight: 500;
+  border-left: 3px solid transparent;
+}
+.uf-nav-link:hover {
+  background: var(--uf-pink-tint);
+}
+.uf-nav-link[data-active] {
+  background: var(--uf-pink-tint);
+  color: var(--uf-pink-deep);
+  border-left-color: var(--uf-pink);
+}
+[data-mantine-color-scheme="dark"] .uf-nav-link[data-active] {
+  color: #f9a8d4;
+}
+.uf-nav-link[data-active] .material-icons-outlined {
+  color: var(--uf-pink);
+}
+
+/* Environment switcher: vertical segmented control */
+.uf-env-switch {
+  background: var(--uf-app-bg);
+  border: 1px solid var(--uf-panel-border);
+}
+.uf-env-switch .mantine-SegmentedControl-indicator {
+  background: var(--uf-panel-bg);
+  box-shadow: var(--uf-shadow);
+}
+.uf-env-switch .mantine-SegmentedControl-label {
+  font-weight: 500;
+  padding-block: 8px;
+}
+.uf-env-switch .mantine-SegmentedControl-label[data-active] {
+  color: var(--uf-pink-deep);
+  font-weight: 600;
+}
+[data-mantine-color-scheme="dark"] .uf-env-switch .mantine-SegmentedControl-label[data-active] {
+  color: #f9a8d4;
+}
+.uf-env-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--uf-panel-border);
+  flex-shrink: 0;
+}
+.uf-env-dot[data-live] {
+  background: #22c55e;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.2);
+}
+
+/* --------------------------------------------------------------------------
+   Tables & forms
+   -------------------------------------------------------------------------- */
+.uf-table thead th {
+  font-size: var(--mantine-font-size-xs);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--uf-muted);
+  white-space: nowrap;
+}
+.uf-table tbody tr[data-clickable] {
+  cursor: pointer;
+}
+.uf-table tbody tr:hover {
+  background: var(--uf-pink-tint) !important;
+}
+
+.uf-field-label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: var(--mantine-font-size-sm);
+  font-weight: 600;
+  color: var(--mantine-color-text);
+}
+
+.uf-code {
+  max-height: 480px;
+  overflow: auto;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+/* Material icon glyphs inherit size from the font-size we set inline */
+.material-icons-outlined {
+  font-size: inherit;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+/* --------------------------------------------------------------------------
+   JSON viewer (components/JsonView.tsx)
+   -------------------------------------------------------------------------- */
+:root {
+  --uf-json-bg: #f8f9fb;
+  --uf-json-key: #be185d;     /* signature pink, deep */
+  --uf-json-string: #0f766e;  /* teal */
+  --uf-json-number: #b45309;  /* amber */
+  --uf-json-boolean: #6d28d9; /* violet */
+  --uf-json-null: #6b7280;
+  --uf-json-punct: #6b7280;
+}
+[data-mantine-color-scheme="dark"] {
+  --uf-json-bg: #17181b;
+  --uf-json-key: #f9a8d4;
+  --uf-json-string: #5eead4;
+  --uf-json-number: #fcd34d;
+  --uf-json-boolean: #c4b5fd;
+  --uf-json-null: #9ca3af;
+  --uf-json-punct: #9ca3af;
+}
+.uf-json {
+  border: 1px solid var(--uf-panel-border);
+  border-radius: var(--mantine-radius-md);
+  background: var(--uf-json-bg);
+  overflow: hidden;
+}
+.uf-json[data-tone="error"] {
+  border-color: var(--mantine-color-red-4);
+}
+.uf-json-bar {
+  border-bottom: 1px solid var(--uf-panel-border);
+  background: var(--uf-panel-bg);
+}
+.uf-json-pre {
+  margin: 0;
+  padding: var(--mantine-spacing-sm) var(--mantine-spacing-md);
+  font-family: var(--mantine-font-family-monospace);
+  font-size: 13px;
+  line-height: 1.55;
+  white-space: pre;
+  color: var(--mantine-color-text);
+}
+.uf-json[data-tone="error"] .uf-json-pre {
+  color: var(--mantine-color-red-7);
+  white-space: pre-wrap;
+}
+[data-mantine-color-scheme="dark"] .uf-json[data-tone="error"] .uf-json-pre {
+  color: var(--mantine-color-red-4);
+}
+.uf-json-key { color: var(--uf-json-key); font-weight: 600; }
+.uf-json-string { color: var(--uf-json-string); }
+.uf-json-number { color: var(--uf-json-number); }
+.uf-json-boolean { color: var(--uf-json-boolean); font-weight: 600; }
+.uf-json-null { color: var(--uf-json-null); font-style: italic; }
+.uf-json-punct { color: var(--uf-json-punct); }
+
+/* --------------------------------------------------------------------------
+   Dropdown (components/UnicornDropdown.tsx)
+   -------------------------------------------------------------------------- */
+/* The trigger is a <button>; keep its value on one line with an ellipsis so a
+   long "NAME - ACCOUNT" never wraps out of the control. */
+.uf-dropdown-input {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  text-align: left;
+}
+.uf-dropdown-value {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+}
+.uf-dropdown-value > span:first-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.uf-dropdown-value-desc {
+  flex-shrink: 0;
+  font-size: var(--mantine-font-size-xs);
+  font-family: var(--mantine-font-family-monospace);
+  color: var(--uf-muted);
+}
+.uf-dropdown-option {
+  padding: 8px 12px;
+  border-radius: var(--mantine-radius-sm);
+}
+.uf-dropdown-option[data-combobox-selected],
+.uf-dropdown-option:hover {
+  background: var(--uf-pink-tint);
+}
+
+/* --------------------------------------------------------------------------
+   Balances ledger (features/AccountBalances)
+   -------------------------------------------------------------------------- */
+.uf-ledger {
+  border: 1px solid var(--uf-panel-border);
+  border-radius: var(--mantine-radius-md);
+  overflow: hidden;
+  background: var(--uf-panel-bg);
+}
+.uf-ledger-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--uf-panel-border);
+  background: var(--uf-app-bg);
+}
+.uf-ledger-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--mantine-spacing-md);
+  width: 100%;
+  min-height: 52px;
+  padding: 8px 14px;
+  border-bottom: 1px solid var(--uf-panel-border);
+  transition: background-color 120ms ease;
+}
+.uf-ledger-row:last-child {
+  border-bottom: 0;
+}
+.uf-ledger-row:hover,
+.uf-ledger-row:focus-visible {
+  background: var(--uf-pink-tint);
+  outline: none;
+}
+.uf-ledger-amount {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.uf-ledger-ccy {
+  width: 30px;
+  text-align: right;
+}
+.uf-ledger-chevron {
+  font-size: 18px;
+  color: var(--uf-panel-border);
+  transition: color 120ms ease, transform 120ms ease;
+}
+.uf-ledger-row:hover .uf-ledger-chevron {
+  color: var(--uf-pink);
+  transform: translateX(2px);
+}
+/* ScrollArea's content wrapper has min-width: min-content, which lets long
+   account names widen the rows past the panel on phones instead of
+   truncating. The ledger only scrolls vertically, so pin it to the viewport. */
+.uf-ledger .mantine-ScrollArea-content {
+  min-width: 0 !important;
+  width: 100%;
+}

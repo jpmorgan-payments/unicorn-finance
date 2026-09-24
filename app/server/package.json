@@ -1,0 +1,33 @@
+{
+    "name": "unicornfinance-backend",
+    "version": "0.1.0",
+    "private": true,
+    "packageManager": "pnpm@10.19.0",
+    "engines": {
+        "node": ">=20"
+    },
+    "dependencies": {
+        "@aws-sdk/client-secrets-manager": "^3.839.0",
+        "@vendia/serverless-express": "^4.12.6",
+        "dotenv": "^16.5.0",
+        "eslint": "^9.29.0",
+        "eslint-config-airbnb-base": "^15.0.0",
+        "eslint-plugin-import": "^2.32.0",
+        "express": "^5.2.0",
+        "http-proxy-middleware": "^3.0.7",
+        "https-proxy-agent": "^7.0.6",
+        "jose": "^6.0.11",
+        "nodemon": "^3.1.10"
+    },
+    "scripts": {
+        "start": "NODE_OPTIONS='--use-env-proxy' nodemon app.js",
+        "start:local": "NODE_ENV='development' NODE_OPTIONS='--use-env-proxy' nodemon app.local.js",
+        "build": "zip archive.zip . -r -x \"/certs/**\" -x \"*/.DS_Store\" -x \"app.local.js\" -x \"/mock-server/**\""
+    },
+    "license": "Apache-2.0",
+    "pnpm": {
+        "overrides": {
+            "semver": "^6.3.1"
+        }
+    }
+}

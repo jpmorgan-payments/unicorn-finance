@@ -1,0 +1,53 @@
+meta {
+  name: Global Payments
+  type: http
+  seq: 1
+}
+
+post {
+  url: {{baseUrl}}/payment/v2/payments
+  body: json
+  auth: none
+}
+
+headers {
+  Content-Type: application/json
+}
+
+body:json {
+  {
+    "requestedExecutionDate": "2026-08-20",
+    "paymentIdentifiers": { "endToEndId": "UF1756000001" },
+    "transferType": "CREDIT",
+    "value": { "currency": "GBP", "amount": "250000" },
+    "paymentType": "RTP",
+    "debtor": {
+      "name": "Unicorn Finance Inc",
+      "account": { "accountNumber": "000000010900009", "accountType": "DDA", "accountCurrency": "USD" }
+    },
+    "debtorAgent": {
+      "name": "JPMorgan Chase - San Jose",
+      "financialInstitutionIds": [{ "id": "021000021", "idType": "USABA" }]
+    },
+    "creditor": {
+      "name": "London Gearworks Ltd",
+      "account": { "accountNumber": "31926819" }
+    },
+    "creditorAgent": {
+      "name": "Barclays Bank UK PLC",
+      "financialInstitutionIds": [{ "id": "20-00-00", "idType": "SORT_CODE" }]
+    },
+    "paymentPurpose": { "categoryPurpose": "CXBSNS" },
+    "remittanceInformation": {
+      "structuredInformation": [{ "creditReference": { "reference": "INV-2026-4417" } }]
+    }
+  }
+}
+
+docs {
+  £250,000 from a San Jose (US) debtor to a London supplier, over UK Faster
+  Payments (same `paymentType: "RTP"` the app uses domestically - UK FPS's own
+  cap is £1,000,000 per payment). Swap `paymentType`/`creditorAgent.idType` and
+  the same contract reaches India (IMPS), Brazil (PIX) or a US domestic account
+  (USABA) - the rail and market change, the body shape doesn't.
+}

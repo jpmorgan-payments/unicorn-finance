@@ -1,0 +1,34 @@
+meta {
+  name: Unicorn Finance - Payments Garage
+}
+
+docs {
+  # Unicorn Finance - Payments Garage
+
+  Never mind the code - get straight to the API calls behind the three beats:
+  Global Payments (Reach), Global Payments + Track (Confidence), and Account
+  Validation (Trust).
+
+  Two running examples, both from Unicorn Finance (San Jose, US):
+  - **Reach**: £250,000 (`INV-2026-4417`) to a **London** supplier over UK
+    Faster Payments - proof that one contract reaches multiple countries and
+    payment methods.
+  - **Confidence** and **Trust**: **$1,000,000** (`INV-2026-4417`) to a
+    **Palo Alto** supplier over RTP, then tracked and validated - the same
+    story told in the Payments Garage slide deck (`app/client/public/garage`).
+
+  ## Usage
+
+  1. Select the **Local Mock** environment.
+  2. Run `cd app/server/mock-server && docker compose up` to start the Prism
+     mock-server on `:8081`.
+  3. Send **Global Payments** or **Account Validation** - both are backed by the
+     OpenAPI specs in `app/server/mock-server/specs` and work fully offline.
+  4. **FX Rate Sheet** and the Track status "debug mode" stepping run in-app
+     today via the in-browser MSW mock (open the app's Request Preview drawer
+     to see them) and against the real CAT sandbox once you are onboarded -
+     their Prism specs are a follow-up.
+
+  No credentials or secrets are stored here. Real (CAT) mode uses mTLS + a signed
+  JWT via the express server - see `.env.example`.
+}
