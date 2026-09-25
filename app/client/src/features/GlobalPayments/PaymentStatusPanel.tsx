@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Badge, Box, Button, Group, Stack, Text } from "@mantine/core";
+import { Box, Button, Group, Stack, Text } from "@mantine/core";
 import { fetchPaymentStatus } from "./SubmitGlobalPaymentsRequest";
 import { CHAOS_TRACKS, type ChaosScenario, type Stage } from "../../mocks/chaosScenarios";
 import type { Environment } from "../../context/EnvContext";
@@ -15,17 +15,9 @@ interface PaymentStatusPanelProps {
    * fixed lifecycle per call.
    */
   mode: "play" | "debug";
-  /** Which chaos scenario (if any) this payment was submitted with - drives the Debug-mode stage track. */
+  /** Which chaos scenario (if any) this payment was submitted with - drives the stage track. */
   scenario: ChaosScenario;
 }
-
-const STATUS_COLOR: Record<string, string> = {
-  RECEIVED: "gray",
-  ACCEPTED: "blue",
-  PROCESSING: "yellow",
-  COMPLETED: "green",
-  REJECTED: "red",
-};
 
 const REJECTION_MESSAGES: Record<string, string> = {
   FUNDS_CONTROL_FAILED: "Funds check failed.",
@@ -216,21 +208,29 @@ export const PaymentStatusPanel: React.FC<PaymentStatusPanelProps> = ({
     );
   }
 
+  // Play mode draws the same stage track as Debug, but derives the position
+  // from the polled status itself rather than counting clicks.
+  const track = CHAOS_TRACKS[scenario];
+  const playIndex = status
+    ? track.findIndex(
+        (stage) =>
+          stage.paymentStatus === status.paymentStatus &&
+          stage.paymentSubStatus === status.paymentSubStatus,
+      )
+    : -1;
+
   return (
-    <Stack gap={6} mt="sm">
-      {status && (
-        <Group gap="xs">
-          <Badge size="sm" color={STATUS_COLOR[status.paymentStatus] ?? "gray"}>
-            {status.paymentStatus}
-          </Badge>
-          <Text size="xs" c={status.paymentStatus === "REJECTED" ? "red" : "dimmed"}>
-            {status.paymentStatus === "REJECTED"
-              ? REJECTION_MESSAGES[status.paymentSubStatus] ?? "Payment rejected."
-              : status.chaosHandled
-                ? "Hiccup absorbed, retrying..."
-                : status.gpi?.statusDescription}
-          </Text>
-        </Group>
+    <Stack gap={10} mt="sm">
+      <StageTrack track={track} stepIndex={playIndex} />
+      {status?.paymentStatus === "REJECTED" && (
+        <Text size="xs" c="red">
+          {REJECTION_MESSAGES[status.paymentSubStatus] ?? "Payment rejected."}
+        </Text>
+      )}
+      {status?.chaosHandled && (
+        <Text size="xs" c="dimmed">
+          Hiccup absorbed, retrying...
+        </Text>
       )}
     </Stack>
   );
