@@ -1,0 +1,58 @@
+name: CI
+
+on:
+  pull_request:
+    paths:
+      - "app/client/**"
+      - "app/server/**"
+      - ".github/workflows/**"
+  push:
+    branches: [main]
+    paths:
+      - "app/client/**"
+      - "app/server/**"
+      - ".github/workflows/**"
+
+jobs:
+  client:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app/client
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20.19.0"
+
+      - run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Test
+        run: pnpm test:no-watch
+
+      - name: Build
+        run: pnpm build
+
+  server:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app/server
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - run: corepack enable
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Import smoke test
+        run: node -e "require('./app.js')"

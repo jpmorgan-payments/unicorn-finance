@@ -5,12 +5,15 @@ interface UnicornTableProps {
   columns: string[];
   data: string[][];
   onRowClick?: (rowIndex: number) => void;
+  /** Width below which the clickable table scrolls sideways (default 500). */
+  minWidth?: number;
 }
 
 export const UnicornTable: React.FC<UnicornTableProps> = ({
   columns,
   data,
   onRowClick,
+  minWidth = 500,
 }) => {
   // Validate that data rows match column count
   const isDataValid = data.every((row) => row.length === columns.length);
@@ -24,7 +27,7 @@ export const UnicornTable: React.FC<UnicornTableProps> = ({
   // If we have onRowClick, we need to render a custom table
   if (onRowClick) {
     return (
-      <Table.ScrollContainer minWidth={500}>
+      <Table.ScrollContainer minWidth={minWidth}>
         <Table highlightOnHover>
           <Table.Thead>
             <Table.Tr>

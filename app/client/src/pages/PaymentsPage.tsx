@@ -15,8 +15,6 @@ import { DevOptionsPanel } from "../features/GlobalPayments/DevOptionsPanel";
 const PaymentsPage: React.FC = () => {
   const { history, addEntry, clearHistory, handleRowClick, tableData } =
     useApiHistory<PaymentHistory>("unicorn-payment-history", (item) => [
-      item.requestId,
-      item.accountNumber,
       item.paymentType,
       item.status,
     ]);
@@ -37,13 +35,13 @@ const PaymentsPage: React.FC = () => {
         <DevOptionsPanel />
 
         <Grid gutter="lg" align="stretch">
-          <Grid.Col span={{ base: 12, md: 5 }}>
+          <Grid.Col span={{ base: 12, md: 8 }}>
             <Panel title="Submit a Payment">
               <GlobalPaymentsInputForm onPaymentComplete={addEntry} />
             </Panel>
           </Grid.Col>
 
-          <Grid.Col span={{ base: 12, md: 7 }}>
+          <Grid.Col span={{ base: 12, md: 4 }}>
             <Panel
               title="Payment History"
               action={
@@ -61,7 +59,8 @@ const PaymentsPage: React.FC = () => {
             >
               {history.length > 0 ? (
                 <UnicornTable
-                  columns={["Request ID", "Account Number", "Payment Type", "Status"]}
+                  columns={["Type", "Status"]}
+                  minWidth={0}
                   data={tableData}
                   onRowClick={handleRowClick}
                 />
