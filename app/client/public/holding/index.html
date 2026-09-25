@@ -78,6 +78,9 @@
   #me .org{font-family:"Press Start 2P",monospace;font-size:clamp(8px,.8vw,10px);color:var(--gold);
     text-shadow:0 2px 0 #7A2600;letter-spacing:.03em;}
   #me .role{font-size:clamp(12.5px,1.05vw,15px);color:var(--ink-dim);max-width:26ch;line-height:1.45;}
+  #me .crew{display:flex;gap:12px;justify-content:center;margin-top:4px;}
+  #me .crew img{width:clamp(44px,4.4vw,64px);height:clamp(44px,4.4vw,64px);border-radius:50%;
+    object-fit:cover;border:2px solid var(--magenta);box-shadow:0 0 18px rgba(255,62,157,.45);}
 
   /* ---------- CENTER: UNICORN FINANCE ---------- */
   #main{border-color:var(--line-hot);border-width:1px;position:relative;
@@ -135,6 +138,10 @@
     <span class="handle">@torranca</span>
     <span class="org">J.P. Morgan Payments</span>
     <span class="role">Built this thing with AI - mostly by finding the right API and asking it nicely.</span>
+    <div class="crew">
+      <img src="assets/kontel.jpg" alt="Kontel">
+      <img src="assets/christine.jpg" alt="Christine">
+    </div>
   </div>
 
   <div class="card" id="main">
@@ -156,7 +163,7 @@
 </div>
 
 <div id="vig"></div><div id="scan"></div>
-<div id="bar"><span>TOMORROW · 10-12 · STAGE 10</span></div>
+<div id="bar"><span>LIVE</span></div>
 <script>
 addEventListener("keydown",e=>{
   if(e.key==="f"){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen();}
