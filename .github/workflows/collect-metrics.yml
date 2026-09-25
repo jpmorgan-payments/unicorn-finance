@@ -94,7 +94,7 @@ jobs:
           REFERRER_COUNT=$(echo "$REFERRERS_RESPONSE" | jq '. | length')
           echo "Referrer stats collected: ${REFERRER_COUNT} referrers found"
 
-      - uses: stefanzweifel/git-auto-commit-action@v5
+      - uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: Apply metrics changes
           branch: metrics
