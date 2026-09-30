@@ -39,8 +39,8 @@ importers:
         specifier: ^7.0.6
         version: 7.0.6
       jose:
-        specifier: ^6.0.11
-        version: 6.0.12
+        specifier: ^6.2.12
+        version: 6.2.12
       nodemon:
         specifier: ^3.1.10
         version: 3.1.10
@@ -861,8 +861,8 @@ packages:
   isexe@2.0.0:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
 
-  jose@6.0.12:
-    resolution: {integrity: sha512-T8xypXs8CpmiIi78k0E+Lk7T2zlK4zDyg+o1CZ4AkOHgDg98ogdP2BeZ61lTFKFyoEwJ9RgAgN+SdM3iPgNonQ==}
+  jose@6.2.12:
+    resolution: {integrity: sha512-9NiFmJEex0sy2Dk58j2UGBSHgUs2ypF9eZSu4L6vjOX3Dp96Sw1F3uL+H+D1sx02jZZdzUT0HgvCy59CuvXcWw==}
 
   js-yaml@4.3.2:
     resolution: {integrity: sha512-SFNOvSJ+Dgf/9An904Yx+CgSlIPCkIpao4qo51lpee25TIRejdH3rhR4EZMGoNx3/TP3O+wzWuiTFl4sqbltzA==}
@@ -2337,7 +2337,7 @@ snapshots:
 
   isexe@2.0.0: {}
 
-  jose@6.0.12: {}
+  jose@6.2.12: {}
 
   js-yaml@4.3.2:
     dependencies:
