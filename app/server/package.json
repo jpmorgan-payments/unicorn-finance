@@ -13,11 +13,11 @@
         "eslint": "^9.29.0",
         "eslint-config-airbnb-base": "^15.0.0",
         "eslint-plugin-import": "^2.32.0",
-        "express": "^5.2.0",
+        "express": "^5.2.1",
         "http-proxy-middleware": "^3.0.7",
         "https-proxy-agent": "^7.0.6",
         "jose": "^6.0.11",
-        "nodemon": "^3.1.10"
+        "nodemon": "^3.1.14"
     },
     "scripts": {
         "start": "NODE_OPTIONS='--use-env-proxy' nodemon app.js",
