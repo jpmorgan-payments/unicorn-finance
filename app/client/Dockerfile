@@ -3,7 +3,7 @@
 # offline via the in-browser MSW mock - no JPMorgan network or credentials.
 
 # --- build stage ---
-FROM node:22-alpine AS build
+FROM node:22.22.3-alpine3.24 AS build
 WORKDIR /app
 RUN corepack enable
 COPY package.json pnpm-lock.yaml ./
@@ -25,7 +25,7 @@ ENV VITE_ENABLE_JPMC=$VITE_ENABLE_JPMC \
 RUN pnpm build
 
 # --- serve stage ---
-FROM nginx:alpine AS serve
+FROM nginx:1.29.8-alpine3.23 AS serve
 COPY --from=build /app/dist /usr/share/nginx/html
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80

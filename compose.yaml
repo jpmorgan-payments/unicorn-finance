@@ -31,7 +31,7 @@ services:
     build:
       context: ./app/server
     ports:
-      - "8082:8082"
+      - "127.0.0.1:8082:8082"
     # .dockerignore excludes .env from the image, so PDP_CLIENT_ID/PDP_CLIENT_SECRET
     # etc. (see .env.example) must be forwarded at runtime via env_file. `required:
     # false` (Compose 2.24+) keeps a fresh clone with no .env starting cleanly for the

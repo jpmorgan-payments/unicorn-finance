@@ -22,12 +22,17 @@
     "scripts": {
         "start": "NODE_OPTIONS='--use-env-proxy' nodemon app.js",
         "start:local": "NODE_ENV='development' NODE_OPTIONS='--use-env-proxy' nodemon app.local.js",
+        "test": "node --test",
         "build": "zip archive.zip . -r -x \"/certs/**\" -x \"*/.DS_Store\" -x \"app.local.js\" -x \"/mock-server/**\""
     },
     "license": "Apache-2.0",
     "pnpm": {
         "overrides": {
-            "semver": "^6.3.1"
+            "semver": "^6.3.1",
+            "ajv@6": "6.14.0",
+            "proxy-addr": "2.0.8",
+            "qs": "6.16.0",
+            "@humanfs/node": "0.16.8"
         }
     }
 }

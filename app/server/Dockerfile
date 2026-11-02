@@ -2,12 +2,13 @@
 # APIs. This is the Tier 2 ("++ real") path only: it needs client certificates
 # mounted at ./certs and is NOT required for the offline mock demo.
 
-FROM node:22-alpine
+FROM node:22.22.3-alpine3.24
 WORKDIR /app
 RUN corepack enable
 COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 COPY . .
+USER node
 # development = read certs from the mounted ./certs rather than Secrets Manager.
 # It does NOT enable verbose errors; set DEBUG_ERRORS=true for that (see .env.example).
 ENV NODE_ENV=development

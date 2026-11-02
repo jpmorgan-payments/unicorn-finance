@@ -28,6 +28,7 @@ const outboundProxyAgent = outboundProxyUrl
   : undefined;
 const { gatherHttpsOptionsAsync } = require('./grabSecret');
 const { generateJWTJose } = require('./digitalSignature');
+const { isAllowedCatProxyRequest } = require('./security');
 
 // Constants for better maintainability
 const ENV = process.env.NODE_ENV || 'development';
@@ -138,8 +139,6 @@ function createProxyConfigurationDigital(target, httpsOpts, digitalSignature) {
       proxyReq: (proxyReq, req) => {
         console.log('Digital proxy proxyReq called');
         console.log('Setting headers for digital signature request');
-        console.log('Request body:', req.body);
-        console.log('Digital Signature:', digitalSignature);
         if (req.body && digitalSignature) {
           // Clear any existing headers that might interfere
           proxyReq.removeHeader('content-length');
@@ -359,6 +358,10 @@ app.use('/digitalSignature/:splat', jsonParser, async (req, res, next) => {
 
 // Catch-all route handler
 app.use('/:splat', async (req, res, next) => {
+  if (!isAllowedCatProxyRequest(req.method, req.originalUrl)) {
+    return res.status(404).json({ error: 'Not found' });
+  }
+
   try {
     const httpsOpts = await gatherHttpsOptions();
     const target = routeRequest(req.params.splat) + '/' + req.params.splat;
