@@ -14,11 +14,12 @@ rm -f function.zip
 echo "📦 Creating Lambda Layer..."
 mkdir -p lambda-layer/nodejs
 cp ../package-layer.json lambda-layer/nodejs/package.json
+cp ../package-layer-lock.json lambda-layer/nodejs/package-lock.json
 
 # Install production dependencies in layer
 cd lambda-layer/nodejs
 echo "📥 Installing dependencies for layer..."
-npm install --production --no-optional
+npm ci --omit=dev --no-optional
 
 # Remove unnecessary files to reduce size
 echo "🗑️  Removing unnecessary files..."
@@ -57,6 +58,7 @@ cp ../index.js lambda-function/
 cp ../app.js lambda-function/
 cp ../digitalSignature.js lambda-function/
 cp ../grabSecret.js lambda-function/
+cp ../security.js lambda-function/
 cp ../package-lambda.json lambda-function/package.json
 
 # Create function zip

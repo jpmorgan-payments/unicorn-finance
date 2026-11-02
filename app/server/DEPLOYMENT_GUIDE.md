@@ -64,7 +64,7 @@ Your application has been split into two parts:
 7. **Execution Role:**
    - Ensure your Lambda execution role has:
      - `AWSLambdaBasicExecutionRole` (for CloudWatch logs)
-     - `SecretsManagerReadWrite` (for accessing certificates)
+   - A least-privilege policy allowing `secretsmanager:GetSecretValue` on the certificate secret only. Use the resource ARN pattern `arn:aws:secretsmanager:<region>:<account-id>:secret:<secret-name>-*` and set `<secret-name>` to the value of `SECRET_NAME` (Secrets Manager appends a generated suffix).
 
 ### Step 3: Test the Function
 
